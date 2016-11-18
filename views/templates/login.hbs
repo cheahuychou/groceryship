@@ -1,0 +1,14 @@
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs">
+          <li role="presentation" class="active"><a href="#">Login</a></li>
+          <li role="presentation"><a href="#">Register</a></li>
+        </ul>
+    </div>
+    <div class="panel-body">
+        {{#each fields}}
+            <input type="text" class="form-control" placeholder={{placeholder}} id={{name}}> 
+        {{/each}}
+        <button class="btn btn-primary form-submit" type="button" id="{{formType}}-submit">{{button}}</button>
+    </div>
+</div>
