@@ -18,6 +18,7 @@ router.get('/', function(req, res, next) {
 
 // Use passport.js for login authentication and bcrypt to encrypt passwords
 passport.use(new LocalStrategy(function (username, password, done) {
+	username = username.toLowerCase();
 	User.findOne({ username: username }, 'password', function (err, user) {
 		if (err || user == null) {
 			done(new Error('Please enter a valid username'));
@@ -54,7 +55,7 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-	var requested_username = req.body.requested_kerberos.trim();
+	var requested_username = req.body.requested_kerberos.trim().toLowerCase();
 	var requested_password = req.body.requested_password.trim();
 	var requested_mit_id = parseInt(req.body.requested_mit_id.trim());
 	var requested_phone_number = parseInt(req.body.requested_phone_number.trim());
@@ -68,7 +69,7 @@ router.post('/signup', function(req, res, next) {
 		User.count({ username: requested_username },
 			function (err, count) {
 				if (count > 0) {
-					res.render('index', { title: 'GroceryShip', message: 'Please enter YOUR kerberos'});
+					res.render('index', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure your enter your kerberos correctly'});
 				} else {
 					bcrypt.genSalt(function(err, salt) {
 	   				if (err) {

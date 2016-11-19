@@ -3,12 +3,12 @@
 * non-empty strings and do not contain html elements, alert
 * the user if these are not satisified
 * @return {Boolean} false if the kerberos and password violate
-*										the constaints 
+*					the constraints 
 */
 var checkLogInForm = function () {
 	var kerberos = $('#kerberos-box').val().trim();
 	var password = $('#password-box').val().trim();
-	if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || /<[a-z][\s\S]*>/i.test(kerberos)) {
+	if (kerberos.length === 0 || /<[a-z][\s\S]*>/i.test(kerberos)) {
 		alert('Please enter a valid kerberos');
 		return false; 
 	}
@@ -23,7 +23,7 @@ var checkLogInForm = function () {
 * valid and do not contain html elements, alert the user if
 * these are not satisified
 * @return {Boolean} false if the kerberos and password violate
-*										the constaints 
+*					the constraints 
 */
 var checkSignUpForm = function () {
 	var kerberos = $('#kerberos-register-box').val().trim();
