@@ -1,0 +1,44 @@
+<div id='login-container'>
+    <div class="login-warning">
+        {{message}}
+    </div>
+    <form id='login-form' action='/login' method='post' onsubmit="return checkLogInForm()">
+        <input id='kerberos-box' type='text' name='username' placeholder='kerberos' required></input><br>
+        <input id='password-box' type='password' name='password' placeholder='password' required></input><br>
+        <input type="submit" id='login-button' class='btn btn-primary btn-sm' value="LOG IN">
+        <input type="button" class='btn btn-info btn-sm' data-toggle="modal" data-target="#register-modal" value='SIGN UP'></input>
+    </form>
+    <div id="register-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Sign Up</h4>
+                </div>
+                <div class="modal-body">
+                    <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
+                        <input id='kerberos-register-box' type='text' name='requested_kerberos' placeholder='kerberos' required></input><br>
+                        <input id='password-register-box' type='password' name='requested_password' placeholder='password' required></input><br>
+                        <input id='confirm-password-register-box' type='password' name='confirm_password' placeholder='confirm password' required></input><br>
+                        <input id='mit-id-register-box' type='text' name='requested_mit_id' placeholder='MIT ID' required></input><br>
+                        <input id='phone-number-register-box' type='text' name='requested_phone_number' placeholder='phone number' required></input><br>
+                        <select name='dorm'>
+                            <option>Baker</option>
+                            <option>Burton-Conner</option>
+                            <option>East Campus</option>
+                            <option>MacGregor</option>
+                            <option>Maseeh</option>
+                            <option>McCormick</option>
+                            <option>New House</option>
+                            <option>Next House</option>
+                            <option>Random</option>
+                            <option>Senior</option>
+                            <option>Simmons</option>
+                        </select><br>
+                        <input type="submit" id='register-button' class='btn btn-primary btn-sm' value="SIGN UP">
+                    </form>
+                </div>     
+            </div>
+        </div>
+    </div>
+</div>

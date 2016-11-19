@@ -12,6 +12,15 @@
     "ejs": "~2.3.3",
     "express": "~4.13.1",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "bcrypt": "^0.8.7",
+    "dateformat": "^1.0.12",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.14.1",
+    "handlebars": "^4.0.5",
+    "mongoose": "^4.6.4",
+    "morgan": "~1.6.1",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
   }
 }

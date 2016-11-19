@@ -4,15 +4,40 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var exphbs = require('express-handlebars');
+var session = require('express-session');
+var passport = require('passport');
+var passportLocal = require('passport-local');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
 
+// database setup
+var mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/grocerydb');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+  console.log("database connected");
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.engine('.hbs', exphbs({extname: '.hbs'}));
+app.set('view engine', 'hbs');
+
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// set up a secret to encrypt cookies
+app.use(session({ secret : process.env.SECRET || '6170GroceryShip', resave : true, saveUninitialized : true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
