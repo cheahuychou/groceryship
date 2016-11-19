@@ -25,7 +25,7 @@ db.once('open', function (callback) {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('.hbs', exphbs({extname: '.hbs'}));
+app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index'}));
 app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
