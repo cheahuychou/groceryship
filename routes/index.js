@@ -63,12 +63,12 @@ router.post('/signup', function(req, res, next) {
 	console.log(requested_username, requested_password, requested_mit_id, requested_phone_number, dorm)
 
 	if (requested_username.length == 0 || requested_password.length == 0) {
-		res.render('index', { title: 'GroceryShip', message: 'Please enter your username and password below'});
+		res.render('index', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
 	} else {
 		User.count({ username: requested_username },
 			function (err, count) {
 				if (count > 0) {
-					res.render('index', { title: 'GroceryShip', message: 'Username already exists, please enter a different username'});
+					res.render('index', { title: 'GroceryShip', message: 'Please enter YOUR kerberos'});
 				} else {
 					bcrypt.genSalt(function(err, salt) {
 	   				if (err) {
