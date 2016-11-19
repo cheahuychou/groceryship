@@ -69,7 +69,7 @@ router.post('/signup', function(req, res, next) {
 		User.count({ username: requested_username },
 			function (err, count) {
 				if (count > 0) {
-					res.render('index', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure your enter your kerberos correctly'});
+					res.render('index', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly'});
 				} else {
 					bcrypt.genSalt(function(err, salt) {
 	   				if (err) {
