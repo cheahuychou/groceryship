@@ -1,0 +1,26 @@
+<div id="{{name}}-table">
+    <h1>{{title}}</h1>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                {{#each headings}}
+                <th>{{this}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each items}}
+            <tr>
+                {{#each ../headings}}
+                <td>{{'../this.{{this}}'}}</td>
+                {{/each}}
+            </tr>
+            {{/each}}
+            <tr>
+                {{#each headings}}
+                {{!-- TODO: Claim/unclaim button for others' requests and cancel/delete button for own--}}
+                {{/each}}
+            </tr>
+        </tbody>
+    </table>
+</div>
