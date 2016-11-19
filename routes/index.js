@@ -1,31 +1,30 @@
 var express = require('express');
 var router = express.Router();
-var express = require('express');
-var router = express.Router();
+var utils = require('../public/javascripts/utils.js');
+var User = require('../models/user');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-// var User = require('../models/user');
 
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	if (req.session.passport && req.session.passport.user && req.session.passport.user.kerberos) {
-		res.redirect('/users/'+ req.session.passport.user.kerberos);
+	if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
+		res.redirect('/users/'+ req.session.passport.user.username);
 	} else {
 		res.render('index', { title: 'GroceryShip' });
 	}
 });
 
 // Use passport.js for login authentication and bcrypt to encrypt passwords
-passport.use(new LocalStrategy(function (kerberos, password, done) {
-	User.findOne({ kerberos: kerberos }, 'password', function (err, user) {
+passport.use(new LocalStrategy(function (username, password, done) {
+	User.findOne({ username: username }, 'password', function (err, user) {
 		if (err || user == null) {
-			done(new Error('Please enter a valid kerberos'));
+			done(new Error('Please enter a valid username'));
 		} else {
 			bcrypt.compare(password, user.password, function (err, response) {
         if (response == true) {
-          done(null, {kerberos: kerberos});
+          done(null, {username: username});
         } else {
           done(new Error('Please enter a correct password'));
         }
@@ -39,14 +38,14 @@ passport.serializeUser(function (user, done) {
 })
 
 passport.deserializeUser(function (user, done) {
-	User.find({kerberos: user.kerberos}, function(err, user) {
+	User.find({username: user.username}, function(err, user) {
   	done(err, user);
 	});
 });
 
 
 router.post('/login', passport.authenticate('local', { failureRedirect: '/' }), function (req, res, next) {
-	res.redirect('/users/'+ req.user.kerberos);	
+	res.redirect('/users/'+ req.user.username);	
 });
 
 router.post('/logout', function(req, res, next) {
@@ -55,16 +54,21 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-	var requested_kerberos = req.body.requested_kerberos.trim();
+	var requested_username = req.body.requested_kerberos.trim();
 	var requested_password = req.body.requested_password.trim();
+	var requested_mit_id = parseInt(req.body.requested_mit_id.trim());
+	var requested_phone_number = parseInt(req.body.requested_phone_number.trim());
+	var dorm = req.body.dorm.trim();
+	console.log('signing up')
+	console.log(requested_username, requested_password, requested_mit_id, requested_phone_number, dorm)
 
-	if (requested_kerberos.length == 0 || requested_password.length == 0) {
-		res.render('index', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
+	if (requested_username.length == 0 || requested_password.length == 0) {
+		res.render('index', { title: 'GroceryShip', message: 'Please enter your username and password below'});
 	} else {
-		User.count({ kerberos: requested_kerberos },
+		User.count({ username: requested_username },
 			function (err, count) {
 				if (count > 0) {
-					res.render('index', { title: 'GroceryShip', message: 'Please enter your kerberos'});
+					res.render('index', { title: 'GroceryShip', message: 'Username already exists, please enter a different username'});
 				} else {
 					bcrypt.genSalt(function(err, salt) {
 	   				if (err) {
@@ -74,7 +78,7 @@ router.post('/signup', function(req, res, next) {
 	     					if (err) {
 	     						return next(err);
 	     					} else {
-	     						var user = { kerberos: requested_kerberos, password: hash };
+	     						var user = { username: requested_username, password: hash, mit_id: requested_mit_id, phone_number: requested_phone_number, dorm: dorm };
 									User.create(user, 
 										function(err, record) {
 											if (err) {

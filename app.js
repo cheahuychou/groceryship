@@ -16,7 +16,7 @@ var app = express();
 
 // database setup
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/fritterdb');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/grocerydb');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
