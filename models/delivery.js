@@ -13,9 +13,9 @@ var DeliverySchema = mongoose.Schema({
     tips: {type: Number, required: true},
     pickupLocation: {type: String, required: true},
     requester: {type: ObjectId, ref: "User", required: true},
-    shopper: {type: ObjectId, ref: "User"},
-    actualPrice: Number,
-    pickupTime: Date
+    shopper: {type: ObjectId, ref: "User", default: null},
+    actualPrice: {type: Number, default: null},
+    pickupTime: {type: Date, default: null}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -31,6 +31,13 @@ DeliverySchema.path("status").validate(function(status) {
     return status == "pending" || status == "claimed" || status == "rejected" || status == "accepted";
 }, "Not a valid status");
 
+DeliverySchema.path("shopper").validate(function(shopperId) {
+	return shopperId != this.requester;
+}, "The shopper and the requester are not the same.");
+
+DeliverySchema.path("deadline").validate(function(deadline) {
+	return deadline >= this.pickupTime;
+}, "The dealine has passed.");
 
 var DeliveryModel = mongoose.model("Delivery", DeliverySchema);
 
