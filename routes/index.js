@@ -55,18 +55,18 @@ router.post('/logout', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-	var requested_username = req.body.requested_kerberos.trim().toLowerCase();
-	var requested_password = req.body.requested_password.trim();
-	var requested_mit_id = parseInt(req.body.requested_mit_id.trim());
-	var requested_phone_number = parseInt(req.body.requested_phone_number.trim());
+	var requestedUsername = req.body.requestedKerberos.trim().toLowerCase();
+	var requestedPassword = req.body.requestedPassword.trim();
+	var requestedMitId = parseInt(req.body.requestedMitId.trim());
+	var requestedPhoneNumber = parseInt(req.body.requestedPhoneNumber.trim());
 	var dorm = req.body.dorm.trim();
 	console.log('signing up')
-	console.log(requested_username, requested_password, requested_mit_id, requested_phone_number, dorm)
+	console.log(requestedUsername, requestedPassword, requestedMitId, requestedPhoneNumber, dorm)
 
-	if (requested_username.length == 0 || requested_password.length == 0) {
+	if (requestedUsername.length == 0 || requestedPassword.length == 0) {
 		res.render('home', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
 	} else {
-		User.count({ username: requested_username },
+		User.count({ username: requestedUsername },
 			function (err, count) {
 				if (count > 0) {
 					res.render('home', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly'});
@@ -75,11 +75,11 @@ router.post('/signup', function(req, res, next) {
 	   				if (err) {
 	   					return next(err);
 	   				} else {
-	   					bcrypt.hash(requested_password, salt, function(err, hash) {
+	   					bcrypt.hash(requestedPassword, salt, function(err, hash) {
 	     					if (err) {
 	     						return next(err);
 	     					} else {
-	     						var user = { username: requested_username, password: hash, mit_id: requested_mit_id, phone_number: requested_phone_number, dorm: dorm };
+	     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
 									User.create(user, 
 										function(err, record) {
 											if (err) {

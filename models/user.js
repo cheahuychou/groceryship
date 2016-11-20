@@ -4,8 +4,8 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
     password: {type: String, required: true}, // should be just the hash
-    mit_id: {type: Number, required: true},
-    phone_number: {type: Number, required: true},
+    mitId: {type: Number, required: true},
+    phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
 });
 

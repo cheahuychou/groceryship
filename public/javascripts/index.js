@@ -28,9 +28,9 @@ var checkLogInForm = function () {
 var checkSignUpForm = function () {
 	var kerberos = $('#kerberos-register-box').val().trim();
 	var password = $('#password-register-box').val().trim();
-	var confirm_password = $('#confirm-password-register-box').val().trim();
-	var mit_id = $('#mit-id-register-box').val().trim();
-	var phone_number = $('#phone_number-register-box').val().trim();
+	var confirmPassword = $('#confirm-password-register-box').val().trim();
+	var mitId = $('#mit-id-register-box').val().trim();
+	var phoneNumber = $('#phone_number-register-box').val().trim();
 	var dorm = $('#dorm-register-box').val().trim();
 	console.log(/<[a-z][\s\S]*>/i.test(kerberos), /<[a-z][\s\S]*>/i.test(password));
 	if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || /<[a-z][\s\S]*>/i.test(kerberos)) {
@@ -41,11 +41,11 @@ var checkSignUpForm = function () {
 		alert('Please enter a non-empty and valid password');
 		return false; 
 	}
-	if (confirm_password !== password || /<[a-z][\s\S]*>/i.test(password)) {
+	if (confirmPassword !== password || /<[a-z][\s\S]*>/i.test(password)) {
 		alert('The password and confirm password you entered did not match, please try again.');
 		return false;
 	}
-	if (mit_id.match(/^\d+$/) || mit_id.length != 9) {
+	if (mitId.match(/^\d+$/) || mitId.length != 9) {
 		alert('MIT ID must be a nine-digit number');
 		return false;
 	}
