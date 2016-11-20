@@ -1,0 +1,22 @@
+<div id="request-table">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        {{> item_headings}}
+        <th>Pickup Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each requestItems}}
+      <tr>
+        {{> item_row this}}
+        <td>{{pickupTime}}</td>
+        {{!-- TODO: cancel button should only appear for own requests --}}
+        <td><button id='cancel-request-{{n}}' class='btn btn-primary'>Cancel</button></td>
+        {{!-- TODO: claim button should only appear for others' requests --}}
+        <td><button id='claim-request-{{n}}' class='btn btn-primary'>Claim</button></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

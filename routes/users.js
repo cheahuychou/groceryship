@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:username', utils.isAuthenticated, function (req, res, next) { 
-	res.render('dashboard', { title: 'GroceryShip', username: req.params.username});
+	res.render('dashboard', { title: 'Dashboard', username: req.params.username});
 });
 
 router.get('/:username/request', utils.isAuthenticated, function (req, res, next) { 
