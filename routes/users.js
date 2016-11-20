@@ -12,11 +12,11 @@ router.get('/:username', utils.isAuthenticated, function (req, res, next) {
 });
 
 router.get('/:username/request', utils.isAuthenticated, function (req, res, next) { 
-	res.render('request', { title: 'GroceryShip', username: req.params.username});
+	res.render('request', { title: 'Request for a Delivery', username: req.params.username});
 });
 
 router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next) { 
-	res.render('deliver', { title: 'GroceryShip', username: req.params.username});
+	res.render('deliver', { title: 'Request Feed', username: req.params.username});
 });
 
 module.exports = router;
