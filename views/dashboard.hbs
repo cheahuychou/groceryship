@@ -1,27 +1,17 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{title}}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.runtime.min.js"></script>
-    <script src="/javascripts/dashboard.js"></script>
-  </head>
-  <body>
-    <h1>{{title}}</h1>
-    <form action='/logout' method='post'>
-  		<input type="submit" id='logout-button' class='btn btn-primary btn-sm' value="LOG OUT">
-	</form>
-    <div id='notifications'>
-    	<h3>Notifications</h3>
-    </div>
-    <div id='request'>
-    	<h3>Your Requests</h3>
-    </div>
-    <div id='request'>
-    	<h3>To Deliver</h3>
-    </div>
-  </body>
-</html>
+<h1>{{title}}</h1>
+<form action='/logout' method='post'>
+	<input type="submit" id='logout-button' class='btn btn-primary btn-sm' value="LOG OUT">
+</form>
+<div id='notifications'>
+	<h3>Notifications</h3>
+</div>
+<div id='request'>
+	<h3>Your Requests</h3>
+  {{!-- TODO: what if table is empty, i.e. no items --}}
+  {{> requests_table requestItems}}
+</div>
+<div id='deliver'>
+	<h3>To Deliver</h3>
+  {{!-- TODO: what if table is empty, i.e. no items --}}
+  {{> deliveries_table deliveryItems}}
+</div>
