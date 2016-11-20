@@ -3,7 +3,10 @@ var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
 
-/** Returns the "deliver" page consisting of all requests that a user can claim **/
+/**
+Returns the "deliver" page consisting of all requests that a user can claim
+fields rendered: title & requestItems
+**/
 router.get("/requests", function(req, res){
 	var username = req.session.passport.user.username;
 	var now = Date.now;
@@ -15,7 +18,10 @@ router.get("/requests", function(req, res){
 	});
 });
 
-/** Populates the dashboard page of the user, returning the lists of his current requests and current deliveries **/
+/**
+Populates the dashboard page of the user, returning the lists of his current requests and current deliveries
+fields rendered: title, requestItems, deliveryItems
+**/
 router.get("/:username", function(req, res){
 	var username = req.session.passport.user.username;
 	User.find({username: username}, '_id', function(err, current_user) {
