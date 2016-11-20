@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 	if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
 		res.redirect('/users/'+ req.session.passport.user.username);
 	} else {
-		res.render('index', { title: 'GroceryShip' });
+		res.render('home', { title: 'GroceryShip' });
 	}
 });
 
@@ -64,12 +64,12 @@ router.post('/signup', function(req, res, next) {
 	console.log(requested_username, requested_password, requested_mit_id, requested_phone_number, dorm)
 
 	if (requested_username.length == 0 || requested_password.length == 0) {
-		res.render('index', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
+		res.render('home', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
 	} else {
 		User.count({ username: requested_username },
 			function (err, count) {
 				if (count > 0) {
-					res.render('index', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly'});
+					res.render('home', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly'});
 				} else {
 					bcrypt.genSalt(function(err, salt) {
 	   				if (err) {
@@ -88,7 +88,7 @@ router.post('/signup', function(req, res, next) {
 													'message': err.message
 												});
 											}
-											res.render('index', { title: 'GroceryShip', message: 'You have been registered. Now please log in below:'});
+											res.render('home', { title: 'GroceryShip', message: 'You have been registered. Now please log in below:'});
 									});
 	   						}
 	  				 	});	

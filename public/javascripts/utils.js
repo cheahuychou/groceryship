@@ -38,7 +38,7 @@ var Utils = function() {
 		} else if (req.isAuthenticated()) {
 			res.redirect('/users/'+req.session.passport.user.username);
 		} else {
-			res.render('index', { title: 'Fritter', message: 'Please log in below'});
+			res.render('home', { title: 'GroceryShip', message: 'Please log in below'});
 		}
 	}
 

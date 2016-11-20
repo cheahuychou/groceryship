@@ -1,0 +1,15 @@
+<div id="request-form-container">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        {{> item_headings}}
+      </tr>
+    </thead>
+    <tbody>
+      {{> request_item_form n='1'}}
+    </tbody>
+  </table>
+  {{!-- TODO: add listener to add item button click --}}
+  <button id='add-item' class='btn btn-default btn-sm'>Add More</button><br>
+  <button type='submit' id='make-request' class='btn btn-primary' style='float: right'>Make Request</button>
+</div>

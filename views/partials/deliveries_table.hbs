@@ -1,0 +1,26 @@
+<div id="deliveries-table">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
+        <th><input type='checkbox'></th>
+        {{> item_headings}}
+        <th>Pickup Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each deliveryItems}}
+      <tr>
+        {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
+        <td><input type='checkbox'></td>
+        {{> item_row this}}
+        {{!-- TODO: pickupTime should be N/A if deliver now hasn't been done on item--}}
+        <td>{{pickupTime}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{!-- TODO: button should be disabled if there are no items / no items selected --}}
+  {{!-- TODO: button click handler --}}
+  <button id='deliver-items' class='btn btn-primary' style='float: right'>Deliver Now</button>
+</div>
