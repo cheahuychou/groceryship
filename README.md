@@ -10,28 +10,36 @@ Existing solutions include the delivery services of each grocery store (if it ex
 
 ## Files and Authorship
 - models
--- delivery.js
--- user.js
+    - delivery.js
+    - user.js
 - public
--- javascript
---- dashboard.js
---- deliver.js
---- index.js
---- request.js
---- utils.js
--- stylesheets
---- style.css
+    - javascript
+        - dashboard.js
+        - deliver.js
+        - index.js
+        - request.js
+        - utils.js
+    - stylesheets
+        - style.css
 - routes
--- deliveries.js
--- index.js
--- users.js
+    - deliveries.js
+    - index.js
+    - users.js
 - views
--- layouts
---- index.hbs
--- partials
--- dashboard.hbs
--- deliver.hbs
--- error.hbs
--- home.hbs
--- request.hbs
+    - layouts
+        - index.hbs
+    - partials
+        - deliveries_table.hbs
+        - item_headings.hbs
+        - item_row.hbs
+        - login_register.hbs
+        - navbar_logged_in.hbs
+        - request_form.hbs
+        - request_item_form.hbs
+        - requests_table.hbs
+    - dashboard.hbs
+    - deliver.hbs
+    - error.hbs
+    - home.hbs
+    - request.hbs
 - app.js
