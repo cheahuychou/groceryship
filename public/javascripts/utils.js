@@ -33,9 +33,11 @@ var Utils = function() {
    * @return {Boolean} true if the request has the authenication, false otherwise
    */
 	that.isAuthenticated = function (req, res, next) {
-		if (req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
-			next();
-		} else if (req.isAuthenticated()) {
+		if (req.params.username == undefined && req.isAuthenticated() || 
+				req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
+				next();
+		}
+		 else if (req.isAuthenticated()) {
 			res.redirect('/users/'+req.session.passport.user.username);
 		} else {
 			res.render('home', { title: 'GroceryShip', message: 'Please log in below'});

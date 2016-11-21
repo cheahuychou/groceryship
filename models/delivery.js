@@ -5,22 +5,22 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var DeliverySchema = mongoose.Schema({
     stores: [{type: String, required: true}], // A list of possible grocery stores.
     status: {type: String, required: true},
-    deadline: {type: Date, required: true},
+    deadline: {type: String, required: true},
     itemName: {type: String, required: true},
     itemDescription: {type: String, required: true},
-    itemQuantity: {type: String, required: true},
+    itemQuantity: {type: Number, required: true},
     estimatedPrice: {type: Number, required: true},
     tips: {type: Number, required: true},
     pickupLocation: {type: String, required: true},
     requester: {type: ObjectId, ref: "User", required: true},
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
-    pickupTime: {type: Date, default: null}
+    pickupTime: {type: String, default: null}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
 		utils.each(stores, function(store) {
-			if (!(store == "hMart" || store == "starMarket" || store == "traderJoes" || store == "wholeFoods")) {return false;}
+			if (!(store == "HMart" || store == "Star Market" || store == "Trader Joe's" || store == "Whole Foods")) {return false;}
 		});
         return true;
 }, "Not a valid grocery store");

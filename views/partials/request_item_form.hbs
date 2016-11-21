@@ -10,6 +10,15 @@
       <input id='item-price-estimate-{{n}}' type="text" name='item-price-estimate' class="form-control" required>
     </div>
   </td>
+  <td>
+    {{!-- TODO: Fix size --}}
+    <select id='item-stores-{{n}}' name='item-stores' class="form-control">
+      <option>Star Market</option>
+      <option>HMart</option>
+      <option>Trader Joe's</option>
+      <option>Whole Foods</option>
+    </select>
+  </td>
   {{!-- TODO: set default item due to today's date. also set it as min --}}
   <td><input id='item-due-{{n}}' type='datetime-local' name='item-due' class="form-control" required/></td>
   <td>
@@ -34,6 +43,7 @@
       <input id='item-tip-{{n}}' type="text" name='item-tip' class="form-control" required>
     </div>
   </td>
+  <td><input id='item-description-{{n}}' type='text' name='item-description' class="form-control"/></td>
   {{!-- TODO: add functionality to delete item when this button is clicked --}}
   {{!-- TODO: this shouldn't appear when there is only 1 item left so there won't be 0 items --}}
   {{!-- TODO: decide how to handle n when an item is deleted --}}

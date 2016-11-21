@@ -25,7 +25,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
 		} else {
 			bcrypt.compare(password, user.password, function (err, response) {
         if (response == true) {
-          done(null, {username: username});
+          done(null, {username: username, _id: user._id});
         } else {
           done(new Error('Please enter a correct password'));
         }
@@ -84,7 +84,7 @@ router.post('/signup', function(req, res, next) {
 					     					} else {
 					     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
 												User.create(user, 
-													function(err, record) {
+													function(err, user_obj) {
 														if (err) {
 															res.json({
 																'success': false, 

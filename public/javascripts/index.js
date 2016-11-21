@@ -19,7 +19,6 @@ var checkLogInForm = function () {
 	}
 }
 
-console.log('can you see me');
 
 /**
 * Checks that the fields in the signup form are non-empty strings,

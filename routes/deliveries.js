@@ -2,19 +2,30 @@ var express = require('express');
 var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
+var utils = require('../public/javascripts/utils.js');
+var mongoose = require("mongoose");
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
 fields rendered: title & requestItems
 **/
-router.get("/requests", function(req, res){
+router.get("/requests", utils.isAuthenticated, function(req, res){
 	var username = req.session.passport.user.username;
 	var now = Date.now;
 	User.find({username: username}, '_id', function(err, current_user) {
-		Delivery.find({status: "pending", requester: {$ne: current_user._id}, deadline: {$gt: now}})
-		        .exec(function(err, requestItems) {
-		        	res.render('deliver', {title: 'Request Feed', requestItems: requestItems});
-		        });
+		if (err) {
+			res.send({'success': false, 'message': err});
+		} else {
+			Delivery.find({status: "pending", requester: {$ne: current_user._id}, deadline: {$gt: now}})
+			        .exec(function(err, requestItems) {
+			        	if (err) {
+							res.send({'success': false, 'message': err});
+						} else {
+			        		res.render('deliver', {title: 'Request Feed', requestItems: requestItems});
+			        	}
+			        });
+		}
 	});
 });
 
@@ -22,16 +33,21 @@ router.get("/requests", function(req, res){
 Populates the dashboard page of the user, returning the lists of his current requests and current deliveries
 fields rendered: title, requestItems, deliveryItems
 **/
-router.get("/:username", function(req, res){
-	var username = req.session.passport.user.username;
-	User.find({username: username}, '_id', function(err, current_user) {
-		Delivery.find({requester: current_user._id})
-		        .exec(function(err, requestItems) {
-		        	Delivery.find({shopper: current_user._id})
-		        	        .exec(function(err, deliveryItems) {
-		        	        	res.render('dashboard', {title: 'Dashboard', requestItems: requestItems, deliveryItems: deliveryItems});
-		        	        });
-		        });
+router.get("/:username", utils.isAuthenticated, function(req, res){
+	console.log('getting stuff for dashboard');
+	Delivery.find({requester: mongoose.Types.ObjectId(req.session.passport.user._id)})
+	        .exec(function(err, requestItems) {
+	        	if (err) {
+	        		res.send({'success': false, 'message': err})
+	        	} else {
+	        		Delivery.find({shopper: mongoose.Types.ObjectId(req.session.passport.user._id)})
+	        	        .exec(function(err, deliveryItems) {
+	        	        	console.log('successful');
+	        	        	res.render('dashboard', {'success': true, title: 'Dashboard', requestItems: requestItems, deliveryItems: deliveryItems});
+	        	        });
+	        	}
+	        });
+		}
 	});
 });
 
@@ -39,26 +55,37 @@ router.get("/:username", function(req, res){
 Posts a new request from a user
 request body fields (TODO: MIGHT NEED TO BE CHANGED): stores, item-due, item-name, itemDescription, item-qty, item-price-estimate, item-tip, item-pickup
 **/
-router.post("/", function(req, res){
-	var username = req.session.passport.user.username;
-	var stores = req.body.stores;
-	var deadline = req.body.item-due;
-	var itemName = req.body.item-name;
+router.post("/", utils.isAuthenticated, function(req, res){
+	var stores = [req.body.stores];
+	var deadline = req.body.itemDue;
+	var itemName = req.body.itemName;
 	var itemDescription = req.body.itemDescription;
-	var itemQuantity = req.body.item-qty;
-	var estimatedPrice = req.body.item-price-estimate;
-	var tips = req.body.item-tip;
-	var pickupLocation = req.body.item-pickup;
-	User.find({username: username}, '_id', function(err, current_user) {
-		Delivery.create({stores: stores, status: "pending", deadline: deadline, itemName: itemName, itemDescription: itemDescription,
-	                     itemQuantity: itemQuantity, estimatedPrice: estimatedPrice, tips: tips, pickupLocation: pickupLocation, requester: current_user._id}, function(err, newDelivery) {
-	                     	res.json({status: "success"});
-	                     });
-	});
+	var itemQuantity = parseInt(req.body.itemQty);
+	var estimatedPrice = parseInt(req.body.itemPriceEstimate);
+	var tips = parseInt(req.body.itemTips);
+	var pickupLocation = req.body.itemPickupLocation;
+	Delivery.create({
+		stores: stores, 
+		status: "pending", 
+		deadline: deadline, 
+		itemName: itemName,
+		itemDescription: itemDescription,
+		itemQuantity: itemQuantity,
+		estimatedPrice: estimatedPrice, 
+		tips: tips,
+		pickupLocation: pickupLocation,
+		requester: mongoose.Types.ObjectId(req.session.passport.user._id)
+	}, function(err, newDelivery) {
+		if (err) {
+			res.send({'success': false, 'message': err});
+		} else {
+            res.json({'success':  true});            
+		}
+	});	
 });
 
 /** Removes a Delivery when the user cancels the request **/
-router.delete("/:id", function(req, res){
+router.delete("/:id", utils.isAuthenticated, function(req, res){
 	var username = req.session.passport.user.username;
 	Delivery.findOne({_id: id, requester: username}) //verify that the current user is the one who requested it
 	     .remove()
@@ -68,7 +95,7 @@ router.delete("/:id", function(req, res){
 });
 
 /** Updates a Delivery when a user claims that delivery **/
-router.put("/:id/claim", function(req, res){
+router.put("/:id/claim", utils.isAuthenticated, function(req, res){
 	var username = req.session.passport.user.username;
 	User.find({username:username}, '_id', function(err, current_user) {
 		Delivery.findOne({_id: id}, function(err, current_delivery) {
@@ -86,7 +113,7 @@ router.put("/:id/claim", function(req, res){
 Updates a Delivery when a user clicks on "Deliver Now"
 request body fields: pickupTime, actualPrice
 **/
-router.put("/:id/deliver", function(req, res){
+router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
 	var username = req.session.passport.user.username;
 	User.find({username: username}, '_id', function(err, current_user) {
 		Delivery.findOne({_id: id, shopper: current_user._id}, function(err, current_delivery) {
@@ -101,7 +128,7 @@ router.put("/:id/deliver", function(req, res){
 });
 
 /** Updates a Delivery when a user accepts the delivery **/
-router.put("/:id/accept", function(req, res){
+router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 	var username = req.session.passport.user.username;
 	User.find({username: username}, '_id', function(err, current_user) {
 		Delivery.findOne({_id: id, shopper: current_user._id}, function(err, current_delivery) {
@@ -115,7 +142,7 @@ router.put("/:id/accept", function(req, res){
 });
 
 /** Updates a Delivery when a user rejects the delivery **/
-router.put("/:id/reject", function(req, res){
+router.put("/:id/reject", utils.isAuthenticated, function(req, res){
 	var username = req.session.passport.user.username;
 	User.find({username: username}, '_id', function(err, current_user) {
 		Delivery.findOne({_id: id, shopper: current_user._id}, function(err, current_delivery) {
