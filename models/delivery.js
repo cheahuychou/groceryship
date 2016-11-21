@@ -20,11 +20,9 @@ var DeliverySchema = mongoose.Schema({
 
 DeliverySchema.path("stores").validate(function(stores) {
 		utils.each(stores, function(store) {
-			if (!(store == "hMart" || store == "starMarket" || store == "traderJoes" || store == "wholeFoods")){
-				return false
-			} 
-			return true
+			if (!(store == "hMart" || store == "starMarket" || store == "traderJoes" || store == "wholeFoods")) {return false;}
 		});
+        return true;
 }, "Not a valid grocery store");
 
 DeliverySchema.path("status").validate(function(status) {
@@ -33,7 +31,7 @@ DeliverySchema.path("status").validate(function(status) {
 
 DeliverySchema.path("shopper").validate(function(shopperId) {
 	return shopperId != this.requester;
-}, "The shopper and the requester are not the same.");
+}, "The shopper and the requester should not be the same.");
 
 DeliverySchema.path("deadline").validate(function(deadline) {
 	return deadline >= this.pickupTime;

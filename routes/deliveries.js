@@ -51,10 +51,10 @@ router.post("/", function(req, res){
 	var pickupLocation = req.body.item-pickup;
 	User.find({username: username}, '_id', function(err, current_user) {
 		Delivery.create({stores: stores, status: "pending", deadline: deadline, itemName: itemName, itemDescription: itemDescription,
-	                     itemQuantity: itemQuantity, estimatedPrice: estimatedPrice, tips: tips, pickupLocation: pickupLocation, requester: current_user._id});
-
-		res.end();
-	})
+	                     itemQuantity: itemQuantity, estimatedPrice: estimatedPrice, tips: tips, pickupLocation: pickupLocation, requester: current_user._id}, function(err, newDelivery) {
+	                     	res.json({status: "success"});
+	                     });
+	});
 });
 
 /** Removes a Delivery when the user cancels the request **/
@@ -62,9 +62,9 @@ router.delete("/:id", function(req, res){
 	var username = req.session.passport.user.username;
 	Delivery.findOne({_id: id, requester: username}) //verify that the current user is the one who requested it
 	     .remove()
-	     .exec();
-
-	res.end();
+	     .exec(function(err, data) {
+	     	res.json({status: "success"});
+	     });
 });
 
 /** Updates a Delivery when a user claims that delivery **/
@@ -74,9 +74,10 @@ router.put("/:id/claim", function(req, res){
 		Delivery.findOne({_id: id}, function(err, current_delivery) {
 			current_delivery.status = "claimed";
 			current_delivery.shopper = current_user._id;
-			current_delivery.save(function(err) {if (err) console.log(err);});
-
-			res.end();
+			current_delivery.save(function(err) {
+				if (err) console.log(err);
+				res.json({status: "success"});
+			});
 		});
 	});
 });
@@ -91,9 +92,10 @@ router.put("/:id/deliver", function(req, res){
 		Delivery.findOne({_id: id, shopper: current_user._id}, function(err, current_delivery) {
 			current_delivery.pickupTime = req.body.pickupTime;
 			current_delivery.actualPrice = req.body.actualPrice;
-			current_delivery.save(function(err) {if (err) console.log(err);});
-
-			res.end();
+			current_delivery.save(function(err) {
+				if (err) console.log(err);
+				res.json({status: "success"});
+			});
 		});
 	});
 });
@@ -104,9 +106,10 @@ router.put("/:id/accept", function(req, res){
 	User.find({username: username}, '_id', function(err, current_user) {
 		Delivery.findOne({_id: id, shopper: current_user._id}, function(err, current_delivery) {
 			current_delivery.status = "accepted";
-			current_delivery.save(function(err) {if (err) console.log(err);});
-
-			res.end();
+			current_delivery.save(function(err) {
+				if (err) console.log(err);
+				res.json({status: "success"});
+			});
 		});
 	});
 });
@@ -117,9 +120,10 @@ router.put("/:id/reject", function(req, res){
 	User.find({username: username}, '_id', function(err, current_user) {
 		Delivery.findOne({_id: id, shopper: current_user._id}, function(err, current_delivery) {
 			current_delivery.status = "rejected";
-			current_delivery.save(function(err) {if (err) console.log(err);});
-
-			res.end();
+			current_delivery.save(function(err) {
+				if (err) console.log(err);
+				res.json({status: "success"});
+			});
 		});
 	});
 });
