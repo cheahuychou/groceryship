@@ -10,7 +10,6 @@
       {{#each requestItems}}
       <tr>
         {{> item_row this}}
-        <td>{{pickupTime}}</td>
         {{!-- TODO: cancel button should only appear for own requests --}}
         <td><button id='cancel-request-{{id}}' class='btn btn-primary'>Cancel</button></td>
         {{!-- TODO: claim button should only appear for others' requests --}}

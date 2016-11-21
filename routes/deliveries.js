@@ -3,30 +3,21 @@ var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
 var utils = require('../public/javascripts/utils.js');
-var mongoose = require("mongoose");
-var ObjectId = mongoose.Schema.Types.ObjectId;
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
 fields rendered: title & requestItems
 **/
-router.get("/requests", utils.isAuthenticated, function(req, res){
-	var username = req.session.passport.user.username;
+router.get("/requests", utils.isAuthenticated, function(req, res) {
 	var now = Date.now;
-	User.find({username: username}, '_id', function(err, current_user) {
-		if (err) {
-			res.send({'success': false, 'message': err});
-		} else {
-			Delivery.find({status: "pending", requester: {$ne: current_user._id}, deadline: {$gt: now}})
-			        .exec(function(err, requestItems) {
-			        	if (err) {
-							res.send({'success': false, 'message': err});
-						} else {
-			        		res.render('deliver', {title: 'Request Feed', requestItems: requestItems});
-			        	}
-			        });
-		}
-	});
+	Delivery.find({status: "pending", requester: {$ne: req.session.passport.user._id}, deadline: {$gt: now}})
+        .exec(function(err, requestItems) {
+        	if (err) {
+				res.send({'success': false, 'message': err});
+			} else {
+        		res.render('deliver', {title: 'Request Feed', requestItems: requestItems});
+        	}
+        });
 });
 
 /**
@@ -35,20 +26,23 @@ fields rendered: title, requestItems, deliveryItems
 **/
 router.get("/:username", utils.isAuthenticated, function(req, res){
 	console.log('getting stuff for dashboard');
-	Delivery.find({requester: mongoose.Types.ObjectId(req.session.passport.user._id)})
+	Delivery.find({requester: req.session.passport.user._id})
 	        .exec(function(err, requestItems) {
 	        	if (err) {
-	        		res.send({'success': false, 'message': err})
+	        		res.send({'success': false, 'message': err});
 	        	} else {
-	        		Delivery.find({shopper: mongoose.Types.ObjectId(req.session.passport.user._id)})
+	        		console.log('successful', requestItems);
+	        		Delivery.find({shopper: req.session.passport.user._id})
 	        	        .exec(function(err, deliveryItems) {
-	        	        	console.log('successful');
-	        	        	res.render('dashboard', {'success': true, title: 'Dashboard', requestItems: requestItems, deliveryItems: deliveryItems});
+	        	        	if (err) {
+	        	        		res.send({'success': false, 'message': err})
+	        	        	} else {
+	        	        		console.log('successful', deliveryItems);
+	        	        		res.render('dashboard', {'success': true, title: 'Dashboard', requestItems: requestItems, deliveryItems: deliveryItems});
+	        	        	}
 	        	        });
 	        	}
 	        });
-		}
-	});
 });
 
 /**
@@ -74,7 +68,7 @@ router.post("/", utils.isAuthenticated, function(req, res){
 		estimatedPrice: estimatedPrice, 
 		tips: tips,
 		pickupLocation: pickupLocation,
-		requester: mongoose.Types.ObjectId(req.session.passport.user._id)
+		requester: req.session.passport.user._id
 	}, function(err, newDelivery) {
 		if (err) {
 			res.send({'success': false, 'message': err});
