@@ -60,8 +60,6 @@ router.post('/signup', function(req, res, next) {
 	var requestedMitId = parseInt(req.body.requestedMitId.trim());
 	var requestedPhoneNumber = parseInt(req.body.requestedPhoneNumber.trim());
 	var dorm = req.body.dorm.trim();
-	console.log('signing up')
-	console.log(requestedUsername, requestedPassword, requestedMitId, requestedPhoneNumber, dorm)
 
 	if (requestedUsername.length == 0 || requestedPassword.length == 0) {
 		res.render('home', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
@@ -71,31 +69,38 @@ router.post('/signup', function(req, res, next) {
 				if (count > 0) {
 					res.render('home', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly'});
 				} else {
-					bcrypt.genSalt(function(err, salt) {
-	   				if (err) {
-	   					return next(err);
-	   				} else {
-	   					bcrypt.hash(requestedPassword, salt, function(err, hash) {
-	     					if (err) {
-	     						return next(err);
-	     					} else {
-	     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
-									User.create(user, 
-										function(err, record) {
-											if (err) {
-												res.json({
-													'success': false, 
-													'message': err.message
+					User.count({ mitId: requestedMitId },
+						function (err, count) {
+							if (count > 0) {
+								res.render('home', { title: 'GroceryShip', message: 'There is already an account with this MIT ID, make sure you enter your MIT ID correctly'});
+							} else {
+								bcrypt.genSalt(function(err, salt) {
+					   				if (err) {
+					   					return next(err);
+					   				} else {
+					   					bcrypt.hash(requestedPassword, salt, function(err, hash) {
+					     					if (err) {
+					     						return next(err);
+					     					} else {
+					     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
+												User.create(user, 
+													function(err, record) {
+														if (err) {
+															res.json({
+																'success': false, 
+																'message': err.message
+															});
+														}
+														res.render('home', { title: 'GroceryShip', message: 'You have been registered. Now please log in below:'});
 												});
-											}
-											res.render('home', { title: 'GroceryShip', message: 'You have been registered. Now please log in below:'});
-									});
-	   						}
-	  				 	});	
-	  				}	
-					});	
-				}
-			});
+					   						}
+					  				 	});	
+					  				}
+				  				});
+				  			}
+				  		});	
+					}	
+				});
 		}
 });
 
