@@ -95,6 +95,7 @@ $(document).ready(function () {
     };
 
     $('#deliver-confirm-button').click(function() {
+        var hasError = false;
         // validate inputs first
         $('input').each(function() {
             // check that all inputs are nonempty
@@ -103,6 +104,7 @@ $(document).ready(function () {
                 if (!$(this).parent().hasClass('has-error')) {
                     $(this).parent().addClass('has-error');
                 }
+                hasError = true;
                 alert('All fields must be filled out.');
                 return false;
             } else if ($(this).parent().hasClass('has-error')) {
@@ -118,29 +120,46 @@ $(document).ready(function () {
                     if (!$(this).parent().hasClass('has-error')) {
                         $(this).parent().addClass('has-error');
                     }
+                    hasError = true;
                     alert('Please enter a valid price.');
                     return false;
                 }
             }
         });
 
-        $('.to-deliver-item').each(function() {
-            var id = $(this).attr('data-id');
-            $.ajax({
-                url: '/deliveries/'+id+'/deliver',
-                type: 'PUT',
-                data: {
-                    pickupTime: $(this).find('input[name=pickup-time]').val(),
-                    actualPrice: $(this).find('input[name=price]').val()
-                },
-                success: function(data) {
-                    // TODO
-                },
-                error: function(err) {
-                    // TODO: tell user which ones failed
-                }
-            })
-        });
+        if (!hasError) {
+            $('.to-deliver-item').each(function() {
+                var id = $(this).attr('data-id');
+                var pickupTime = $(this).find('input[name=pickup-time]').val();
+                var price = $(this).find('input[name=price]').val();
+                $.ajax({
+                    url: '/deliveries/'+id+'/deliver',
+                    type: 'PUT',
+                    data: {
+                        pickupTime: pickupTime,
+                        actualPrice: price
+                    },
+                    success: function(data) {
+                        // console.log(data);
+                        // TODO
+                        var originalRow = $('.delivery-item-row[data-id='+id+']');
+                        // remove checkbox because pickup time has been set
+                        originalRow.children('.checkbox-cell').empty();
+                        // update pickup time
+                        // TODO maybe include updated item in data with formatted date and get date from there
+                        originalRow.children('.pickup-time').text(dateFormat(pickupTime, "mmmm dS, h:MM TT"));
+
+                    },
+                    error: function(err) {
+                        console.log(err);
+                        // TODO: tell user which ones failed
+                    }
+                })
+            });
+
+            // TODO: only close the modal if all items were successfully updated
+            $('#deliver-now-modal').modal('toggle');
+        }
     });
 
 });

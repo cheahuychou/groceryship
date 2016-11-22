@@ -15,7 +15,7 @@
         <td class='checkbox-cell'>{{#unless pickupTime}}<input type='checkbox'>{{/unless}}</td>
         {{> item_row this}}
 
-        <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
+        <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
       </tr>
       {{/each}}
     </tbody>
