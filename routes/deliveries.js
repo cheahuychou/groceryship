@@ -12,12 +12,11 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
     Delivery.find({status: "pending", requester: {$ne: user._id}, deadline: {$gt: now}})
-        .exec(function(err, requestItems) {
+        .populate('requester').lean().exec(function(err, requestItems) {
             if (err) {
                 res.send({'success': false, 'message': err});
             } else {
-                console.log('getting all requests', requestItems);
-                res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: requestItems});
+                res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
             }
         });
 });
@@ -29,16 +28,16 @@ fields rendered: title, requestItems, deliveryItems
 router.get("/:username", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.find({requester: user._id})
-            .exec(function(err, requestItems) {
+            .populate('shopper').lean().exec(function(err, requestItems) {
                 if (err) {
                     res.send({'success': false, 'message': err});
                 } else {
                     Delivery.find({shopper: user._id})
-                        .exec(function(err, deliveryItems) {
+                        .populate('requester').lean().exec(function(err, deliveryItems) {
                             if (err) {
                                 res.send({'success': false, 'message': err})
                             } else {
-                                res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: requestItems, deliveryItems: deliveryItems});
+                                res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
                             }
                         });
                 }
@@ -71,6 +70,7 @@ router.post("/", utils.isAuthenticated, function(req, res){
         requester: req.session.passport.user._id
     }, function(err, newDelivery) {
         if (err) {
+            console.log(err);
             res.json({success: false, message: err});
         } else {
             res.json({success:  true});            
