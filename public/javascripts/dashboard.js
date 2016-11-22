@@ -73,13 +73,6 @@ $(document).ready(function () {
                 $('#deliver-now-modal tbody').append(row);
             }
         });
-
-        $('#deliver-now-modal').find('.modal-content').css({
-            width:'auto', //probably not needed
-            height:'auto',
-            'max-width': '100%'
-        });
-
     });
 
     // clear modal rows on close
@@ -146,8 +139,7 @@ $(document).ready(function () {
                         // remove checkbox because pickup time has been set
                         originalRow.children('.checkbox-cell').empty();
                         // update pickup time
-                        // TODO maybe include updated item in data with formatted date and get date from there
-                        originalRow.children('.pickup-time').text(dateFormat(pickupTime, "mmmm dS, h:MM TT"));
+                        originalRow.children('.pickup-time').text(data.item.pickupTime);
 
                     },
                     error: function(err) {
