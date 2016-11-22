@@ -1,3 +1,5 @@
+var dateFormat = require('dateformat');
+
 var Utils = function() {
 
 	var that = Object.create(Utils);
@@ -42,6 +44,23 @@ var Utils = function() {
 		} else {
 			res.render('home', { title: 'GroceryShip', message: 'Please log in below'});
 		}
+	}
+
+
+	/**
+   * Reformat the deadline of each delivery
+   * @param {Array} deliveries - array of delivery objects
+   * @return {Array} a new array of delivery objects with deadline formatted
+   */
+	that.formatDate = function (deliveries) {
+		var deliveries = JSON.parse(JSON.stringify(deliveries)); // deep copy
+		return deliveries.map(function (delivery) {
+					delivery.deadline = dateFormat(delivery.deadline, "mmmm dS, h:MM TT");
+					if (delivery.pickupTime) {
+						delivery.pickupTime = dateFormat(delivery.pickupTime, "mmmm dS, h:MM TT");
+					}
+                	return delivery;
+               });
 	}
 
 	Object.freeze(that);

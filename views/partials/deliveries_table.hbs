@@ -5,6 +5,7 @@
         {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
         <th><input class='header-checkbox' type='checkbox'></th>
         {{> item_headings}}
+        <th>Requester</th>
         <th>Pickup Time</th>
       </tr>
     </thead>
@@ -14,7 +15,8 @@
         {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
         <td class='checkbox-cell'>{{#unless pickupTime}}<input type='checkbox'>{{/unless}}</td>
         {{> item_row this}}
-
+        
+        <td class='requester'>{{#if requester}}{{requester.username}}{{else}}N/A{{/if}}</td>
         <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
       </tr>
       {{/each}}
