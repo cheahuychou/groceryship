@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
-var Rating = require("delivery");
-var utils = require("../public/javascripts/utils.js")
+var Rating = require("../models/rating.js");
+var utils = require("../public/javascripts/utils.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var DeliverySchema = mongoose.Schema({

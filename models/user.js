@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var Delivery = require("delivery");
+var Delivery = require("../models/delivery.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var UserSchema = mongoose.Schema({
@@ -8,8 +8,8 @@ var UserSchema = mongoose.Schema({
     mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
-    requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: null},
-    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: null}
+    requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
+    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: []}
 });
 
 UserSchema.path("username").validate(function(value) {
@@ -20,7 +20,7 @@ UserSchema.path("password").validate(function(value) {
     return value.trim().length > 0;
 }, "No empty passwords.");
 
-UserSchema.path("requesterRating").validate(function(ratings){
+UserSchema.path("requesterRatings").validate(function(ratings){
 		return ratings.reduce(function(boolean, rating){
 				return boolean && Delivery.findById(rating.delivery, function (err, delivery){
 						delivery.requester.equals(this._id);
@@ -28,7 +28,7 @@ UserSchema.path("requesterRating").validate(function(ratings){
 		}, true);
 }, "User must be the requester.");
 
-UserSchema.path("shopperRating").validate(function(ratings){
+UserSchema.path("shopperRatings").validate(function(ratings){
 		return ratings.reduce(function(boolean, rating){
 				return boolean && Delivery.findById(rating.delivery, function (err, delivery){
 						delivery.shopper.equals(this._id);

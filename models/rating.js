@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var Delivery = require("delivery");
+var Delivery = require("../models/delivery.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var RatingSchema = mongoose.Schema({
