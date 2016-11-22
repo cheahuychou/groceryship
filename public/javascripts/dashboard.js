@@ -34,6 +34,54 @@ $(document).ready(function () {
         } else {
             $('.checkbox-cell input').prop('checked', false);
         }
-    })
+    });
+
+    $('#deliver-items').click(function() {
+        $('.checkbox-cell input').each(function() {
+            if (this.checked) {
+                var originalRow = $(this).parent().parent();
+                var row = $('<tr>', {
+                    class: 'to-deliver-item',
+
+                });
+
+                var requester = originalRow.attr('data-requester');
+                var itemName = originalRow.children('.item-name').text();
+                var pickupPoint = originalRow.children('.pickup-location').text();
+
+                var inputPickupTime = $('<input>', {
+                    class: 'form-control',
+                    type: 'datetime-local',
+                    name: 'pickup-time'
+                });
+
+                var inputPrice = $('<input>', {
+                    class: 'form-control',
+                    type: 'String',
+                    name: 'price'
+                });
+
+                row.append($('<td>', {text: requester}));
+                row.append($('<td>', {text: itemName}));
+                row.append($('<td>', {text: pickupPoint}));
+                row.append($('<td/>').append(inputPickupTime));
+                row.append($('<td/>').append(inputPrice));
+
+                $('#deliver-now-modal tbody').append(row);
+            }
+        });
+
+        $('#deliver-now-modal').find('.modal-content').css({
+            width:'auto', //probably not needed
+            height:'auto',
+            'max-width': '100%'
+        });
+
+    });
+
+    // clear modal inputs on close
+    $('#deliver-now-modal').on('hidden.bs.modal', function (e) {
+        $('#deliver-now-modal tbody').empty();
+    });
 
 });

@@ -10,18 +10,17 @@
     </thead>
     <tbody>
       {{#each deliveryItems}}
-      <tr class='delivery-item-row' data-id='{{_id}}'>
+      <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester}}'>
         {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
         <td class='checkbox-cell'><input type='checkbox'></td>
         {{> item_row this}}
-        {{!-- TODO: pickupTime should be N/A if deliver now hasn't been done on item--}}
+
         <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
   {{!-- TODO: button should be disabled if there are no items / no items selected --}}
-  {{!-- TODO: button click handler --}}
   <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#deliver-now-modal' style='float: right'>Deliver Now</button>
   {{> deliver_now}}
 </div>
