@@ -1,5 +1,4 @@
 var mongoose = require("mongoose");
-var Rating = require("../models/rating.js");
 var utils = require("../public/javascripts/utils.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -37,12 +36,6 @@ DeliverySchema.path("shopper").validate(function(shopperId) {
 DeliverySchema.path("deadline").validate(function(deadline) {
     return deadline >= this.pickupTime;
 }, "The dealine has passed.");
-
-DeliverySchema.path("rating").validate(function(ratingId){
-    return Rating.findById(ratingId, function (err, rating){
-        rating.delivery.equals(this._id);
-    }); 
-}, "The rating must point back to the right delivery.");
 
 var DeliveryModel = mongoose.model("Delivery", DeliverySchema);
 

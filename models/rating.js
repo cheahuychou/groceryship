@@ -1,9 +1,10 @@
 var mongoose = require("mongoose");
-var Delivery = require("../models/delivery.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var RatingSchema = mongoose.Schema({
 	delivery: {type: ObjectId, ref: "Delivery", required: true},
+	requester: {type: ObjectId, ref: "User", required: true},
+	shopper: {type: ObjectId, ref: "User", required: true},
 	requesterRating: {type: Number, default: null},
 	shopperRating: {type: Number, default: null},
 	rejectedReason: {type: String, required: false}

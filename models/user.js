@@ -1,5 +1,4 @@
 var mongoose = require("mongoose");
-var Delivery = require("../models/delivery.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var UserSchema = mongoose.Schema({
@@ -19,22 +18,6 @@ UserSchema.path("username").validate(function(value) {
 UserSchema.path("password").validate(function(value) {
     return value.trim().length > 0;
 }, "No empty passwords.");
-
-UserSchema.path("requesterRatings").validate(function(ratings){
-		return ratings.reduce(function(boolean, rating){
-				return boolean && Delivery.findById(rating.delivery, function (err, delivery){
-						delivery.requester.equals(this._id);
-				});
-		}, true);
-}, "User must be the requester.");
-
-UserSchema.path("shopperRatings").validate(function(ratings){
-		return ratings.reduce(function(boolean, rating){
-				return boolean && Delivery.findById(rating.delivery, function (err, delivery){
-						delivery.shopper.equals(this._id);
-				});
-		}, true);
-}, "User must be the shopper.");
 
 UserSchema.path("mitId").validate(function(value) {
     return value.toString().length === 9;

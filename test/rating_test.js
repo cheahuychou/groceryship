@@ -55,7 +55,7 @@ describe("App", function() {
 
 				var deliveryId = testDelivery1._id;
 
-		  	it("should have minimum required fields of a rating", function(done) {
+		  	it("should be able to create a rating object", function(done) {
 		  			Rating.create({
 			  				delivery: deliveryId,
 			  				requester: id1,
@@ -68,7 +68,31 @@ describe("App", function() {
 		  			});
 				});
 
-		  	it("should have minimum required fields of a rating", function(done) {
+		  	it("should not miss the delivery field", function(done) {
+		  			Rating.create({
+			  				requester: id1,
+			  				shopper: id2,
+			  				requesterRating: 5,
+			  				shopperRating: 4,
+		  			}, function (err, rating){
+		  					assert.isNotNull(err);
+		  					done();
+		  			});
+				});
+
+				it("should not miss the requester field", function(done) {
+		  			Rating.create({
+			  				delivery: deliveryId,
+			  				shopper: id2,
+			  				requesterRating: 5,
+			  				shopperRating: 4,
+		  			}, function (err, rating){
+		  					assert.isNotNull(err);
+		  					done();
+		  			});
+				});
+
+		  	it("should not miss the shopper field", function(done) {
 		  			Rating.create({
 			  				delivery: deliveryId,
 			  				requester: id1,
