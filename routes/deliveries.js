@@ -11,14 +11,13 @@ fields rendered: title & requestItems
 router.get("/requests", utils.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.find({status: "pending", requester: {$ne: user._id}, deadline: {$gt: now}})
-        .populate('requester').lean().exec(function(err, requestItems) {
-            if (err) {
-                res.send({'success': false, 'message': err});
-            } else {
-                res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
-            }
-        });
+    Delivery.getRequests(user._id, now, null, null, null, function(err, requestItems) {
+        if (err) {
+            res.send({'success': false, 'message': err});
+        } else {
+            res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
+        }
+    });
 });
 
 /**
@@ -26,22 +25,15 @@ Populates the dashboard page of the user, returning the lists of his current req
 fields rendered: title, requestItems, deliveryItems
 **/
 router.get("/:username", utils.isAuthenticated, function(req, res){
+    var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.find({requester: user._id})
-            .populate('shopper').lean().exec(function(err, requestItems) {
-                if (err) {
-                    res.send({'success': false, 'message': err});
-                } else {
-                    Delivery.find({shopper: user._id})
-                        .populate('requester').lean().exec(function(err, deliveryItems) {
-                            if (err) {
-                                res.send({'success': false, 'message': err})
-                            } else {
-                                res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
-                            }
-                        });
-                }
-            });
+    Delivery.getRequestsAndDeliveries(user._id, now, function(err, requestItems, deliveryItems) {
+        if (err) {
+            res.send({'success': false, 'message': err})
+        } else {
+            res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
+        }
+    });
 });
 
 /**
