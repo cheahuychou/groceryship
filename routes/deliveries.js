@@ -98,19 +98,17 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
-    var username = req.session.passport.user.username;
-    User.findOne({username:username}, '_id', function(err, current_user) {
-        Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
-            current_delivery.status = "claimed";
-            current_delivery.shopper = current_user._id;
-            current_delivery.save(function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    res.json({success: true});
-                }
-            });
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
+        current_delivery.status = "claimed";
+        current_delivery.shopper = user._id;
+        current_delivery.save(function(err) {
+            if (err) {
+                console.log(err);
+                res.json({success: false, message: err});
+            } else {
+                res.json({success: true});
+            }
         });
     });
 });
@@ -120,55 +118,49 @@ Updates a Delivery when a user clicks on "Deliver Now"
 request body fields: pickupTime, actualPrice
 **/
 router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
-    var username = req.session.passport.user.username;
-    User.find({username: username}, '_id', function(err, current_user) {
-        Delivery.findOne({_id: req.params.id, shopper: current_user._id}, function(err, current_delivery) {
-            current_delivery.pickupTime = new Date(req.body.pickupTime);
-            current_delivery.actualPrice = req.body.actualPrice;
-            current_delivery.save(function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    res.json({success: true});
-                }
-            });
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
+        current_delivery.pickupTime = new Date(req.body.pickupTime);
+        current_delivery.actualPrice = req.body.actualPrice;
+        current_delivery.save(function(err) {
+            if (err) {
+                console.log(err);
+                res.json({success: false, message: err});
+            } else {
+                res.json({success: true});
+            }
         });
     });
 });
 
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
-    var username = req.session.passport.user.username;
-    User.find({username: username}, '_id', function(err, current_user) {
-        Delivery.findOne({_id: req.params.id, shopper: current_user._id}, function(err, current_delivery) {
-            current_delivery.status = "accepted";
-            current_delivery.save(function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    res.json({success: true});
-                }
-            });
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
+        current_delivery.status = "accepted";
+        current_delivery.save(function(err) {
+            if (err) {
+                console.log(err);
+                res.json({success: false, message: err});
+            } else {
+                res.json({success: true});
+            }
         });
     });
 });
 
 /** Updates a Delivery when a user rejects the delivery **/
 router.put("/:id/reject", utils.isAuthenticated, function(req, res){
-    var username = req.session.passport.user.username;
-    User.find({username: username}, '_id', function(err, current_user) {
-        Delivery.findOne({_id: req.params.id, shopper: current_user._id}, function(err, current_delivery) {
-            current_delivery.status = "rejected";
-            current_delivery.save(function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    res.json({success: true});
-                }
-            });
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
+        current_delivery.status = "rejected";
+        current_delivery.save(function(err) {
+            if (err) {
+                console.log(err);
+                res.json({success: false, message: err});
+            } else {
+                res.json({success: true});
+            }
         });
     });
 });
