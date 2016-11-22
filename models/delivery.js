@@ -20,7 +20,7 @@ var DeliverySchema = mongoose.Schema({
 
 DeliverySchema.path("stores").validate(function(stores) {
     return stores.reduce(function(a, b) {
-        return a && (b === "hMart" || b === "starMarket" || b === "traderJoes" || b === "wholeFoods");
+        return a && (b === "HMart" || b === "Star Market" || b === "Trader Joe's" || b === "Whole Foods");
     }, true);
 }, "Not a valid grocery store");
 

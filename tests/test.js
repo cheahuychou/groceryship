@@ -9,7 +9,7 @@ describe("App", function() {
 
   // Before running any test, connect to the database.
   before(function(done) {
-    con = mongoose.connect("mongodb://localhost/geditables", function() {
+    con = mongoose.connect("mongodb://localhost/grocerydb", function() {
       done();
     });
   });
@@ -20,17 +20,27 @@ describe("App", function() {
   });
 
   describe("Delivery", function() {
-    it("should have basic fields of a delivery", function(done) {
-      var testUser1 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id1 = testUser1._id;
 
-      Delivery.create({stores: ["hMart"],
+    var testUser1 = new User({
+      "username": "test1",
+      "password": "something",
+      "mit_id": 1,
+      "phone_number": 1,
+      "dorm": "Baker"
+    });
+    var id1 = testUser1._id;
+
+    var testUser2 = new User({
+      "username": "test1",
+      "password": "something2",
+      "mit_id": 2,
+      "phone_number": 2,
+      "dorm": "Random"
+    });
+    var id2 = testUser2._id;
+
+    it("should have minimum required fields of a delivery", function(done) {
+      Delivery.create({stores: ["HMart"],
         status: "pending",
         deadline: new Date('2016-11-21T23:59:59'),
         itemName: "test-item",
@@ -49,26 +59,8 @@ describe("App", function() {
       });
     });
 
-    it("should have all the relevant fields of a delivery", function(done) {
-      var testUser1 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id1 = testUser1._id;
-
-      var testUser2 = new User({
-        "username": "test1",
-        "password": "something2",
-        "mit_id": 2,
-        "phone_number": 2,
-        "dorm": "Random"
-      });
-      var id2 = testUser2._id;
-
-      Delivery.create({stores: ["wholeFoods", "traderJoes", "starMarket", "hMart"],
+    it("should have all fields of a delivery present in the design model", function(done) {
+      Delivery.create({stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
         status: "rejected",
         deadline: new Date('2016-11-22T11:00:30'),
         itemName: "test-item-xx",
@@ -93,16 +85,7 @@ describe("App", function() {
     });
 
     it("should reject grocery stores not covered under our project", function(done) {
-      var testUser1 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id1 = testUser1._id;
-
-      Delivery.create({stores: ["hMart", "laVerdes", "starMarket"],
+      Delivery.create({stores: ["HMart", "laVerdes", "Star Market"],
         status: "pending",
         deadline: new Date('2016-11-21T23:59:59'),
         itemName: "test-item",
@@ -120,16 +103,7 @@ describe("App", function() {
     });
 
     it("should reject statuses not covered under our project", function(done) {
-      var testUser1 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id1 = testUser1._id;
-
-      Delivery.create({stores: ["hMart", "starMarket"],
+      Delivery.create({stores: ["HMart", "Star Market"],
         status: "other",
         deadline: new Date('2016-11-21T11:59:59'),
         itemName: "test-item",
@@ -147,16 +121,7 @@ describe("App", function() {
     });
 
     it("should not allow requester and shopper to be the same", function(done) {
-      var testUser1 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id1 = testUser1._id;
-
-      Delivery.create({stores: ["starMarket"],
+      Delivery.create({stores: ["Star Market"],
         status: "claimed",
         deadline: new Date('2016-11-21T11:59:59'),
         itemName: "test-item",
@@ -176,25 +141,7 @@ describe("App", function() {
     });
 
     it("should not allow pickup time to be after the deadline", function(done) {
-      var testUser1 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id1 = testUser1._id;
-
-      var testUser2 = new User({
-        "username": "test1",
-        "password": "something",
-        "mit_id": 1,
-        "phone_number": 1,
-        "dorm": "Baker"
-      });
-      var id2 = testUser2._id;
-
-      Delivery.create({stores: ["wholeFoods"],
+      Delivery.create({stores: ["Whole Foods"],
         status: "accepted",
         deadline: new Date('2016-11-21T11:59:59'),
         itemName: "test-item",
