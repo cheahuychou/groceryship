@@ -55,13 +55,41 @@ describe("App", function() {
 
 				var deliveryId = testDelivery1._id;
 
-		  	it("The rating should have minimum required fields.", function(done) {
+		  	it("should have minimum required fields of a rating", function(done) {
 		  			Rating.create({
 			  				delivery: deliveryId,
+			  				requester: id1,
+			  				shopper: id2,
 			  				requesterRating: 5,
 			  				shopperRating: 4,
 		  			}, function (err, rating){
 		  					assert.isNull(err);
+		  					done();
+		  			});
+				});
+
+		  	it("should have minimum required fields of a rating", function(done) {
+		  			Rating.create({
+			  				delivery: deliveryId,
+			  				requester: id1,
+			  				requesterRating: 5,
+			  				shopperRating: 4,
+		  			}, function (err, rating){
+		  					assert.isNotNull(err);
+		  					done();
+		  			});
+				});
+
+				it("should contain the requester and the shopper of a rating", function(done) {
+		  			Rating.create({
+			  				delivery: deliveryId,
+			  				requester: id1,
+			  				shopper: id2,
+			  				requesterRating: 5,
+			  				shopperRating: 4,
+		  			}, function (err, rating){
+		  					assert.strictEqual(rating.requester, id1);
+		  					assert.strictEqual(rating.shopper, id2);
 		  					done();
 		  			});
 				});
