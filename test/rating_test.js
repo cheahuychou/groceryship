@@ -103,6 +103,32 @@ describe("App", function() {
   			});
 		});
 
+		it("should not have a illegal requester rating", function(done) {
+  			Rating.create({
+  				delivery: deliveryId,
+  				requester: id1,
+  				shopper: id2,
+  				requesterRating: 6,
+  				shopperRating: 4,
+  			}, function (err, rating){
+				assert.isNotNull(err);
+				done();
+  			});
+		});
+
+		it("should not have a illegal shopper rating", function(done) {
+  			Rating.create({
+  				delivery: deliveryId,
+  				requester: id1,
+  				shopper: id2,
+  				requesterRating: 5,
+  				shopperRating: -1,
+  			}, function (err, rating){
+				assert.isNotNull(err);
+				done();
+  			});
+		});
+
 		it("should contain the requester and the shopper of a rating", function(done) {
   			Rating.create({
   				delivery: deliveryId,

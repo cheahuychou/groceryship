@@ -14,6 +14,14 @@ RatingSchema.path("rejectedReason").validate(function(reason) {
     return reason.trim().length > 0;
 }, "A rejection reason cannot be an empty string.");
 
+RatingSchema.path("requesterRating").validate(function(rating) {
+    return rating >= 0 && rating <= 5;
+}, "A requester rating should be ranged from 0 to 5.");
+
+RatingSchema.path("shopperRating").validate(function(rating) {
+    return rating >= 0 && rating <= 5;
+}, "A shopper rating should be ranged from 0 to 5.");
+
 var RatingModel = mongoose.model("Rating", RatingSchema);
 
 module.exports = RatingModel;
