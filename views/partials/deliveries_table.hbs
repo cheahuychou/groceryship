@@ -3,7 +3,7 @@
     <thead>
       <tr>
         {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
-        <th><input type='checkbox'></th>
+        <th><input class='header-checkbox' type='checkbox'></th>
         {{> item_headings}}
         <th>Requester</th>
         <th>Pickup Time</th>
@@ -11,9 +11,9 @@
     </thead>
     <tbody>
       {{#each deliveryItems}}
-      <tr class='delivery-item-row' data-id='{{_id}}'>
+      <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
         {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
-        <td><input type='checkbox'></td>
+        <td class='checkbox-cell'>{{#unless pickupTime}}<input type='checkbox'>{{/unless}}</td>
         {{> item_row this}}
         {{!-- TODO: pickupTime should be N/A if deliver now hasn't been done on item--}}
         <td class='requester'>{{#if requester}}{{requester.username}}{{else}}N/A{{/if}}</td>
@@ -23,7 +23,6 @@
     </tbody>
   </table>
   {{!-- TODO: button should be disabled if there are no items / no items selected --}}
-  {{!-- TODO: button click handler --}}
   <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#deliver-now-modal' style='float: right'>Deliver Now</button>
   {{> deliver_now}}
 </div>
