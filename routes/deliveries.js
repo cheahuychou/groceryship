@@ -54,10 +54,10 @@ request body fields (TODO: MIGHT NEED TO BE CHANGED): stores, item-due, item-nam
 **/
 router.post("/", utils.isAuthenticated, function(req, res){
     var stores = [req.body.stores];
-    var deadline = req.body.itemDue;
+    var deadline = new Date(req.body.itemDue);
     var itemName = req.body.itemName;
     var itemDescription = req.body.itemDescription;
-    var itemQuantity = parseInt(req.body.itemQty);
+    var itemQuantity = req.body.itemQty;
     var estimatedPrice = parseInt(req.body.itemPriceEstimate);
     var tips = parseInt(req.body.itemTips);
     var pickupLocation = req.body.itemPickupLocation;
@@ -123,7 +123,7 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var username = req.session.passport.user.username;
     User.find({username: username}, '_id', function(err, current_user) {
         Delivery.findOne({_id: req.params.id, shopper: current_user._id}, function(err, current_delivery) {
-            current_delivery.pickupTime = req.body.pickupTime;
+            current_delivery.pickupTime = new Date(req.body.pickupTime);
             current_delivery.actualPrice = req.body.actualPrice;
             current_delivery.save(function(err) {
                 if (err) {

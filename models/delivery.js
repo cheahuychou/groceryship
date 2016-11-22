@@ -33,9 +33,13 @@ DeliverySchema.path("shopper").validate(function(shopperId) {
 	return shopperId != this.requester;
 }, "The shopper and the requester should not be the same.");
 
-DeliverySchema.path("deadline").validate(function(deadline) {
-	return deadline >= this.pickupTime;
+DeliverySchema.path("pickupTime").validate(function(pickupTime) {
+    return (!pickupTime || new Date(this.deadline) >= new Date(pickupTime));
 }, "The dealine has passed.");
+
+DeliverySchema.path("deadline").validate(function(deadline) {
+	return new Date(deadline) >= new Date();
+}, "The dealine must be after the current time.");
 
 var DeliveryModel = mongoose.model("Delivery", DeliverySchema);
 
