@@ -9,10 +9,10 @@
 <div id='request'>
 	<h3>Your Requests</h3>
   {{!-- TODO: what if table is empty, i.e. no items --}}
-  {{> requests_table requestItems}}
+  {{> requests_table own=true}}
 </div>
 <div id='deliver'>
 	<h3>To Deliver</h3>
   {{!-- TODO: what if table is empty, i.e. no items --}}
-  {{> deliveries_table deliveryItems}}
+  {{> deliveries_table}}
 </div>
