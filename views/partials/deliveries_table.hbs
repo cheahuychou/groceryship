@@ -5,6 +5,7 @@
         {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
         <th><input type='checkbox'></th>
         {{> item_headings}}
+        <th>Requester</th>
         <th>Pickup Time</th>
       </tr>
     </thead>
@@ -15,6 +16,7 @@
         <td><input type='checkbox'></td>
         {{> item_row this}}
         {{!-- TODO: pickupTime should be N/A if deliver now hasn't been done on item--}}
+        <td class='requester'>{{#if requester}}{{requester.username}}{{else}}N/A{{/if}}</td>
         <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
       </tr>
       {{/each}}
