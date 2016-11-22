@@ -9,7 +9,7 @@ Returns the "deliver" page consisting of all requests that a user can claim
 fields rendered: title & requestItems
 **/
 router.get("/requests", utils.isAuthenticated, function(req, res) {
-    var now = Date.now;
+    var now = Date.now();
     var user = req.session.passport.user;
     Delivery.find({status: "pending", requester: {$ne: user._id}, deadline: {$gt: now}})
         .exec(function(err, requestItems) {
