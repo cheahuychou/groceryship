@@ -27,20 +27,17 @@ Populates the dashboard page of the user, returning the lists of his current req
 fields rendered: title, requestItems, deliveryItems
 **/
 router.get("/:username", utils.isAuthenticated, function(req, res){
-    console.log('getting stuff for dashboard');
     var user = req.session.passport.user;
     Delivery.find({requester: user._id})
             .exec(function(err, requestItems) {
                 if (err) {
                     res.send({'success': false, 'message': err});
                 } else {
-                    console.log('successful', requestItems);
                     Delivery.find({shopper: user._id})
                         .exec(function(err, deliveryItems) {
                             if (err) {
                                 res.send({'success': false, 'message': err})
                             } else {
-                                console.log('successful', deliveryItems);
                                 res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: requestItems, deliveryItems: deliveryItems});
                             }
                         });
