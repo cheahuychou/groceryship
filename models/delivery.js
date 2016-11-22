@@ -16,6 +16,7 @@ var DeliverySchema = mongoose.Schema({
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
     pickupTime: {type: Date, default: null}
+    rating: {type: ObjectId, ref: "Rating"}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {

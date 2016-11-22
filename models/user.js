@@ -7,16 +7,29 @@ var UserSchema = mongoose.Schema({
     mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
+    requesterRating: {type: [{type: ObjectId, ref: "rating"}], default: null},
+    shopperRating: {type: [{type: ObjectId, ref: "rating"}], default: null}
 });
 
 UserSchema.path("username").validate(function(value) {
     return value.trim().length > 0;
-}, "No empty kerberos");
+}, "No empty kerberos.");
 
 UserSchema.path("password").validate(function(value) {
     return value.trim().length > 0;
-}, "No empty passwords");
+}, "No empty passwords.");
 
+UserSchema.path("requesterRating").validate(function(ratings){
+		return ratings.reduce(function(boolean, rating){
+				return boolean && rating.delivery.requester == this._id;
+		}, true);
+}, "User must be the requester.");
+
+UserSchema.path("shopperRating").validate(function(ratings){
+		return ratings.reduce(function(boolean, rating){
+				return boolean && rating.delivery.shopper == this._id;
+		}, true);
+}, "User must be the shopper.");
 
 var UserModel = mongoose.model("User", UserSchema);
 
