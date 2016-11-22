@@ -5,17 +5,17 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var DeliverySchema = mongoose.Schema({
     stores: [{type: String, required: true}], // A list of possible grocery stores.
     status: {type: String, required: true},
-    deadline: {type: String, required: true},
+    deadline: {type: Date, required: true},
     itemName: {type: String, required: true},
     itemDescription: {type: String, required: true},
-    itemQuantity: {type: Number, required: true},
+    itemQuantity: {type: String, required: true},
     estimatedPrice: {type: Number, required: true},
     tips: {type: Number, required: true},
     pickupLocation: {type: String, required: true},
     requester: {type: ObjectId, ref: "User", required: true},
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
-    pickupTime: {type: String, default: null}
+    pickupTime: {type: Date, default: null}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -34,8 +34,8 @@ DeliverySchema.path("shopper").validate(function(shopperId) {
 }, "The shopper and the requester should not be the same.");
 
 DeliverySchema.path("deadline").validate(function(deadline) {
-	return deadline >= this.pickupTime;
-}, "The dealine has passed.");
+    return deadline >= this.pickupTime;
+ }, "The dealine has passed.");
 
 var DeliveryModel = mongoose.model("Delivery", DeliverySchema);
 

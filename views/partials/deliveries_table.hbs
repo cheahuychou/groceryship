@@ -10,12 +10,12 @@
     </thead>
     <tbody>
       {{#each deliveryItems}}
-      <tr>
+      <tr class='delivery-item-row' data-id='{{_id}}'>
         {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
         <td><input type='checkbox'></td>
         {{> item_row this}}
         {{!-- TODO: pickupTime should be N/A if deliver now hasn't been done on item--}}
-        <td>{{pickupTime}}</td>
+        <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
       </tr>
       {{/each}}
     </tbody>

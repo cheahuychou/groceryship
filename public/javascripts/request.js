@@ -23,9 +23,14 @@ $(document).ready(function() {
 				itemPickupLocation: pickupLocation,	
 	        }, function(data) {
 	          if (!data.success) {
+                console.log(data.message);
 	            alert('Request submission failed. Please try again');
 	          } 
 	        });  
 		});     
   	});
+
+    $('#add-item').click(function() {
+        // TODO
+    });
 });

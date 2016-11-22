@@ -10,7 +10,7 @@ var LocalStrategy = require('passport-local').Strategy;
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
-		res.redirect('/users/'+ req.session.passport.user.username);
+		res.redirect('/deliveries/'+ req.session.passport.user.username);
 	} else {
 		res.render('home', { title: 'GroceryShip' });
 	}
@@ -46,7 +46,7 @@ passport.deserializeUser(function (user, done) {
 
 
 router.post('/login', passport.authenticate('local', { failureRedirect: '/' }), function (req, res, next) {
-	res.redirect('/users/'+ req.user.username);	
+	res.redirect('/deliveries/'+ req.user.username);
 });
 
 router.post('/logout', function(req, res, next) {
