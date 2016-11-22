@@ -63,7 +63,7 @@ describe("Models", function() {
       });
 
       it("should fail to create a user when the dorm is missing", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "dorm": "Maseeh"};
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();

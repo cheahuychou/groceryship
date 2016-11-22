@@ -29,7 +29,7 @@ UserSchema.path("dorm").validate(function(value) {
 	var dorms = ['Maseeh', 'McCormick', 'Baker', 'Burton Cornor', 'MacGregor', 'New House', 'Next House',
 					'East Campus', 'Senior House']
     return value.trim().length > 0 && dorms.indexOf(value) > -1;
-}, "MIT ID must have 9 digits");
+}, "Not a valid dorm name");
 
 
 var UserModel = mongoose.model("User", UserSchema);
