@@ -9,7 +9,7 @@ describe("App", function() {
 
   // Before running any test, connect to the database.
   before(function(done) {
-    con = mongoose.connect("mongodb://localhost/grocerydb", function() {
+    con = mongoose.connect("mongodb://localhost/grocerydb-test", function() {
       done();
     });
   });
