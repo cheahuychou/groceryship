@@ -26,8 +26,9 @@ UserSchema.path("phoneNumber").validate(function(value) {
 }, "US phone numbers must have exactly 10 digits");
 
 UserSchema.path("dorm").validate(function(value) {
-	var dorms = ['Maseeh', 'McCormick', 'Baker', 'Burton Cornor', 'MacGregor', 'New House', 'Next House',
-					'East Campus', 'Senior House']
+    var dorms = ['Baker', 'Burton Conner', 'East Campus', 'MacGregor', 'Maseeh',
+                    'McCormick', 'New House', 'Next House', 'Random', 'Senior',
+                    'Simmons']
     return value.trim().length > 0 && dorms.indexOf(value) > -1;
 }, "Not a valid dorm name");
 
