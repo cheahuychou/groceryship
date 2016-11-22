@@ -1,4 +1,5 @@
 var mongoose = require("mongoose");
+var Delivery = require("delivery");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var UserSchema = mongoose.Schema({
@@ -21,13 +22,17 @@ UserSchema.path("password").validate(function(value) {
 
 UserSchema.path("requesterRating").validate(function(ratings){
 		return ratings.reduce(function(boolean, rating){
-				return boolean && rating.delivery.requester == this._id;
+				return boolean && Delivery.findById(rating.delivery, function (err, delivery){
+						delivery.requester.equals(this._id);
+				});
 		}, true);
 }, "User must be the requester.");
 
 UserSchema.path("shopperRating").validate(function(ratings){
 		return ratings.reduce(function(boolean, rating){
-				return boolean && rating.delivery.shopper == this._id;
+				return boolean && Delivery.findById(rating.delivery, function (err, delivery){
+						delivery.shopper.equals(this._id);
+				});
 		}, true);
 }, "User must be the shopper.");
 

@@ -15,8 +15,8 @@ var DeliverySchema = mongoose.Schema({
     requester: {type: ObjectId, ref: "User", required: true},
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
-    pickupTime: {type: Date, default: null}
-    rating: {type: ObjectId, ref: "Rating"}
+    pickupTime: {type: Date, default: null},
+    rating: {type: ObjectId, ref: "Rating", default: null}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -36,6 +36,12 @@ DeliverySchema.path("shopper").validate(function(shopperId) {
 DeliverySchema.path("deadline").validate(function(deadline) {
     return deadline >= this.pickupTime;
 }, "The dealine has passed.");
+
+DeliverySchema.path("rating").validate(function(ratings){
+    return ratings.reduce(function(boolean, rating){
+        return boolean && rating.delivery.equals(this._id);
+    }, true);
+}, "The rating must point back to the right delivery.");
 
 var DeliveryModel = mongoose.model("Delivery", DeliverySchema);
 
