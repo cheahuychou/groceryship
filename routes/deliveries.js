@@ -124,7 +124,7 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
                 console.log(err);
                 res.json({success: false, message: err});
             } else {
-                res.json({success: true});
+                res.json({success: true, item: utils.formatDate([current_delivery])[0]});
             }
         });
     });

@@ -1,7 +1,7 @@
 {{!-- TODO: input validation for each input --}}
-<form id='item-form-{{n}}'>
-<tr class='item' id='item-{{n}}'>
-  <td><input id='item-name-{{n}}' type='text' name='item-name' class="form-control" required/></td>
+
+<tr class='item' id='item-{{n}}' data-num='{{n}}'>
+  <td><input id='item-name-{{n}}' type='text' name='item-name' class="form-control" required autofocus/></td>
   {{!-- TODO: fix sizing for input boxes that for numbers because they don't need to be that long --}}
   <td><input id='item-qty-{{n}}' type='number' name='item-qty' min='1' value='1' class="form-control" required/></td>
   <td>
@@ -47,10 +47,9 @@
     </div>
   </td>
   <td><input id='item-description-{{n}}' type='text' name='item-description' class="form-control"/></td>
-  {{!-- TODO: add functionality to delete item when this button is clicked --}}
-  {{!-- TODO: this shouldn't appear when there is only 1 item left so there won't be 0 items --}}
+  {{!-- delete item when this button is clicked --}}
   {{!-- TODO: decide how to handle n when an item is deleted --}}
-  <td><button id='item-remove-{{n}}' type="button" class="close">&times;</button></td>
+  <td><button id='item-remove-{{n}}' type="button" class="close item-remove" hidden>&times;</button></td>
 </tr>
     {{!-- submit button for testing --}}
     {{!-- <input type='submit' id='make-request' class='btn btn-primary' style='float: right'> --}}
