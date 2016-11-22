@@ -11,7 +11,7 @@ var RatingSchema = mongoose.Schema({
 
 RatingSchema.path("rejectedReason").validate(function(reason) {
     return reason.trim().length > 0;
-}, "Must be a nonempty string.");
+}, "A rejection reason cannot be an empty string.");
 
 var RatingModel = mongoose.model("Rating", RatingSchema);
 

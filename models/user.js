@@ -8,8 +8,8 @@ var UserSchema = mongoose.Schema({
     mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
-    requesterRating: {type: [{type: ObjectId, ref: "rating"}], default: null},
-    shopperRating: {type: [{type: ObjectId, ref: "rating"}], default: null}
+    requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: null},
+    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: null}
 });
 
 UserSchema.path("username").validate(function(value) {
