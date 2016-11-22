@@ -52,8 +52,8 @@ var checkSignUpForm = function () {
 		alert('MIT ID must be a nine-digit number');
 		return false;
 	}
-	if (!phoneNumber.match(/^\d+$/) || phoneNumber.length != 10) {
-		alert('US phone numbers must have 10 digits');
+	if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).length != 10) {
+		alert('please enter a valid US phone numbers with 10 digits');
 		return false;
 	}
 
