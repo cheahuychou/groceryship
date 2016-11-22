@@ -3,7 +3,7 @@
     <thead>
       <tr>
         {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
-        <th><input type='checkbox'></th>
+        <th><input class='header-checkbox' type='checkbox'></th>
         {{> item_headings}}
         <th>Pickup Time</th>
       </tr>
@@ -12,7 +12,7 @@
       {{#each deliveryItems}}
       <tr class='delivery-item-row' data-id='{{_id}}'>
         {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
-        <td><input type='checkbox'></td>
+        <td class='checkbox-cell'><input type='checkbox'></td>
         {{> item_row this}}
         {{!-- TODO: pickupTime should be N/A if deliver now hasn't been done on item--}}
         <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>

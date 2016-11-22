@@ -22,4 +22,18 @@ $(document).ready(function () {
         });
     });
 
+    $('.delivery-item-row').click(function() {
+        var rowCheckbox = $(this).children('.checkbox-cell').children('input');
+        // toggle row checkbox
+        rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
+    });
+
+    $('.header-checkbox').change(function() {
+        if (this.checked) {
+            $('.checkbox-cell input').prop('checked', true);
+        } else {
+            $('.checkbox-cell input').prop('checked', false);
+        }
+    })
+
 });
