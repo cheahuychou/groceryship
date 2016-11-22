@@ -7,7 +7,7 @@ var DeliverySchema = mongoose.Schema({
     status: {type: String, required: true},
     deadline: {type: Date, required: true},
     itemName: {type: String, required: true},
-    itemDescription: {type: String, required: true},
+    itemDescription: {type: String, default: null},
     itemQuantity: {type: String, required: true},
     estimatedPrice: {type: Number, required: true},
     tips: {type: Number, required: true},
