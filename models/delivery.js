@@ -130,11 +130,10 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, dueAfter, cal
  */
 DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, sortBy, callback) {
     if (storesList === null) {
-        storesList = ["HMart", "Star Market", "Trader Joe's", "Whole Foods"];
+        storesList = utils.allStores();
     }
     if (pickupLocationList === null) {
-        pickupLocationList = ['Maseeh', 'McCormick', 'Baker', 'Burton Conner', 'MacGregor', 'New House', 'Next House',
-                    'East Campus', 'Senior', 'Random', 'Simmons', 'Lobby 7', 'Lobby 10', 'Stata'];
+        pickupLocationList = utils.allPickupLocations();
     }
     if (sortBy !== null) {
         this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
