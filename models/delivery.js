@@ -1,3 +1,4 @@
+//Author: Joseph Kuan
 var mongoose = require("mongoose");
 var utils = require("../public/javascripts/utils.js")
 var ObjectId = mongoose.Schema.Types.ObjectId;
@@ -59,7 +60,7 @@ DeliverySchema.methods.claim = function(shopperID, callback) {
 };
 
 /**
- * "Delivers" a pending request, giving the delivery a pickupTime and actualPrice of good
+ * "Delivers" a claimed request, assigning the delivery a pickupTime and an actualPrice
  * @param {Date} pickupTime - The pickup time of the delivery
  * @param {Number} actualPrice - The actual price of the good
  * @param {Function} callback - The function to execute after request is delivered. Callback

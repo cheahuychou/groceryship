@@ -1,3 +1,4 @@
+//Author: Joseph Kuan
 var express = require('express');
 var router = express.Router();
 var Delivery = require('../models/delivery');
@@ -46,8 +47,8 @@ router.post("/", utils.isAuthenticated, function(req, res){
     var itemName = req.body.itemName;
     var itemDescription = req.body.itemDescription;
     var itemQuantity = req.body.itemQty;
-    var estimatedPrice = parseInt(req.body.itemPriceEstimate);
-    var tips = parseInt(req.body.itemTips);
+    var estimatedPrice = parseFloat(req.body.itemPriceEstimate);
+    var tips = parseFloat(req.body.itemTips);
     var pickupLocation = req.body.itemPickupLocation;
     Delivery.create({
         stores: stores,
@@ -107,7 +108,7 @@ request body fields: pickupTime, actualPrice
 router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
-        current_delivery.deliver(new Date(req.body.pickupTime), req.body.actualPrice, function(err) {
+        current_delivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
