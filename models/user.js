@@ -7,15 +7,17 @@ var UserSchema = mongoose.Schema({
     mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
+    requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
+    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: []}
 });
 
 UserSchema.path("username").validate(function(value) {
     return value.trim().length > 0;
-}, "No empty kerberos");
+}, "No empty kerberos.");
 
 UserSchema.path("password").validate(function(value) {
     return value.trim().length > 0;
-}, "No empty passwords");
+}, "No empty passwords.");
 
 UserSchema.path("mitId").validate(function(value) {
     return value.toString().length === 9;
@@ -31,7 +33,6 @@ UserSchema.path("dorm").validate(function(value) {
                     'Simmons']
     return value.trim().length > 0 && dorms.indexOf(value) > -1;
 }, "Not a valid dorm name");
-
 
 var UserModel = mongoose.model("User", UserSchema);
 

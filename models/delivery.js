@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var utils = require("../public/javascripts/utils.js")
+var utils = require("../public/javascripts/utils.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var DeliverySchema = mongoose.Schema({
@@ -15,7 +15,8 @@ var DeliverySchema = mongoose.Schema({
     requester: {type: ObjectId, ref: "User", required: true},
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
-    pickupTime: {type: Date, default: null}
+    pickupTime: {type: Date, default: null},
+    rating: {type: ObjectId, ref: "Rating", default: null}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
