@@ -30,7 +30,7 @@ DeliverySchema.path("status").validate(function(status) {
 }, "Not a valid status");
 
 DeliverySchema.path("shopper").validate(function(shopperId) {
-	return shopperId != this.requester;
+	return (shopperId === null) || (shopperId.toString() !== this.requester.toString());
 }, "The shopper and the requester should not be the same.");
 
 DeliverySchema.path("deadline").validate(function(deadline) {

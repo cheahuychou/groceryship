@@ -8,100 +8,105 @@ describe("App", function() {
   // The mongoose connection object.
   var con;
 
-  // The ids of the test users
+  // ids of the default test users
   var id1, id2, id3;
 
   // Some default deliveries
   var pending1, claimed1, rejected1, accepted1;
 
-  // Before running any test, connect to the database. Also, create some test users and deliveries
+  // Before running any test, connect to the database & drop database. Also, create some test users and deliveries
   before(function(done) {
-    con = mongoose.connect("mongodb://localhost/grocerydb-test", function() {
-      var testUser1 = new User({
-        "username": "username1",
-        "password": "something1",
-        "mitId": 123456789,
-        "phoneNumber": 1234567890,
-        "dorm": "Baker"
-      });
+    con = mongoose.connect("mongodb://localhost/grocerydb-delivery_test", function() {
 
-      var testUser2 = new User({
-        "username": "username2",
-        "password": "something2",
-        "mitId": 234567890,
-        "phoneNumber": 2345678901,
-        "dorm": "MacGregor"
-      });
+      con.connection.db.dropDatabase(function() {
 
-      var testUser3 = new User({
-        "username": "username3",
-        "password": "something3",
-        "mitId": 345678901,
-        "phoneNumber": 3456789012,
-        "dorm": "New House"
-      });
+        var testUser1 = new User({
+          "username": "username1",
+          "password": "something1",
+          "mitId": 123456789,
+          "phoneNumber": 1234567890,
+          "dorm": "Baker"
+        });
 
-      User.create([testUser1, testUser2, testUser3], function(err, users) {
-        if (err) {
-          console.log("Default users not created");
-          console.log(err.message);
-        }
-        id1 = users[0]._id;
-        id2 = users[1]._id;
-        id3 = users[2]._id;
+        var testUser2 = new User({
+          "username": "username2",
+          "password": "something2",
+          "mitId": 234567890,
+          "phoneNumber": 2345678901,
+          "dorm": "MacGregor"
+        });
 
-        pending1 = {stores: ["HMart", "Star Market"],
-            status: "pending",
-            deadline: new Date('2016-11-21T23:59:59'),
-            itemName: "test-item-beer",
-            itemDescription: "test-description-bluegirl",
-            itemQuantity: "test-quantity-6",
-            estimatedPrice: 3.5,
-            tips: 0.5,
-            pickupLocation: "Baker",
-            requester: id1};
+        var testUser3 = new User({
+          "username": "username3",
+          "password": "something3",
+          "mitId": 345678901,
+          "phoneNumber": 3456789012,
+          "dorm": "New House"
+        });
 
-        rejected1 = {stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
-            status: "rejected",
-            deadline: new Date('2016-11-22T11:00:30'),
-            itemName: "test-item-xx",
-            itemDescription: "test-description-yy",
-            itemQuantity: "test-quantity-3",
-            estimatedPrice: 15.50,
-            tips: 2,
-            pickupLocation: "McCormick",
-            requester: id2,
-            shopper: id1, 
-            actualPrice: 20,
-            pickupTime: new Date('2016-11-21T23:00:59')};
+        User.create([testUser1, testUser2, testUser3], function(err, users) {
+          if (err) {
+            console.log("Default users not created");
+            console.log(err.message);
+          }
 
-        accepted1 = {stores: ["Whole Foods", "Trader Joe's"],
-            status: "accepted",
-            deadline: new Date('2016-11-23T11:00:30'),
-            itemName: "test-item-icecream",
-            itemDescription: "test-description-talenti",
-            itemQuantity: "test-quantity-1",
-            estimatedPrice: 15.50,
-            tips: 2,
-            pickupLocation: "McCormick",
-            requester: id3,
-            shopper: id2, 
-            actualPrice: 14,
-            pickupTime: new Date('2016-11-22T23:00:59')};
+          id1 = users[0]._id;
+          id2 = users[1]._id;
+          id3 = users[2]._id;
 
-        claimed1 = {stores: ["Trader Joe's"],
-            status: "claimed",
-            deadline: new Date('2016-11-22T10:30:00'),
-            itemName: "test-item-sausages",
-            itemDescription: "test-description-yuge",
-            itemQuantity: "test-quantity-many",
-            estimatedPrice: 8,
-            tips: 1,
-            pickupLocation: "New House",
-            requester: id2,
-            shopper: id1};
+          pending1 = {stores: ["HMart", "Star Market"],
+              status: "pending",
+              deadline: new Date('2016-11-21T23:59:59'),
+              itemName: "test-item-beer",
+              itemDescription: "test-description-bluegirl",
+              itemQuantity: "test-quantity-6",
+              estimatedPrice: 3.5,
+              tips: 0.5,
+              pickupLocation: "Baker",
+              requester: id1};
 
-        done();
+          rejected1 = {stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
+              status: "rejected",
+              deadline: new Date('2016-11-22T11:00:30'),
+              itemName: "test-item-xx",
+              itemDescription: "test-description-yy",
+              itemQuantity: "test-quantity-3",
+              estimatedPrice: 15.50,
+              tips: 2,
+              pickupLocation: "McCormick",
+              requester: id2,
+              shopper: id1, 
+              actualPrice: 20,
+              pickupTime: new Date('2016-11-21T23:00:59')};
+
+          accepted1 = {stores: ["Whole Foods", "Trader Joe's"],
+              status: "accepted",
+              deadline: new Date('2016-11-23T11:00:30'),
+              itemName: "test-item-icecream",
+              itemDescription: "test-description-talenti",
+              itemQuantity: "test-quantity-1",
+              estimatedPrice: 15.50,
+              tips: 2,
+              pickupLocation: "McCormick",
+              requester: id3,
+              shopper: id2, 
+              actualPrice: 14,
+              pickupTime: new Date('2016-11-22T23:00:59')};
+
+          claimed1 = {stores: ["Trader Joe's"],
+              status: "claimed",
+              deadline: new Date('2016-11-22T10:30:00'),
+              itemName: "test-item-sausages",
+              itemDescription: "test-description-yuge",
+              itemQuantity: "test-quantity-many",
+              estimatedPrice: 8,
+              tips: 1,
+              pickupLocation: "New House",
+              requester: id2,
+              shopper: id1};
+
+          done();
+        });
       });
     });
   });
@@ -175,23 +180,25 @@ describe("App", function() {
       });
 
       it("should not allow requester and shopper to be the same", function(done) {
-        Delivery.create({stores: ["Star Market"],
-          status: "claimed",
-          deadline: new Date('2016-11-21T11:59:59'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1,
-          shopper: id1, 
-          actualPrice: 11.5}, function(err, doc) {
-            assert.throws(function() {
-              assert.ifError(err);
+        User.findOne({username: "username1"}, '_id', function(err, user1) {
+          Delivery.create({stores: ["Star Market"],
+            status: "claimed",
+            deadline: new Date('2016-11-21T11:59:59'),
+            itemName: "test-item",
+            itemDescription: "test-description",
+            itemQuantity: "test-quantity",
+            estimatedPrice: 10,
+            tips: 0.75,
+            pickupLocation: "Baker",
+            requester: id1,
+            shopper: user1._id, 
+            actualPrice: 11.5}, function(err, doc) {
+              assert.throws(function() {
+                assert.ifError(err);
+              });
+              done();
             });
-            done();
-          });
+        });
       });
 
       it("should not allow pickup time to be after the deadline", function(done) {
@@ -247,14 +254,16 @@ describe("App", function() {
       });
 
       it("should not allow the requester to claim his own delivery", function(done) {
-        Delivery.create(pending1, function(err, doc) {
-            doc.claim(id1, function(err) {
-              assert.throws(function() {
-                assert.ifError(err);
+        User.findOne({username: "username1"}, '_id', function(err, user1) {
+          Delivery.create(pending1, function(err, doc) {
+              doc.claim(user1._id, function(err) {
+                assert.throws(function() {
+                  assert.ifError(err);
+                });
+                done();
               });
-              done();
             });
-          });
+        });
       });
 
       it("should not allow a claimed delivery to be claimed again", function(done) {
