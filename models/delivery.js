@@ -21,7 +21,7 @@ var DeliverySchema = mongoose.Schema({
 
 DeliverySchema.path("stores").validate(function(stores) {
     return stores.reduce(function(a, b) {
-        return a && (b === "HMart" || b === "Star Market" || b === "Trader Joe's" || b === "Whole Foods");
+        return a && (utils.allStores().indexOf(b) > -1);
     }, true);
 }, "Not a valid grocery store");
 
@@ -38,9 +38,7 @@ DeliverySchema.path("deadline").validate(function(deadline) {
 }, "The dealine has passed.");
 
 DeliverySchema.path("pickupLocation").validate(function(value) {
-    var dorms = ['Maseeh', 'McCormick', 'Baker', 'Burton Conner', 'MacGregor', 'New House', 'Next House',
-                    'East Campus', 'Senior', 'Random', 'Simmons', 'Lobby 7', 'Lobby 10', 'Stata'];
-    return value.trim().length > 0 && dorms.indexOf(value) > -1;
+    return value.trim().length > 0 && utils.allPickupLocations().indexOf(value) > -1;
 }, "Not a valid dorm name");
 
 /**
