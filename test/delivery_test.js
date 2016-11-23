@@ -12,7 +12,7 @@ describe("App", function() {
   var id1, id2, id3;
 
   // Some default deliveries
-  var pending1, claimed1, rejected1, accepted1;
+  var pending_delivery1, claimed_delivery1, rejected_delivery1, accepted_delivery1;
 
   // Before running any test, connect to the database & drop database. Also, create some test users and deliveries
   before(function(done) {
@@ -54,7 +54,7 @@ describe("App", function() {
           id2 = users[1]._id;
           id3 = users[2]._id;
 
-          pending1 = {stores: ["HMart", "Star Market"],
+          pending_delivery1 = {stores: ["HMart", "Star Market"],
               status: "pending",
               deadline: new Date('2016-11-21T23:59:59'),
               itemName: "test-item-beer",
@@ -65,7 +65,7 @@ describe("App", function() {
               pickupLocation: "Baker",
               requester: id1};
 
-          rejected1 = {stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
+          rejected_delivery1 = {stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
               status: "rejected",
               deadline: new Date('2016-11-22T11:00:30'),
               itemName: "test-item-xx",
@@ -79,7 +79,7 @@ describe("App", function() {
               actualPrice: 20,
               pickupTime: new Date('2016-11-21T23:00:59')};
 
-          accepted1 = {stores: ["Whole Foods", "Trader Joe's"],
+          accepted_delivery1 = {stores: ["Whole Foods", "Trader Joe's"],
               status: "accepted",
               deadline: new Date('2016-11-23T11:00:30'),
               itemName: "test-item-icecream",
@@ -93,7 +93,7 @@ describe("App", function() {
               actualPrice: 14,
               pickupTime: new Date('2016-11-22T23:00:59')};
 
-          claimed1 = {stores: ["Trader Joe's"],
+          claimed_delivery1 = {stores: ["Trader Joe's"],
               status: "claimed",
               deadline: new Date('2016-11-22T10:30:00'),
               itemName: "test-item-sausages",
@@ -120,7 +120,7 @@ describe("App", function() {
 
     describe("Basic Model and Validation", function() {
       it("should have minimum required fields of a delivery", function(done) {
-        Delivery.create(pending1, function() {
+        Delivery.create(pending_delivery1, function() {
           Delivery.findOne({"itemName": "test-item-beer"}, function(err, doc) {
             assert.strictEqual(doc.itemDescription, "test-description-bluegirl");
             assert.strictEqual(doc.estimatedPrice, 3.5);
@@ -131,7 +131,7 @@ describe("App", function() {
       });
 
       it("should have all fields of a delivery present in the design model", function(done) {
-        Delivery.create(rejected1 ,function() {
+        Delivery.create(rejected_delivery1 ,function() {
           Delivery.findOne({requester: id2}, function(err, doc) {
             assert.strictEqual(doc.itemDescription, "test-description-yy");
             assert.strictEqual(doc.estimatedPrice, 15.5);
@@ -242,9 +242,9 @@ describe("App", function() {
 
     }); //End Describe Basic Model and Validation
 
-    describe("Claim function", function() {
+    describe("Claim", function() {
       it("should allow shoppers to claim requests", function(done) {
-        Delivery.create(pending1, function(err, doc) {
+        Delivery.create(pending_delivery1, function(err, doc) {
             doc.claim(id2, function(err) {
               assert.strictEqual(doc.shopper.toString(), id2.toString());
               assert.strictEqual(doc.status, "claimed");
@@ -255,7 +255,7 @@ describe("App", function() {
 
       it("should not allow the requester to claim his own delivery", function(done) {
         User.findOne({username: "username1"}, '_id', function(err, user1) {
-          Delivery.create(pending1, function(err, doc) {
+          Delivery.create(pending_delivery1, function(err, doc) {
               doc.claim(user1._id, function(err) {
                 assert.throws(function() {
                   assert.ifError(err);
@@ -267,7 +267,7 @@ describe("App", function() {
       });
 
       it("should not allow a claimed delivery to be claimed again", function(done) {
-        Delivery.create(claimed1, function(err, doc) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
             doc.claim(id1, function(err) {
               assert.throws(function() {
                 assert.ifError(err);
@@ -278,9 +278,9 @@ describe("App", function() {
       });
     }); //End Describe Claim function
 
-    describe("Deliver function", function() {
+    describe("Deliver", function() {
       it("should allow shoppers to deliver requests", function(done) {
-        Delivery.create(claimed1, function(err, doc) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
             doc.deliver(new Date('2016-11-22T14:30:00'), 11, function(err) {
               assert.strictEqual(doc.pickupTime.getTime(), new Date('2016-11-22T14:30:00').getTime());
               assert.strictEqual(doc.actualPrice, 11);
@@ -290,9 +290,9 @@ describe("App", function() {
       });
     }); //End Describe Deliver function
 
-    describe("Accept and Reject functions", function() {
+    describe("Accept and Reject", function() {
       it("should allow requester to accept requests", function(done) {
-        Delivery.create(claimed1, function(err, doc) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
             doc.accept(function(err) {
               assert.strictEqual(doc.status, "accepted");
               done();
@@ -301,7 +301,7 @@ describe("App", function() {
       });
 
       it("should allow requester to reject requests", function(done) {
-        Delivery.create(claimed1, function(err, doc) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
             doc.reject(function(err) {
               assert.strictEqual(doc.status, "rejected");
               done();
@@ -310,7 +310,7 @@ describe("App", function() {
       });
 
       it("should not allow requests not in the 'claimed' stage to be accepted", function(done) {
-        Delivery.create(pending1, function(err, doc) {
+        Delivery.create(pending_delivery1, function(err, doc) {
             doc.accept(function(err) {
               assert.throws(function() {
                 assert.ifError(err);
@@ -321,7 +321,7 @@ describe("App", function() {
       });
 
       it("should not allow requests not in the 'claimed' stage to be rejected", function(done) {
-        Delivery.create(accepted1, function(err, doc) {
+        Delivery.create(accepted_delivery1, function(err, doc) {
             doc.reject(function(err) {
               assert.throws(function() {
                 assert.ifError(err);
@@ -332,9 +332,9 @@ describe("App", function() {
       });
     }); //End Describe Accept and Reject functions
 
-    describe("getRequestsAndDeliveries function", function() {
+    describe("getRequestsAndDeliveries", function() {
       it("should get requests and deliveries of a user", function(done) {
-        Delivery.create([pending1, claimed1], function(err, doc) {
+        Delivery.create([pending_delivery1, claimed_delivery1], function(err, doc) {
             Delivery.getRequestsAndDeliveries(id1, new Date('2016-11-21T18:00:00'), function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 1);
               assert.strictEqual(deliveryItems.length, 1);
@@ -348,7 +348,7 @@ describe("App", function() {
       });
 
       it("should not get requests and deliveries of other users", function(done) {
-        Delivery.create([pending1, claimed1], function(err, doc) {
+        Delivery.create([pending_delivery1, claimed_delivery1], function(err, doc) {
             Delivery.getRequestsAndDeliveries(id3, new Date('2016-11-21T18:00:00'), function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 0);
               assert.strictEqual(deliveryItems.length, 0);
@@ -358,7 +358,7 @@ describe("App", function() {
       });
 
       it("should not get requests and deliveries whose deadlines have passed", function(done) {
-        Delivery.create([pending1, claimed1], function(err, doc) {
+        Delivery.create([pending_delivery1, claimed_delivery1], function(err, doc) {
             Delivery.getRequestsAndDeliveries(id1, new Date('2016-11-22T12:00:00'), function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 0);
               assert.strictEqual(deliveryItems.length, 0);
@@ -368,7 +368,7 @@ describe("App", function() {
       });
 
       it("should not get requests and deliveries that are not pending or claimed", function(done) {
-        Delivery.create([accepted1, rejected1], function(err, doc) {
+        Delivery.create([accepted_delivery1, rejected_delivery1], function(err, doc) {
             Delivery.getRequestsAndDeliveries(id2, new Date('2016-11-21T15:00:00'), function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 0);
               assert.strictEqual(deliveryItems.length, 0);
@@ -378,9 +378,9 @@ describe("App", function() {
       });
     }); //End Describe getRequestsAndDeliveries function
 
-    describe("getRequests function", function() {
+    describe("getRequests", function() {
       it("should populate pending requests that are not requested by the current user", function(done) {
-        Delivery.create([pending1,
+        Delivery.create([pending_delivery1,
                           {stores: ["Star Market", "Whole Foods"],
           status: "pending",
           deadline: new Date('2016-11-23T23:59:59'),
@@ -401,7 +401,7 @@ describe("App", function() {
       });
 
       it("should not populate requests that are not pending", function(done) {
-        Delivery.create([claimed1, accepted1], function(err, doc) {
+        Delivery.create([claimed_delivery1, accepted_delivery1], function(err, doc) {
             Delivery.getRequests(id1, new Date('2016-11-22T08:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], ["McCormick", "New House"], null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
               done();
@@ -410,7 +410,7 @@ describe("App", function() {
       });
 
       it("should not populate requests whose deadlines have passed", function(done) {
-        Delivery.create(pending1, function(err, doc) {
+        Delivery.create(pending_delivery1, function(err, doc) {
             Delivery.getRequests(id2, new Date('2016-11-22T10:00:00'), null, ["Lobby 7", "Baker"], null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
               done();
@@ -419,7 +419,7 @@ describe("App", function() {
       });
 
       it("should not populate requests from stores outside of the filter list of stores", function(done) {
-        Delivery.create(pending1, function(err, doc) {
+        Delivery.create(pending_delivery1, function(err, doc) {
             Delivery.getRequests(id2, new Date('2016-11-21T12:00:00'), ["Trader Joe's", "Whole Foods"], ["Lobby 7", "Baker"], null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
               done();
@@ -446,7 +446,7 @@ describe("App", function() {
       });
 
       it("should sort pending requests in the correct order", function(done) {
-        Delivery.create([pending1,
+        Delivery.create([pending_delivery1,
                           {stores: ["Star Market", "Whole Foods"],
           status: "pending",
           deadline: new Date('2016-11-23T23:59:59'),
