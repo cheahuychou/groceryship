@@ -52,7 +52,7 @@ var checkSignUpForm = function () {
 		alert('MIT ID must be a nine-digit number');
 		return false;
 	}
-	if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).length != 10) {
+	if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10) {
 		alert('please enter a valid US phone numbers with 10 digits');
 		return false;
 	}
