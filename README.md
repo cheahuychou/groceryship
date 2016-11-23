@@ -1,5 +1,15 @@
 # GroceryShip
 
+## Usage
+A deployed version of GroceryShip is available on Heroku [here](http://groceryship.herokuapp.com/).
+
+For a local version,
+- Make sure you have Node.js, NPM, and [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community) which will be used for this project.
+- Start the MongoDB server in one terminal window with `sudo mongod`.
+- In another terminal window, install the dependencies with `npm install`.
+- Start the app with `npm start`.
+- The app will be available on [`http://localhost:3000`](http://localhost:3000).
+
 ## Description
 GroceryShip is a web application that facilitates peer grocery delivery. Students from the same college can post requests for groceries they need with a detailed description of the item/s. Students who are doing grocery shopping can then claim and fulfill these requests. Requesters specify how much they're willing to pay as a delivery fee and which pickup/delivery locations (dorms, living groups, other on-campus places) they prefer. Payments are made once delivery is complete and both parties indicate this in the app. We will focus on an implementation for MIT students first. 
 
