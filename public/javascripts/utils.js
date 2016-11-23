@@ -2,7 +2,30 @@ var dateFormat = require('dateformat');
 
 var Utils = function() {
 
-	var that = Object.create(Utils);
+	var that = Object.create(Utils.prototype);
+
+	/**
+	* @return {Array} the list of all dorms in MIT that a user can register himself under
+	*/
+	that.allDorms = function() {
+		return ['Maseeh', 'McCormick', 'Baker', 'Burton Cornor', 'MacGregor', 'New House', 'Next House',
+					'East Campus', 'Senior House'];
+	};
+
+	/**
+	* @return {Array} the list of all pickup locations which a user can request goods to be delivered to
+	*/
+	that.allPickupLocations = function() {
+		return ['Maseeh', 'McCormick', 'Baker', 'Burton Conner', 'MacGregor', 'New House', 'Next House',
+                    'East Campus', 'Senior', 'Random', 'Simmons', 'Lobby 7', 'Lobby 10', 'Stata'];
+	};
+
+	/**
+	* @return {Array} the list of all stores which the user can request goods from
+	*/
+	that.allStores = function() {
+		return ["HMart", "Star Market", "Trader Joe's", "Whole Foods"];
+	};
 
 	/**
    * Reverse the given array (not in place)

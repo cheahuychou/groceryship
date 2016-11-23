@@ -1,3 +1,4 @@
+//Author: Joseph Kuan
 var express = require('express');
 var router = express.Router();
 var Delivery = require('../models/delivery');
@@ -11,14 +12,13 @@ fields rendered: title & requestItems
 router.get("/requests", utils.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.find({status: "pending", requester: {$ne: user._id}, deadline: {$gt: now}})
-        .populate('requester').lean().exec(function(err, requestItems) {
-            if (err) {
-                res.send({'success': false, 'message': err});
-            } else {
-                res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
-            }
-        });
+    Delivery.getRequests(user._id, now, null, null, null, function(err, requestItems) {
+        if (err) {
+            res.send({'success': false, 'message': err});
+        } else {
+            res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
+        }
+    });
 });
 
 /**
@@ -26,22 +26,15 @@ Populates the dashboard page of the user, returning the lists of his current req
 fields rendered: title, requestItems, deliveryItems
 **/
 router.get("/:username", utils.isAuthenticated, function(req, res){
+    var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.find({requester: user._id})
-            .populate('shopper').lean().exec(function(err, requestItems) {
-                if (err) {
-                    res.send({'success': false, 'message': err});
-                } else {
-                    Delivery.find({shopper: user._id})
-                        .populate('requester').lean().exec(function(err, deliveryItems) {
-                            if (err) {
-                                res.send({'success': false, 'message': err})
-                            } else {
-                                res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
-                            }
-                        });
-                }
-            });
+    Delivery.getRequestsAndDeliveries(user._id, now, function(err, requestItems, deliveryItems) {
+        if (err) {
+            res.send({'success': false, 'message': err})
+        } else {
+            res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
+        }
+    });
 });
 
 /**
@@ -54,8 +47,8 @@ router.post("/", utils.isAuthenticated, function(req, res){
     var itemName = req.body.itemName;
     var itemDescription = req.body.itemDescription;
     var itemQuantity = req.body.itemQty;
-    var estimatedPrice = parseInt(req.body.itemPriceEstimate);
-    var tips = parseInt(req.body.itemTips);
+    var estimatedPrice = parseFloat(req.body.itemPriceEstimate);
+    var tips = parseFloat(req.body.itemTips);
     var pickupLocation = req.body.itemPickupLocation;
     Delivery.create({
         stores: stores,
@@ -97,9 +90,7 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
-        current_delivery.status = "claimed";
-        current_delivery.shopper = user._id;
-        current_delivery.save(function(err) {
+        current_delivery.claim(user._id, function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
@@ -117,9 +108,7 @@ request body fields: pickupTime, actualPrice
 router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
-        current_delivery.pickupTime = new Date(req.body.pickupTime);
-        current_delivery.actualPrice = req.body.actualPrice;
-        current_delivery.save(function(err) {
+        current_delivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
@@ -133,9 +122,8 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
-        current_delivery.status = "accepted";
-        current_delivery.save(function(err) {
+    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, current_delivery) {
+        current_delivery.accept(function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
@@ -149,9 +137,8 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user rejects the delivery **/
 router.put("/:id/reject", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
-        current_delivery.status = "rejected";
-        current_delivery.save(function(err) {
+    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, current_delivery) {
+        current_delivery.reject(function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
