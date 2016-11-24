@@ -66,6 +66,9 @@ $(document).ready(function () {
                     class: 'form-control',
                     type: 'datetime-local',
                     name: 'pickup-time'
+                    // TODO: set min as current datetime
+                    // TODO: set max as deadline
+                    // and maybe use another better datetime picker
                 });
 
                 var inputPrice = $('<input>', {
@@ -145,22 +148,32 @@ $(document).ready(function () {
                     success: function(data) {
                         // console.log(data);
                         // TODO
-                        var originalRow = $('.delivery-item-row[data-id='+id+']');
-                        // remove checkbox because pickup time has been set
-                        originalRow.children('.checkbox-cell').empty();
-                        // update pickup time
-                        originalRow.children('.pickup-time').text(data.item.pickupTime);
-
+                        if (data.success) {
+                            // update to deliver table
+                            var originalRow = $('.delivery-item-row[data-id='+id+']');
+                            // remove checkbox because pickup time has been set
+                            originalRow.children('.checkbox-cell').empty();
+                            // update pickup time
+                            originalRow.children('.pickup-time').text(data.item.pickupTime);
+                        } else {
+                            hasError = true;
+                        }
                     },
                     error: function(err) {
                         console.log(err);
-                        // TODO: tell user which ones failed
+                        // TODO: tell user which ones failed?
+                        hasError = true;
                     }
                 })
             });
 
-            // TODO: only close the modal if all items were successfully updated
-            $('#deliver-now-modal').modal('toggle');
+            if (hasError) {
+                alert('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!');
+            } else {
+                alert('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!');
+                // only close the modal if all items were successfully updated
+                $('#deliver-now-modal').modal('toggle');
+            }
         }
     });
 
