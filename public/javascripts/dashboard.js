@@ -1,3 +1,4 @@
+// Author: Czarina Lao
 $(document).ready(function () {
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
@@ -24,15 +25,19 @@ $(document).ready(function () {
 
     // make it more usable by allowing checking/unchecking of checkbox by clicking the row
     $('.delivery-item-row').click(function(e) {
-        var rowCheckbox = $(this).children('.checkbox-cell').children('input');
-        // toggle row checkbox
-        rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
+        // only do this if the main target wasn't a checkbox
+        // because otherwise, the checkbox get double checked/unchecked like nothing happened
+        if (!$(e.target).hasClass('deliveries-checkbox')) {
+            var rowCheckbox = $(this).children('.checkbox-cell').children('input');
+            // toggle row checkbox
+            rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
 
-        // disable deliver now button if no checkboxes are checked
-        if ($('.deliveries-checkbox:checked').size() === 0) {
-            $('#deliver-items').prop('disabled', true);
-        } else {
-            $('#deliver-items').prop('disabled', false);
+            // disable deliver now button if no checkboxes are checked
+            if ($('.deliveries-checkbox:checked').size() === 0) {
+                $('#deliver-items').prop('disabled', true);
+            } else {
+                $('#deliver-items').prop('disabled', false);
+            }
         }
     });
 
