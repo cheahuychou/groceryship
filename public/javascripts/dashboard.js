@@ -8,33 +8,42 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
-                    // TODO: show message that cancel was successful
                     // TODO: ask for the reason of cancellation
+                    addMessage('Request canceled.', 'success', true);
                 } else {
                     console.log(data.message);
-                    // TODO: show error message
+                    addMessage('The request could not be canceled. Note that you can\'t cancel claimed requests.', 'danger', true);
                 }
             },
             error: function(err) {
                 console.log(err);
-                // TODO: show error message
+                addMessage('A network error might have occurred. Please try again.', 'danger', true);
             }
         });
     });
 
     // make it more usable by allowing checking/unchecking of checkbox by clicking the row
-    $('.delivery-item-row').click(function() {
+    $('.delivery-item-row').click(function(e) {
         var rowCheckbox = $(this).children('.checkbox-cell').children('input');
         // toggle row checkbox
         rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
+
+        // disable deliver now button if no checkboxes are checked
+        if ($('.deliveries-checkbox:checked').size() === 0) {
+            $('#deliver-items').prop('disabled', true);
+        } else {
+            $('#deliver-items').prop('disabled', false);
+        }
     });
 
     // checking and unchecking the header checkbox checks/unchecks all the checkboxes
     $('.header-checkbox').change(function() {
         if (this.checked) {
             $('.checkbox-cell input').prop('checked', true);
+            $('#deliver-items').prop('disabled', false);
         } else {
             $('.checkbox-cell input').prop('checked', false);
+            $('#deliver-items').prop('disabled', true);
         }
     });
 
@@ -51,6 +60,7 @@ $(document).ready(function () {
                 var requester = originalRow.attr('data-requester');
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
+                console.log(originalRow.children('.deadline').text());
 
                 var inputPickupTime = $('<input>', {
                     class: 'form-control',
