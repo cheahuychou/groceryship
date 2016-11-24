@@ -1,4 +1,21 @@
 /**
+ * Adds the message message to the area with id messages.
+ * @param {String} message  The message
+ * @param {String} type     The type of message: success, warning, info, or danger
+ * @param {Boolean} clearOld if true, clears old messages
+ */
+var addMessage = function(message, type, clearOld) {
+    if (clearOld) $('#messages').empty();
+    var messageDiv = $('<div/>');
+    messageDiv.addClass('alert alert-dismissible alert-'+type);
+    messageDiv.attr('role', 'alert');
+    messageDiv.text(message);
+    // dismiss button. code from bootstrap
+    messageDiv.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+    $('#messages').append(messageDiv);
+}
+
+/**
 * Checks that the kerberos and password for the login form are
 * non-empty strings and do not contain html elements, alert
 * the user if these are not satisified

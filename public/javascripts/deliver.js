@@ -9,15 +9,15 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
-                    // TODO: show message that claim was successful
+                    addMessage('Request claimed! It has been added to your dashboard.', 'success', true);
                 } else {
                     console.log(data.message);
-                    // TODO: show error message
+                    addMessage('The request could not be claimed. Note that you won\'t be able to claim your own requests.', 'danger', true);
                 }
             },
             error: function(err) {
                 console.log(err);
-                // TODO: show error message
+                addMessage('A network error might have occurred. Please try again.', 'danger', true);
             }
         });
     });

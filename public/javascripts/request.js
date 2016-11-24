@@ -21,16 +21,17 @@ $(document).ready(function() {
 				itemTips: tips,
 				itemPickupLocation: pickupLocation,	
 	        }, function(data) {
-	          if (!data.success) {
-                console.log(data.message);
-	            alert('Request submission failed. Please try again');
-	          } 
+                if (!data.success) {
+                    console.log(data.message);
+                    addMessage('Request submission failed. Please try again.', 'danger', true);
+                } else {
+                    // clear form after submitting successfully
+                    $('#request-form').find('input').val('');
+                    addMessage('Request submitted. You can check the status of your requests on your dashboard.', 'success', true);
+                }
 	        });  
 		});
-        
-        // clear form after submitting
-        // TODO: only do this if successful
-        $('#request-form').find('input').val('');   
+         
   	});
 
     $('#add-item').click(function() {
@@ -38,14 +39,12 @@ $(document).ready(function() {
         var lastNum = parseInt($('tbody tr:last-child').attr('data-num'));
         $('tbody').append($('.item').last().prop('outerHTML'));
         var newRow = $('tbody tr:last-child');
-        console.log(newRow);
         // update ids of new row
         var oldId = newRow.attr('id');
         newRow.attr('id', oldId.replace(lastNum, lastNum+1));
         newRow.attr('data-num', lastNum+1);
         newRow.find('input,select,button').each(function() {
             var oldId = $(this).attr('id');
-            console.log(oldId);
             $(this).attr('id', oldId.replace(lastNum, lastNum+1));
         });
         newRow.find('.item-remove').click(function() {
