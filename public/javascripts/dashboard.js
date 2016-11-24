@@ -31,13 +31,13 @@ $(document).ready(function () {
             var rowCheckbox = $(this).children('.checkbox-cell').children('input');
             // toggle row checkbox
             rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
+        }
 
-            // disable deliver now button if no checkboxes are checked
-            if ($('.deliveries-checkbox:checked').size() === 0) {
-                $('#deliver-items').prop('disabled', true);
-            } else {
-                $('#deliver-items').prop('disabled', false);
-            }
+        // disable deliver now button if no checkboxes are checked
+        if ($('.deliveries-checkbox:checked').size() === 0) {
+            $('#deliver-items').prop('disabled', true);
+        } else {
+            $('#deliver-items').prop('disabled', false);
         }
     });
 
@@ -122,8 +122,19 @@ $(document).ready(function () {
                 $(this).parent().removeClass('has-error');
             }
 
-            // check if valid prices are entered
-            if ($(this).attr('name') == 'price') {
+            // check if pickup time is in the future
+            // TODO: the datetimepicker should have datetimes < now disabled
+            if ($(this).attr('name') == 'pickup-time') {
+                if (new Date($(this).val()) < Date.now()) {
+                    if (!$(this).parent().hasClass('has-error')) {
+                        $(this).parent().addClass('has-error');
+                    }
+                    hasError = true;
+                    alert('Please enter a date and time after the current date and time.');
+                    return false;
+                }
+            } else if ($(this).attr('name') == 'price') {
+                // check if valid prices are entered
                 var price = checkPriceFormat($(this).val());
                 if (price) {
                     $(this).val(price);
