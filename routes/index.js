@@ -5,7 +5,11 @@ var User = require('../models/user');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-
+var qs = require('querystring');
+var CLIENT_ID = "ca_9cM2X0fAV2o3P0YUpK0rrBrv9cNW1Gir";
+var API_KEY = "sk_test_K2JP71UZxFF601z5LWtyQotV";
+var TOKEN_URI = 'https://connect.stripe.com/oauth/token';
+var AUTHORIZE_URI = 'https://connect.stripe.com/oauth/authorize';
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -102,6 +106,40 @@ router.post('/signup', function(req, res, next) {
 					}	
 				});
 		}
+});
+
+router.get('/authorize', function(req, res){
+	//Redirect to Stripe /oauth/authorize end point
+	res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
+	    response_type: 'code',
+	    scope: 'read_write',
+	    client_id: CLIENT_ID
+  	}));
+});
+
+router.get('/oauth/callback', function(req, res) {
+
+  var code = req.query.code;
+
+  // Make /oauth/token endpoint POST request
+  request.post({
+    url: TOKEN_URI,
+    form: {
+      grant_type: 'authorization_code',
+      client_id: CLIENT_ID,
+      code: code,
+      client_secret: API_KEY
+    }
+  }, function(err, r, body) {
+    
+    var accessToken = JSON.parse(body).access_token;
+    
+    // Do something with your accessToken
+    
+    // For demo's sake, output in response:
+    res.send({ 'Your Token': accessToken });
+    
+  });
 });
 
 module.exports = router;
