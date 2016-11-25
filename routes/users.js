@@ -22,7 +22,7 @@ router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next
 
 router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
 	User.findOne({'username': req.session.passport.user.username}, function(err, userObject){
-		res.render('profile', {title: 'Profile Page', user: userObject});
+		res.render('profile', {title: 'Profile Page', user: userObject, username: userObject.username});
 	});
 });
 
