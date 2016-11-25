@@ -42,7 +42,9 @@ Posts a new request from a user
 request body fields (TODO: MIGHT NEED TO BE CHANGED): stores, item-due, item-name, itemDescription, item-qty, item-price-estimate, item-tip, item-pickup
 **/
 router.post("/", utils.isAuthenticated, function(req, res){
-    var stores = [req.body.stores];
+    console.log(req.body);
+    var stores = req.body['stores[]'];
+    console.log('stores', stores);
     var deadline = new Date(req.body.itemDue);
     var itemName = req.body.itemName;
     var itemDescription = req.body.itemDescription;

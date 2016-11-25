@@ -1,9 +1,8 @@
 {{!-- TODO: input validation for each input --}}
-
 <tr class='item' id='item-{{n}}' data-num='{{n}}'>
   <td><input id='item-name-{{n}}' type='text' name='item-name' class="form-control" required autofocus/></td>
   {{!-- TODO: fix sizing for input boxes that for numbers because they don't need to be that long --}}
-  <td><input id='item-qty-{{n}}' type='number' name='item-qty' min='1' value='1' class="form-control" required/></td>
+  <td><input id='item-qty-{{n}}' type='text' name='item-qty' min='1' value='1' class="form-control" required/></td>
   <td>
   <div class="input-group">
       <span class="input-group-addon">$</span>
@@ -12,7 +11,7 @@
   </td>
   <td>
     {{!-- TODO: Fix size --}}
-    <select id='item-stores-{{n}}' name='item-stores' class="form-control">
+    <select multiple id='item-stores-{{n}}' name='item-stores' class="form-control">
       <option>Star Market</option>
       <option>HMart</option>
       <option>Trader Joe's</option>
@@ -20,7 +19,7 @@
     </select>
   </td>
   {{!-- TODO: set default item due to today's date. also set it as min --}}
-  <td><input id='item-due-{{n}}' type='datetime-local' name='item-due' class="form-control" required/></td>
+  <td><input id='item-due-{{n}}' type='datetime-local' name='item-due' class="form-control datetimepicker" onfocus="setMinDateTime()" required/></td>
   <td>
     {{!-- TODO: Fix size --}}
     <select id='item-pickup-location-{{n}}' name='item-pickup' class="form-control">

@@ -8,8 +8,9 @@ var Utils = function() {
 	* @return {Array} the list of all dorms in MIT that a user can register himself under
 	*/
 	that.allDorms = function() {
-		return ['Maseeh', 'McCormick', 'Baker', 'Burton Cornor', 'MacGregor', 'New House', 'Next House',
-					'East Campus', 'Senior House'];
+		return ['Baker', 'Burton Conner', 'East Campus', 'MacGregor', 'Maseeh',
+                'McCormick', 'New House', 'Next House', 'Random', 'Senior',
+                'Simmons'];
 	};
 
 	/**
@@ -61,8 +62,7 @@ var Utils = function() {
 		if (req.params.username == undefined && req.isAuthenticated() || 
 				req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
 				next();
-		}
-		 else if (req.isAuthenticated()) {
+		} else if (req.isAuthenticated()) {
 			res.redirect('/users/'+req.session.passport.user.username);
 		} else {
 			res.render('home', { title: 'GroceryShip', message: 'Please log in below'});

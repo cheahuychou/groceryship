@@ -21,13 +21,14 @@ passport.use(new LocalStrategy(function (username, password, done) {
 	username = username.toLowerCase();
 	User.findOne({ username: username }, 'password', function (err, user) {
 		if (err || user == null) {
-			done(new Error('Please enter a valid username'));
+			console.log(done)
+			done({message:'Please enter a valid username'});
 		} else {
 			bcrypt.compare(password, user.password, function (err, response) {
         if (response == true) {
           done(null, {username: username, _id: user._id});
         } else {
-          done(new Error('Please enter a correct password'));
+          done({message:'Please enter a correct password'});
         }
       });
 		}
@@ -44,9 +45,17 @@ passport.deserializeUser(function (user, done) {
 	});
 });
 
-
-router.post('/login', passport.authenticate('local', { failureRedirect: '/' }), function (req, res, next) {
-	res.redirect('/deliveries/'+ req.user.username);
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) {
+    	return res.render('home', { title: 'GroceryShip', message: err.message});
+    }
+    if (!user) { return res.redirect('/'); }
+    req.logIn(user, function(err) {
+      if (err) { return res.render('home', { title: 'GroceryShip', message: err.message}); }
+      res.redirect('/deliveries/'+ user.username);
+    });
+  })(req, res, next);
 });
 
 router.post('/logout', function(req, res, next) {

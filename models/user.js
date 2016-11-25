@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var ObjectId = mongoose.Schema.Types.ObjectId;
+var utils = require("../public/javascripts/utils.js");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
@@ -28,9 +29,7 @@ UserSchema.path("phoneNumber").validate(function(value) {
 }, "US phone numbers must have exactly 10 digits");
 
 UserSchema.path("dorm").validate(function(value) {
-    var dorms = ['Baker', 'Burton Conner', 'East Campus', 'MacGregor', 'Maseeh',
-                    'McCormick', 'New House', 'Next House', 'Random', 'Senior',
-                    'Simmons']
+    var dorms = utils.allDorms();
     return value.trim().length > 0 && dorms.indexOf(value) > -1;
 }, "Not a valid dorm name");
 
