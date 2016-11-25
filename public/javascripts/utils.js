@@ -3,6 +3,7 @@ var dateFormat = require('dateformat');
 var Utils = function() {
 
 	var that = Object.create(Utils.prototype);
+	that.welcomeMessage = '<center><h2>Hello from GroceryShip!</h2></center>'
 
 	/**
 	* @return {Array} the list of all dorms in MIT that a user can register himself under
@@ -84,6 +85,61 @@ var Utils = function() {
 					}
                 	return delivery;
                });
+	}
+
+
+	/**
+   * Creates a random 16 character long token for the spepcified user
+   * @param {Array} deliveries - array of delivery objects
+   * @return {Array} a new array of delivery objects with deadline formatted
+   */
+	that.createVerificationToken = function (user, callback) {
+		// taken from https://www.quora.com/How-can-you-send-a-password-email-verification-link-using-NodeJS-1
+		// create random 16 character token
+		var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    	var token = '';
+    	for (var i = 16; i > 0; --i) {
+      		token += chars[Math.round(Math.random() * (chars.length - 1))];
+    	}
+ 		// create expiration date
+		var expires = new Date();
+		expires.setHours(expires.getHours() + 6);
+		user.setVerificationToken(token, callback);
+	}
+
+	that.verficationEmailSubject = function (kerberos) {
+		return 'Confirm your GroceryShip Account, ' + kerberos +'!';
+	}
+
+	that.verficationEmailContent = function (token) {
+		console.log('token received', token)
+		return that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><form action="http://localhost:3000/verify/' + token + '"><input type="submit" value="Confirm" /></form>';
+	}
+
+	that.sendVerficationEmail = function (user, transporter) {
+		that.createVerificationToken(user, function (err, user) {
+			return that.sendEmail(user.username, that.verficationEmailSubject(user.username), that.verficationEmailContent(user.verificationToken), transporter);
+		});
+		
+	}
+
+	that.sendEmail = function (kerberos, subject, htmlContent, transporter) {
+		console.log('sending email');
+		console.log(kerberos, subject, htmlContent);
+		var mailOptions = {
+		    from: 'GroceryShip 6170 <groceryship6170@gmail.com>', // sender address
+		    to: kerberos + '@mit.edu',
+		    subject: subject, // Subject line
+		    text: '', // plaintext body
+		    html: htmlContent // html body
+		};
+		// send mail with defined transport object
+		transporter.sendMail(mailOptions, function(error, info){
+		    if(error){
+		        return {success: false};
+		    }
+		    return {success: true}
+		});
 	}
 
 	Object.freeze(that);

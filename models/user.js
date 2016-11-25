@@ -9,29 +9,61 @@ var UserSchema = mongoose.Schema({
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
     requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
-    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: []}
+    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
+    verified: {type:Boolean, default: false},
+    verificationToken: {type:String, default: null}
+
 });
 
-UserSchema.path("username").validate(function(value) {
-    return value.trim().length > 0;
+UserSchema.methods.verify = function (callback) {
+    this.verified = true;
+    this.save(callback);
+}
+
+UserSchema.statics.verifyAccount = function(token, callback) {
+    this.findOne({verificationToken: token}, function (err, user) {
+        if (err) {
+            callback({success:false, message: 'Invalid token'});
+        } else if (user.verified) {
+            callback({success:false, message: 'The account is already verified'});
+        }
+        user.verify(callback);
+    });
+};
+
+UserSchema.methods.setVerificationToken = function (token, callback) {
+    this.verificationToken = token
+    this.save(callback);
+}
+
+
+UserSchema.path("username").validate(function(username) {
+    return username.trim().length > 0;
 }, "No empty kerberos.");
 
-UserSchema.path("password").validate(function(value) {
-    return value.trim().length > 0;
+UserSchema.path("password").validate(function(password) {
+    return password.trim().length > 0;
 }, "No empty passwords.");
 
-UserSchema.path("mitId").validate(function(value) {
-    return value.toString().length === 9;
+UserSchema.path("mitId").validate(function(mitId) {
+    return mitId.toString().length === 9;
 }, "MIT ID must have exactly 9 digits");
 
-UserSchema.path("phoneNumber").validate(function(value) {
-    return value.toString().length === 10;
+UserSchema.path("phoneNumber").validate(function(phoneNumber) {
+    return phoneNumber.toString().length === 10;
 }, "US phone numbers must have exactly 10 digits");
 
-UserSchema.path("dorm").validate(function(value) {
+UserSchema.path("dorm").validate(function(dorm) {
     var dorms = utils.allDorms();
-    return value.trim().length > 0 && dorms.indexOf(value) > -1;
+    return dorm.trim().length > 0 && dorms.indexOf(dorm) > -1;
 }, "Not a valid dorm name");
+
+UserSchema.path("verificationToken").validate(function(verificationToken) {
+    if (!this.verificationToken) {
+        return true
+    }
+    return this.verificationToken.length == 16;
+}, "Verifacation token must be 16 digit");
 
 var UserModel = mongoose.model("User", UserSchema);
 
