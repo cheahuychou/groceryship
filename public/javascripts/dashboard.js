@@ -81,13 +81,7 @@ $(document).ready(function () {
                     type: 'String',
                     name: 'price'
                 }).change(function() {
-                    var price = checkPriceFormat($(this).val());
-                    if (price) {
-                        $(this).val(price);
-                        $(this).parent().removeClass('has-error');
-                    } else if (!$(this).parent().hasClass('has-error')) {
-                        $(this).parent().addClass('has-error');
-                    }
+                    showPriceFormatErrors(this);
                 });
 
 
@@ -137,13 +131,7 @@ $(document).ready(function () {
                 }
             } else if ($(this).attr('name') == 'price') {
                 // check if valid prices are entered
-                var price = checkPriceFormat($(this).val());
-                if (price) {
-                    $(this).val(price);
-                } else {
-                    if (!$(this).parent().hasClass('has-error')) {
-                        $(this).parent().addClass('has-error');
-                    }
+                if ($(this).parent().hasClass('has-error')) {
                     hasError = true;
                     alert('Please enter a valid price.');
                     return false;

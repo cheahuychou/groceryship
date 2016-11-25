@@ -27,3 +27,13 @@ var checkPriceFormat = function(priceString) {
     if (isNaN(price)) return false;
     return price;
 };
+
+var showPriceFormatErrors = function(element) {
+    var price = checkPriceFormat($(element).val());
+    if (price) {
+        $(element).val(price);
+        $(element).parent().removeClass('has-error');
+    } else if (!$(element).parent().hasClass('has-error')) {
+        $(element).parent().addClass('has-error');
+    }
+}

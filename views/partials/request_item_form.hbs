@@ -3,11 +3,11 @@
 <tr class='item' id='item-{{n}}' data-num='{{n}}'>
   <td><input id='item-name-{{n}}' type='text' name='item-name' class="form-control" required autofocus/></td>
   {{!-- TODO: fix sizing for input boxes that for numbers because they don't need to be that long --}}
-  <td><input id='item-qty-{{n}}' type='number' name='item-qty' min='1' value='1' class="form-control" required/></td>
+  <td><input id='item-qty-{{n}}' type='string' name='item-qty' value='1' class="form-control" required/></td>
   <td>
   <div class="input-group">
       <span class="input-group-addon">$</span>
-      <input id='item-price-estimate-{{n}}' type="text" name='item-price-estimate' class="form-control" required>
+      <input id='item-price-estimate-{{n}}' type="text" name='item-price-estimate' class="price form-control" required>
     </div>
   </td>
   <td>
@@ -43,7 +43,7 @@
   <td>
     <div class="input-group">
       <span class="input-group-addon">$</span>
-      <input id='item-tip-{{n}}' type="text" name='item-tip' class="form-control" required>
+      <input id='item-tip-{{n}}' type="text" name='item-tip' class="price form-control" required>
     </div>
   </td>
   <td><input id='item-description-{{n}}' type='text' name='item-description' class="form-control"/></td>
