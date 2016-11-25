@@ -1,3 +1,4 @@
+// Author: Czarina Lao
 $(document).ready(function() {
     $('.price').change(function() {
         showPriceFormatErrors(this);

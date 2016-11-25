@@ -1,3 +1,5 @@
+// Author: Czarina Lao
+
 /**
  * Adds the message message to the area with id messages.
  * @param {String} message  The message

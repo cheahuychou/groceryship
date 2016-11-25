@@ -1,3 +1,4 @@
+// Author: Czarina Lao
 $(document).ready(function () {
     $('.claim-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
