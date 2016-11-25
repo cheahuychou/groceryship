@@ -4,6 +4,7 @@ var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
 var utils = require('../public/javascripts/utils.js');
+var email = require('../public/javascripts/email.js');
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
@@ -116,7 +117,7 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
                     console.log(err);
                     res.json({success: false, message: err});
                 } else {
-                    utils.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
+                    email.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
                     res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
                 }
             });
@@ -132,7 +133,7 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
                 console.log(err);
                 res.json({success: false, message: err});
             } else {
-                utils.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
+                email.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
                 res.json({success: true});
             }
         });
@@ -148,7 +149,7 @@ router.put("/:id/reject", utils.isAuthenticated, function(req, res){
                 console.log(err);
                 res.json({success: false, message: err});
             } else {
-                utils.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
+                email.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
                 res.json({success: true});
             }
         });

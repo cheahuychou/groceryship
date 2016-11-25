@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var utils = require('../public/javascripts/utils.js');
 var config = require('../public/javascripts/config.js');
+var email = require('../public/javascripts/email.js');
 var User = require('../models/user');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
@@ -115,7 +116,7 @@ router.post('/signup', function(req, res, next) {
 															});
 														} else {
 															// TODO: verify that the kerberos is valid
-															utils.sendVerficationEmail(user_obj);
+															email.sendVerficationEmail(user_obj);
 															res.render('home', { title: 'GroceryShip', message: 'We have sent you a verification email. Please check your MIT email.'});
 															}
 														});
