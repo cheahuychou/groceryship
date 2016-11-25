@@ -107,13 +107,6 @@ $(document).ready(function () {
         $('#deliver-now-modal tbody').empty();
     });
 
-    // TODO: move this to utils so that it can be used in other forms
-    var checkPriceFormat = function(priceString) {
-        var price = parseFloat(priceString).toFixed(2);
-        if (isNaN(price)) return false;
-        return price;
-    };
-
     $('#deliver-confirm-button').click(function() {
         var hasError = false;
         // validate inputs first
