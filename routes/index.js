@@ -9,6 +9,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var qs = require('querystring');
 var CLIENT_ID = "ca_9cM2X0fAV2o3P0YUpK0rrBrv9cNW1Gir";
 var API_KEY = "sk_test_K2JP71UZxFF601z5LWtyQotV";
+var stripe = require("stripe")(API_KEY);
 var TOKEN_URI = 'https://connect.stripe.com/oauth/token';
 var AUTHORIZE_URI = 'https://connect.stripe.com/oauth/authorize';
 
@@ -88,6 +89,7 @@ router.post('/signup', function(req, res, next) {
 					     						return next(err);
 					     					} else {
 					     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
+												// Connect with the Stripe account.
 												res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
 												    response_type: 'code',
 												    scope: 'read_write',
@@ -106,7 +108,6 @@ router.post('/signup', function(req, res, next) {
 });
 
 router.get('/oauth/callback', function(req, res) {
-
   	var code = req.query.code;
 
   	//Make /oauth/token endpoint POST request
@@ -120,19 +121,26 @@ router.get('/oauth/callback', function(req, res) {
 		}
   	}, function(err, r, body) {
 		var user = JSON.parse(req.query.state);
-		user['stripeId'] = JSON.parse(body).stripe_user_id;
-		User.create(user, function(err, user_obj){
-			if (err) {
-				res.json({
-					'success': false, 
-					'message': err.message
-				});
+		var stripeId = JSON.parse(body).stripe_user_id;
+		user['stripeId'] = stripeId;
+		stripe.accounts.retrieve(stripeId,
+			function(err, account){
+				user['stripeEmail'] = account.email;	
+				User.create(user, function(err, user_obj){
+					if (err) {
+						res.json({
+							'success': false, 
+							'message': err.message
+						});
+					}
+					res.render('home', { 
+						title: 'GroceryShip', 
+						message: 'You have been registered. Now please log in below:'
+					});
+				});    
 			}
-			res.render('home', { 
-				title: 'GroceryShip', 
-				message: 'You have been registered. Now please log in below:'
-			});
-		});    
+		);
+		
 	});
 });
 

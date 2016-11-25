@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var utils = require('../public/javascripts/utils.js');
+var User = require('../models/user.js');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -19,8 +20,10 @@ router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next
 	res.render('deliver', { title: 'Request Feed', username: req.params.username});
 });
 
-router.get('/:username/profile', utils.isAuthenticated, function (req, res) {
-	res.render('profile', {title: 'Profile', username: req.params.username});
+router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
+	User.findOne({'username': req.session.passport.user.username}, function(err, userObject){
+		res.render('profile', {title: 'Profile Page', user: userObject});
+	});
 });
 
 module.exports = router;
