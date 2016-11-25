@@ -19,4 +19,8 @@ router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next
 	res.render('deliver', { title: 'Request Feed', username: req.params.username});
 });
 
+router.get('/:username/profile', utils.isAuthenticated, function (req, res) {
+	res.render('profile', {title: 'Profile', username: req.params.username});
+});
+
 module.exports = router;

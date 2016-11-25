@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var request = require('request');
 var utils = require('../public/javascripts/utils.js');
 var User = require('../models/user');
 var bcrypt = require('bcrypt');
@@ -87,16 +88,12 @@ router.post('/signup', function(req, res, next) {
 					     						return next(err);
 					     					} else {
 					     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
-												User.create(user, 
-													function(err, user_obj) {
-														if (err) {
-															res.json({
-																'success': false, 
-																'message': err.message
-															});
-														}
-														res.render('home', { title: 'GroceryShip', message: 'You have been registered. Now please log in below:'});
-												});
+												res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
+												    response_type: 'code',
+												    scope: 'read_write',
+												    client_id: CLIENT_ID,
+												    state: JSON.stringify(user)
+											  	}));					
 					   						}
 					  				 	});	
 					  				}
@@ -108,38 +105,35 @@ router.post('/signup', function(req, res, next) {
 		}
 });
 
-router.get('/authorize', function(req, res){
-	//Redirect to Stripe /oauth/authorize end point
-	res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
-	    response_type: 'code',
-	    scope: 'read_write',
-	    client_id: CLIENT_ID
-  	}));
-});
-
 router.get('/oauth/callback', function(req, res) {
 
-  var code = req.query.code;
+  	var code = req.query.code;
 
-  // Make /oauth/token endpoint POST request
-  request.post({
-    url: TOKEN_URI,
-    form: {
-      grant_type: 'authorization_code',
-      client_id: CLIENT_ID,
-      code: code,
-      client_secret: API_KEY
-    }
-  }, function(err, r, body) {
-    
-    var accessToken = JSON.parse(body).access_token;
-    
-    // Do something with your accessToken
-    
-    // For demo's sake, output in response:
-    res.send({ 'Your Token': accessToken });
-    
-  });
+  	//Make /oauth/token endpoint POST request
+  	request.post({
+		url: TOKEN_URI,
+		form: {
+			grant_type: 'authorization_code',
+			client_id: CLIENT_ID,
+			code: code,
+			client_secret: API_KEY
+		}
+  	}, function(err, r, body) {
+		var user = JSON.parse(req.query.state);
+		user['stripeId'] = JSON.parse(body).stripe_user_id;
+		User.create(user, function(err, user_obj){
+			if (err) {
+				res.json({
+					'success': false, 
+					'message': err.message
+				});
+			}
+			res.render('home', { 
+				title: 'GroceryShip', 
+				message: 'You have been registered. Now please log in below:'
+			});
+		});    
+	});
 });
 
 module.exports = router;
