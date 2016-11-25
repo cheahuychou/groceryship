@@ -80,7 +80,16 @@ $(document).ready(function () {
                     class: 'form-control',
                     type: 'String',
                     name: 'price'
+                }).change(function() {
+                    var price = checkPriceFormat($(this).val());
+                    if (price) {
+                        $(this).val(price);
+                        $(this).parent().removeClass('has-error');
+                    } else if (!$(this).parent().hasClass('has-error')) {
+                        $(this).parent().addClass('has-error');
+                    }
                 });
+
 
                 row.append($('<td>', {text: requester}));
                 row.append($('<td>', {text: itemName}));
@@ -100,7 +109,7 @@ $(document).ready(function () {
 
     // TODO: move this to utils so that it can be used in other forms
     var checkPriceFormat = function(priceString) {
-        var price = parseFloat(priceString);
+        var price = parseFloat(priceString).toFixed(2);
         if (isNaN(price)) return false;
         return price;
     };
@@ -150,11 +159,12 @@ $(document).ready(function () {
         });
 
         if (!hasError) {
-            $('.to-deliver-item').each(function() {
+            var deliveredItems = $('.to-deliver-item').map(function() {
+                var currentItem = $(this);
                 var id = $(this).attr('data-id');
                 var pickupTime = $(this).find('input[name=pickup-time]').val();
                 var price = $(this).find('input[name=price]').val();
-                $.ajax({
+                return $.ajax({
                     url: '/deliveries/'+id+'/deliver',
                     type: 'PUT',
                     data: {
@@ -162,7 +172,6 @@ $(document).ready(function () {
                         actualPrice: price
                     },
                     success: function(data) {
-                        // console.log(data);
                         // TODO
                         if (data.success) {
                             // update to deliver table
@@ -171,8 +180,11 @@ $(document).ready(function () {
                             originalRow.children('.checkbox-cell').empty();
                             // update pickup time
                             originalRow.children('.pickup-time').text(data.item.pickupTime);
+                            // remove item from modal
+                            currentItem.remove();
                         } else {
                             hasError = true;
+                            console.log(data.message);
                         }
                     },
                     error: function(err) {
@@ -180,16 +192,18 @@ $(document).ready(function () {
                         // TODO: tell user which ones failed?
                         hasError = true;
                     }
-                })
+                });
             });
 
-            if (hasError) {
-                alert('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!');
-            } else {
-                alert('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!');
-                // only close the modal if all items were successfully updated
-                $('#deliver-now-modal').modal('toggle');
-            }
+            $.when.apply(this, deliveredItems).then(function() {
+                if (hasError) {
+                    alert('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!');
+                } else {
+                    alert('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!');
+                    // only close the modal if all items were successfully updated
+                    $('#deliver-now-modal').modal('toggle');
+                }
+            });
         }
     });
 
