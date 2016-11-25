@@ -6,7 +6,6 @@ var User = require('../models/user');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var nodemailer = require('nodemailer');
 
 
 /* GET home page. */
@@ -46,21 +45,6 @@ passport.deserializeUser(function (user, done) {
   	done(err, user);
 	});
 });
-
-console.log(config.emailAddress());
-console.log(config.emailPassword());
-
-// create reusable transporter object using the default SMTP transport
-var smtpConfig = {
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-        user: process.env.GMAIL_ADDRESS || config.emailAddress(),
-        pass: process.env.GMAIL_PASSWORD || config.emailPassword()
-    }
-};
-var transporter = nodemailer.createTransport(smtpConfig);
 
 
 router.post('/login', function(req, res, next) {
@@ -130,7 +114,8 @@ router.post('/signup', function(req, res, next) {
 																'message': err.message
 															});
 														} else {
-															utils.sendVerficationEmail(user_obj, transporter);
+															// TODO: verify that the kerberos is valid
+															utils.sendVerficationEmail(user_obj);
 															res.render('home', { title: 'GroceryShip', message: 'We have sent you a verification email. Please check your MIT email.'});
 															}
 														});

@@ -1,9 +1,23 @@
 var dateFormat = require('dateformat');
+var nodemailer = require('nodemailer');
+var config = require('./config.js');
 
 var Utils = function() {
 
 	var that = Object.create(Utils.prototype);
 	that.welcomeMessage = '<center><h2>Hello from GroceryShip!</h2></center>'
+
+	// create reusable transporter object using the default SMTP transport
+	var smtpConfig = {
+	    host: 'smtp.gmail.com',
+	    port: 465,
+	    secure: true, // use SSL
+	    auth: {
+	        user: process.env.GMAIL_ADDRESS || config.emailAddress(),
+	        pass: process.env.GMAIL_PASSWORD || config.emailPassword()
+	    }
+	};
+	that.transporter = nodemailer.createTransport(smtpConfig);
 
 	/**
 	* @return {Array} the list of all dorms in MIT that a user can register himself under
@@ -112,18 +126,50 @@ var Utils = function() {
 	}
 
 	that.verficationEmailContent = function (token) {
-		console.log('token received', token)
 		return that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><form action="http://localhost:3000/verify/' + token + '"><input type="submit" value="Confirm" /></form>';
 	}
 
-	that.sendVerficationEmail = function (user, transporter) {
+	that.sendVerficationEmail = function (user) {
 		that.createVerificationToken(user, function (err, user) {
-			return that.sendEmail(user.username, that.verficationEmailSubject(user.username), that.verficationEmailContent(user.verificationToken), transporter);
+			return that.sendEmail(user.username, that.verficationEmailSubject(user.username), that.verficationEmailContent(user.verificationToken));
 		});
-		
 	}
 
-	that.sendEmail = function (kerberos, subject, htmlContent, transporter) {
+	that.deliveryEmailContent = function (shopper, requester) {
+		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + shopper.username + ' has bought a few of the items you requsted and is ready to deliver it to you. Please contact him/her at ' + shopper.phoneNumber + ' to setup a pickup time.</p>'; //TODO: insert html notification from the dashboard here
+	}
+
+	that.sendDeliveryEmail = function (shopper, requester) {
+		return that.sendEmail(requester.username, 'New Delivery', that.deliveryEmailContent(shopper, requester));
+	}
+
+	that.requesterAcceptanceEmailContent = function (shopper, requester) {
+		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + "Below is a summary of today's delivery from " +  shopper.username + ':</p>'; //TODO: insert html for the detail of the delivered items and payment
+	}
+
+	that.shopperAcceptanceEmailContent = function (shopper, requester) {
+		return that.welcomeMessage + '<center><p> Hi ' + shopper.username + '! ' + requester.username + 'accepted your delivery, below is a summary of the tip you recieved.</p>'; //TODO: insert html for the tips 
+	}
+
+	that.sendAcceptanceEmails = function (shopper, requester) {
+		that.sendEmail(requester.username, "Summary of Today's Delivery from " + shopper.username, that.requesterAcceptanceEmailContent(shopper, requester));
+		that.sendEmail(shopper.username, "Delivery for " + requester.username + "accepted", that.shopperAcceptanceEmailContent(shopper, requester));
+	}
+
+	that.requesterRejectionEmailContent = function (shopper, requester) {
+		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + "This is to confirm that you rejected the delivery from" +  shopper.username + '</p>'; //TODO: insert html for the detail of the delivered items and payment
+	}
+
+	that.shopperRejectionEmailContent = function (shopper, requester) {
+		return that.welcomeMessage + '<center><p> Hi ' + shopper.username + '! ' + requester.username + 'rejected your delivery. Please check your policy regarding returning items.</p>'; //TODO: insert html for the tips 
+	}
+
+	that.sendRejectionEmails = function (shopper, requester) {
+		that.sendEmail(requester.username, "Summary of Today's Delivery from " + shopper.username, that.requesterRejectionEmailContent(shopper, requester));
+		that.sendEmail(shopper.username, "Delivery for " + requester.username + "rejected", that.shopperRejectionEmailContent(shopper, requester));
+	}
+
+	that.sendEmail = function (kerberos, subject, htmlContent) {
 		console.log('sending email');
 		console.log(kerberos, subject, htmlContent);
 		var mailOptions = {
@@ -134,7 +180,7 @@ var Utils = function() {
 		    html: htmlContent // html body
 		};
 		// send mail with defined transport object
-		transporter.sendMail(mailOptions, function(error, info){
+		that.transporter.sendMail(mailOptions, function(error, info){
 		    if(error){
 		        return {success: false};
 		    }

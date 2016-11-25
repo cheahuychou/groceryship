@@ -91,8 +91,8 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
-        current_delivery.claim(user._id, function(err) {
+    Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
+        currentDelivery.claim(user._id, function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
@@ -109,27 +109,30 @@ request body fields: pickupTime, actualPrice
 **/
 router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
-        current_delivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
-            if (err) {
-                console.log(err);
-                res.json({success: false, message: err});
-            } else {
-                res.json({success: true, item: utils.formatDate([current_delivery])[0]});
-            }
+    Delivery.findOne({_id: req.params.id, shopper: user._id})
+        .populate('shopper').populate('requester').exec(function(err, currentDelivery) {
+            currentDelivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    utils.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
+                    res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
+                }
+            });
         });
-    });
 });
 
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, current_delivery) {
-        current_delivery.accept(function(err) {
+    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
+        currentDelivery.accept(function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
             } else {
+                utils.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
                 res.json({success: true});
             }
         });
@@ -139,12 +142,13 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user rejects the delivery **/
 router.put("/:id/reject", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, current_delivery) {
-        current_delivery.reject(function(err) {
+    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
+        currentDelivery.reject(function(err) {
             if (err) {
                 console.log(err);
                 res.json({success: false, message: err});
             } else {
+                utils.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
                 res.json({success: true});
             }
         });
