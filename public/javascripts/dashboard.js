@@ -52,6 +52,11 @@ $(document).ready(function () {
         }
     });
 
+    // header checkbox is disabled if no rows have checkboxes
+    if ($('.deliveries-checkbox').length === 0) {
+        $('.header-checkbox').prop('disabled', true);
+    }
+
     // add selected items to deliver now modal
     $('#deliver-items').click(function() {
         $('.checkbox-cell input').each(function() {
@@ -177,6 +182,11 @@ $(document).ready(function () {
             });
 
             $.when.apply(this, deliveredItems).then(function() {
+                // header checkbox is disabled if no rows have checkboxes
+                if ($('.deliveries-checkbox').length === 0) {
+                    $('.header-checkbox').prop('disabled', true);
+                    $('#deliver-items').prop('disabled', true);
+                }
                 if (hasError) {
                     alert('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!');
                 } else {

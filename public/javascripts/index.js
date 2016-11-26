@@ -26,7 +26,7 @@ var addMessage = function(message, type, clearOld) {
  */
 var checkPriceFormat = function(priceString) {
     var price = parseFloat(priceString).toFixed(2);
-    if (isNaN(price)) return false;
+    if (isNaN(price) || price < 0) return false;
     return price;
 };
 

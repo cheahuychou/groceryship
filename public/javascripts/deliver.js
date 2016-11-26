@@ -13,7 +13,7 @@ $(document).ready(function () {
                     addMessage('Request claimed! It has been added to your dashboard.', 'success', true);
                 } else {
                     console.log(data.message);
-                    addMessage('The request could not be claimed. Note that you won\'t be able to claim your own requests.', 'danger', true);
+                    addMessage('The request could not be claimed. It might have already been claimed or canceled.', 'danger', true);
                 }
             },
             error: function(err) {
