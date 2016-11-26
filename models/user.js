@@ -20,7 +20,7 @@ UserSchema.path("password").validate(function(value) {
 }, "No empty passwords.");
 
 UserSchema.path("mitId").validate(function(value) {
-    return value.toString().length === 9;
+    return value.toString().length <= 9; //An MIT ID with leading zeros would be represented by a number with less than 9 digits (leading 0s are omitted)
 }, "MIT ID must have exactly 9 digits");
 
 UserSchema.path("phoneNumber").validate(function(value) {
