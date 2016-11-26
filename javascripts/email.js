@@ -70,10 +70,16 @@ var Email = function() {
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendVerficationEmail = function (user) {
+	that.sendVerficationEmail = function (user, developmentMode) {
 		that.createVerificationToken(user, function (err, user) {
 			var subject = 'Confirm your GroceryShip Account, ' + user.username +'!';
-			var content = that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="http://localhost:3000/verify/' + user.username + '/' + user.verificationToken + '"><input type="submit" value="Confirm" /></form></center>';
+			var link;
+			if (developmentMode) {
+				link = 'http://localhost:3000/verify/' + user.username + '/' + user.verificationToken;
+			} else {
+				link = config.productionUrl() + '/verify/' + user.username + '/' + user.verificationToken;
+			}
+			var content = that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="' + link + '"><input type="submit" value="Confirm" /></form></center>';
 			return that.sendEmail(user.username, subject, content);
 		});
 	}

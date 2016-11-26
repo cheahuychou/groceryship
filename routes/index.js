@@ -127,15 +127,22 @@ router.post('/signup', function(req, res, next) {
 															});
 														} else {
 															// TODO: verify that the kerberos is valid
-															email.sendVerficationEmail(user_obj);
+															if (req.env === 'development') {
+																email.sendVerficationEmail(user_obj, true);
+															} else {
+																email.sendVerficationEmail(user_obj, false);
+															}
+															
 															res.render('home', { title: 'GroceryShip', message: 'We have sent you a verification email. Please check your MIT email.'});
-															// Connect with the Stripe account.
-															res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
-															    response_type: 'code',
-															    scope: 'read_write',
-															    client_id: CLIENT_ID,
-															    state: JSON.stringify(user)
-														  	}));	
+
+															// TODO: Please explain if this replaces the line above
+															// // Connect with the Stripe account.
+															// res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
+															//     response_type: 'code',
+															//     scope: 'read_write',
+															//     client_id: CLIENT_ID,
+															//     state: JSON.stringify(user)
+														 //  	}));	
 														};
 												});
 					   						};
