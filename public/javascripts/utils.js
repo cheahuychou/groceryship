@@ -61,6 +61,8 @@ var Utils = function() {
 	that.isAuthenticated = function (req, res, next) {
 		if (req.params.username == undefined && req.isAuthenticated() || 
 				req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
+			// if the request is not user specific, give permission as long as the user is authenticated,
+			// otherwise, needs to check that user is requesting for himself
 				next();
 		} else if (req.isAuthenticated()) {
 			res.redirect('/users/'+req.session.passport.user.username);
