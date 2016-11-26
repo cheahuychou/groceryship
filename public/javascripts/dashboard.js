@@ -45,6 +45,7 @@ $(document).ready(function () {
             }
 
             // Create the appropriate buttons in the modal
+            /* TODO: REMOVE THIS IF NOT NEEDED ANYMORE (buttons have been moved to main dashboard)
             if (type === "delivery") {
                 var confirmButton = $('<button>', {
                     class: 'btn btn-primary',
@@ -66,6 +67,7 @@ $(document).ready(function () {
                 $('#notification-buttons').append(acceptButton);
                 $('#notification-buttons').append(rejectButton);
             }
+            */
         };
 
         $.ajax({
