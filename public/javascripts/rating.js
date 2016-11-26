@@ -1,3 +1,5 @@
+// Author: Cheahuychou Mao
+
 $(document).ready(function () { 
     var setRating = function() {
       return $('.rating .fa').each(function() {

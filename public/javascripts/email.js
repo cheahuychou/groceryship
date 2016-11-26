@@ -1,3 +1,5 @@
+// Author: Cheahuychou Mao
+
 var nodemailer = require('nodemailer');
 var config = require('./config.js');
 var utils = require('./utils.js');

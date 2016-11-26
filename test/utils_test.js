@@ -1,3 +1,5 @@
+// Author: Cheahuychou Mao
+
 var assert = require("assert");
 var utils = require('../public/javascripts/utils.js');
 var mongoose = require("mongoose");
