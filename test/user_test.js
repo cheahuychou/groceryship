@@ -24,7 +24,9 @@ describe("Models", function() {
         var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
-          User.findOne({"username": "testuser1"}, function(err, user) {
+          User.findOne({"username": "testuser"}, function(err, user) {
+            assert.isNull(err);
+            assert.isNotNull(user);
             done();
           });
         });
@@ -87,7 +89,7 @@ describe("Models", function() {
       });
 
       it("should not allow invalid MIT ID", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 12345678, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 1234567890, "phoneNumber": 1234567890, "dorm": "Maseeh"}
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -107,6 +109,17 @@ describe("Models", function() {
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
+        });
+      });
+
+      it("should have verified set to false when first got created", function(done) {
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            assert(!user.verified);
+            done();
+          });
         });
       });
 
