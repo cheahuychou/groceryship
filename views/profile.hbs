@@ -1,0 +1,56 @@
+<script src='/javascripts/profile.js'></script>
+<h1>{{title}}</h1>
+<table class="table table-hover">
+  <tbody>
+  	<tr>
+  	  <td>Kerberos</td>
+  	  <td>{{user.username}}</td>
+  	</tr>
+  	  <td>Phone Number</td>
+  	  <td>{{user.phoneNumber}}</td>
+  	<tr>
+  	  <td>MIT ID</td>
+  	  <td>{{user.mitId}}</td>
+  	</tr>
+  	<tr>
+  	  <td>Dorm</td>
+  	  <td>{{user.dorm}}</td>
+  	</tr>
+  	<tr>
+  	  <td>Stripe Account</td>
+  	  <td>{{user.stripeEmail}}</td>
+  	</tr>
+  </tbody>
+</table>
+<input type="button" class='btn btn-info btn-sm' data-toggle="modal" data-target="#register-modal" value='Edit Profile'></input>
+<div id="register-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit Profile</h4>
+      </div>
+      <div class="modal-body">
+        <form id='register-form' action='/users/{{user.username}}/profile/edit' method='post' onsubmit='return checkEditForm()'>
+          <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>
+          <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
+          <input id='phone-number-register-box' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
+          <select name={{user.dorm}} id='edit-dormlist'>
+            <option>Baker</option>
+            <option>Burton Conner</option>
+            <option>East Campus</option>
+            <option>MacGregor</option>
+            <option>Maseeh</option>
+            <option>McCormick</option>
+            <option>New House</option>
+            <option>Next House</option>
+            <option>Random</option>
+            <option>Senior</option>
+            <option>Simmons</option>
+          </select><br>
+          <input type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm' value="CONFIRM CHANGES">
+        </form>
+      </div>     
+    </div>
+  </div>
+</div>

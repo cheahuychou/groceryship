@@ -7,6 +7,8 @@ var UserSchema = mongoose.Schema({
     mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
+    stripeId: {type: String, required: true},
+    stripeEmail: {type: String, required: true},
     requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
     shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: []}
 });
@@ -33,6 +35,24 @@ UserSchema.path("dorm").validate(function(value) {
                     'Simmons']
     return value.trim().length > 0 && dorms.indexOf(value) > -1;
 }, "Not a valid dorm name");
+
+/**
+ * Connect a stripe ID to the user schema. Feeds an error into the callback if the Stripe account
+ * has already been used.
+ * @param {String} stripeId - The stripe id of the user. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.methods.connect = function(stripeId, callback) {
+    User.findOne({"stripeId": stripeId}, function(err, user){
+        if (user.length){
+            callback(new Error("The Stripe account has been used by another user."));
+        } else {
+            this.stripeId = stripeId;
+            this.save(callback);
+        }
+    });
+};
 
 var UserModel = mongoose.model("User", UserSchema);
 
