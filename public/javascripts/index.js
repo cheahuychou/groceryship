@@ -39,3 +39,26 @@ var showPriceFormatErrors = function(element) {
         $(element).parent().addClass('has-error');
     }
 }
+
+/**
+ * Sets the min and max date for the datetime picker
+ * where min date is today
+ * @param {String} deadline - the string for the deadline in the format returned
+ *                            "mmmm dS, h:MM TT"
+ */
+var setMinMaxDateTime = function (deadline) {
+    // TODO: currently the time is set to 0:00:00, however we might want it to be the exactly the current time and exact
+    // due time
+    var currentTime = new Date();
+    var minDateTime = currentTime.getFullYear()  + "-" + (currentTime.getMonth()+1) + "-" + currentTime.getDate() + "T00:00:00"; 
+    $('.datetimepicker').each(function () {
+        $(this).attr('min', minDateTime);
+    });
+    if (deadline) {
+        var deadlineString = deadline.split(',')[0];
+        deadlineString = deadlineString.substring(0, deadlineString.length - 2);
+        var dueTime = new Date(Date.parse(deadlineString));
+        var maxDateTime = currentTime.getFullYear()  + "-" + (dueTime.getMonth()+1) + "-" + dueTime.getDate() + "T00:00:00";
+        $('.datetimepicker').attr('max', maxDateTime);
+    }
+}

@@ -70,12 +70,12 @@ $(document).ready(function () {
                 var requester = originalRow.attr('data-requester');
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
-                console.log(originalRow.children('.deadline').text());
+                var deadline = originalRow.children('.deadline').text();
 
                 var inputPickupTime = $('<input>', {
-                    class: 'form-control',
+                    class: 'form-control datetimepicker',
                     type: 'datetime-local',
-                    name: 'pickup-time'
+                    name: 'pickup-time',
                     // TODO: set min as current datetime
                     // TODO: set max as deadline
                     // and maybe use another better datetime picker
@@ -97,6 +97,7 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#deliver-now-modal tbody').append(row);
+                setMinMaxDateTime(deadline);
             }
         });
     });
@@ -197,5 +198,4 @@ $(document).ready(function () {
             });
         }
     });
-
 });
