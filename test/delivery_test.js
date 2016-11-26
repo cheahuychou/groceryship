@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var User = require('../models/user');
 var Delivery = require('../models/delivery');
 
-describe("App", function() {
+describe("Models", function() {
   // The mongoose connection object.
   var con;
 
@@ -16,7 +16,7 @@ describe("App", function() {
 
   // Before running any test, connect to the database & drop database. Also, create some test users and deliveries
   before(function(done) {
-    con = mongoose.connect("mongodb://localhost/grocerydb-delivery_test", function() {
+    con = mongoose.connect("mongodb://localhost/grocerydb-delivery-test", function() {
 
       con.connection.db.dropDatabase(function() {
 

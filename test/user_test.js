@@ -7,7 +7,7 @@ describe("Models", function() {
   var con;
   // Before running any test, connect to the database.
   before(function(done) {
-    con = mongoose.connect("mongodb://localhost/grocery-test", function() {
+    con = mongoose.connect("mongodb://localhost/grocery-user-test", function() {
       done();
     });
   });
