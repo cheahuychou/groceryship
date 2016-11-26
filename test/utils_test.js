@@ -26,9 +26,9 @@ describe("Utils", function() {
         // Before running any test, connect to the database.
         before(function(done) {
             con = mongoose.connect("mongodb://localhost/grocery-utils-test", function() {
-                var userJSON1 = {"username": "testUser1", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Baker"};
+                var userJSON1 = {"username": "testUser1", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Baker", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
 
-                var userJSON2 = {"username": "testUser2", "password": "123456", "mitId": 234567890, "phoneNumber": 2345678901, "dorm": "MacGregor"};
+                var userJSON2 = {"username": "testUser2", "password": "123456", "mitId": 234567890, "phoneNumber": 2345678901, "dorm": "MacGregor", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
 
                 User.create([userJSON1, userJSON2], function(err, users) {
                     if (err) {

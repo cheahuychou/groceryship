@@ -24,6 +24,10 @@ a {
   color:  #FFD700;
 }
 
+#main-content {
+    margin-top: 20px;
+}
+
 @media screen and (min-width: 768px) {
     .modal-dialog {
       width: 750px; /* New width for default modal */

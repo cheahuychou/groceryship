@@ -1,3 +1,4 @@
+// Author: Czarina Lao
 $(document).ready(function () {
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
@@ -8,35 +9,53 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
-                    // TODO: show message that cancel was successful
                     // TODO: ask for the reason of cancellation
+                    addMessage('Request canceled.', 'success', true);
                 } else {
                     console.log(data.message);
-                    // TODO: show error message
+                    addMessage('The request could not be canceled. Note that you can\'t cancel claimed requests.', 'danger', true);
                 }
             },
             error: function(err) {
                 console.log(err);
-                // TODO: show error message
+                addMessage('A network error might have occurred. Please try again.', 'danger', true);
             }
         });
     });
 
     // make it more usable by allowing checking/unchecking of checkbox by clicking the row
-    $('.delivery-item-row').click(function() {
-        var rowCheckbox = $(this).children('.checkbox-cell').children('input');
-        // toggle row checkbox
-        rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
+    $('.delivery-item-row').click(function(e) {
+        // only do this if the main target wasn't a checkbox
+        // because otherwise, the checkbox get double checked/unchecked like nothing happened
+        if (!$(e.target).hasClass('deliveries-checkbox')) {
+            var rowCheckbox = $(this).children('.checkbox-cell').children('input');
+            // toggle row checkbox
+            rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
+        }
+
+        // disable deliver now button if no checkboxes are checked
+        if ($('.deliveries-checkbox:checked').size() === 0) {
+            $('#deliver-items').prop('disabled', true);
+        } else {
+            $('#deliver-items').prop('disabled', false);
+        }
     });
 
     // checking and unchecking the header checkbox checks/unchecks all the checkboxes
     $('.header-checkbox').change(function() {
         if (this.checked) {
             $('.checkbox-cell input').prop('checked', true);
+            $('#deliver-items').prop('disabled', false);
         } else {
             $('.checkbox-cell input').prop('checked', false);
+            $('#deliver-items').prop('disabled', true);
         }
     });
+
+    // header checkbox is disabled if no rows have checkboxes
+    if ($('.deliveries-checkbox').length === 0) {
+        $('.header-checkbox').prop('disabled', true);
+    }
 
     // add selected items to deliver now modal
     $('#deliver-items').click(function() {
@@ -51,18 +70,25 @@ $(document).ready(function () {
                 var requester = originalRow.attr('data-requester');
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
+                var deadline = originalRow.children('.deadline').text();
 
                 var inputPickupTime = $('<input>', {
-                    class: 'form-control',
+                    class: 'form-control datetimepicker',
                     type: 'datetime-local',
-                    name: 'pickup-time'
+                    name: 'pickup-time',
+                    // TODO: set min as current datetime
+                    // TODO: set max as deadline
+                    // and maybe use another better datetime picker
                 });
 
                 var inputPrice = $('<input>', {
                     class: 'form-control',
                     type: 'String',
                     name: 'price'
+                }).change(function() {
+                    showPriceFormatErrors(this);
                 });
+
 
                 row.append($('<td>', {text: requester}));
                 row.append($('<td>', {text: itemName}));
@@ -71,6 +97,7 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#deliver-now-modal tbody').append(row);
+                setMinMaxDateTime(deadline);
             }
         });
     });
@@ -79,13 +106,6 @@ $(document).ready(function () {
     $('#deliver-now-modal').on('hidden.bs.modal', function (e) {
         $('#deliver-now-modal tbody').empty();
     });
-
-    // TODO: move this to utils so that it can be used in other forms
-    var checkPriceFormat = function(priceString) {
-        var price = parseFloat(priceString);
-        if (isNaN(price)) return false;
-        return price;
-    };
 
     $('#deliver-confirm-button').click(function() {
         var hasError = false;
@@ -104,15 +124,20 @@ $(document).ready(function () {
                 $(this).parent().removeClass('has-error');
             }
 
-            // check if valid prices are entered
-            if ($(this).attr('name') == 'price') {
-                var price = checkPriceFormat($(this).val());
-                if (price) {
-                    $(this).val(price);
-                } else {
+            // check if pickup time is in the future
+            // TODO: the datetimepicker should have datetimes < now disabled
+            if ($(this).attr('name') == 'pickup-time') {
+                if (new Date($(this).val()) < Date.now()) {
                     if (!$(this).parent().hasClass('has-error')) {
                         $(this).parent().addClass('has-error');
                     }
+                    hasError = true;
+                    alert('Please enter a date and time after the current date and time.');
+                    return false;
+                }
+            } else if ($(this).attr('name') == 'price') {
+                // check if valid prices are entered
+                if ($(this).parent().hasClass('has-error')) {
                     hasError = true;
                     alert('Please enter a valid price.');
                     return false;
@@ -121,11 +146,12 @@ $(document).ready(function () {
         });
 
         if (!hasError) {
-            $('.to-deliver-item').each(function() {
+            var deliveredItems = $('.to-deliver-item').map(function() {
+                var currentItem = $(this);
                 var id = $(this).attr('data-id');
                 var pickupTime = $(this).find('input[name=pickup-time]').val();
                 var price = $(this).find('input[name=price]').val();
-                $.ajax({
+                return $.ajax({
                     url: '/deliveries/'+id+'/deliver',
                     type: 'PUT',
                     data: {
@@ -133,24 +159,43 @@ $(document).ready(function () {
                         actualPrice: price
                     },
                     success: function(data) {
-                        // console.log(data);
                         // TODO
-                        var originalRow = $('.delivery-item-row[data-id='+id+']');
-                        // remove checkbox because pickup time has been set
-                        originalRow.children('.checkbox-cell').empty();
-                        // update pickup time
-                        originalRow.children('.pickup-time').text(data.item.pickupTime);
-
+                        if (data.success) {
+                            // update to deliver table
+                            var originalRow = $('.delivery-item-row[data-id='+id+']');
+                            // remove checkbox because pickup time has been set
+                            originalRow.children('.checkbox-cell').empty();
+                            // update pickup time
+                            originalRow.children('.pickup-time').text(data.item.pickupTime);
+                            // remove item from modal
+                            currentItem.remove();
+                        } else {
+                            hasError = true;
+                            console.log(data.message);
+                        }
                     },
                     error: function(err) {
                         console.log(err);
-                        // TODO: tell user which ones failed
+                        // TODO: tell user which ones failed?
+                        hasError = true;
                     }
-                })
+                });
             });
 
-            // TODO: only close the modal if all items were successfully updated
-            $('#deliver-now-modal').modal('toggle');
+            $.when.apply(this, deliveredItems).then(function() {
+                // header checkbox is disabled if no rows have checkboxes
+                if ($('.deliveries-checkbox').length === 0) {
+                    $('.header-checkbox').prop('disabled', true);
+                    $('#deliver-items').prop('disabled', true);
+                }
+                if (hasError) {
+                    alert('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!');
+                } else {
+                    alert('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!');
+                    // only close the modal if all items were successfully updated
+                    $('#deliver-now-modal').modal('toggle');
+                }
+            });
         }
     });
 });

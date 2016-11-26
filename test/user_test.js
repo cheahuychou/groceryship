@@ -22,7 +22,7 @@ describe("Models", function() {
 
     describe("Create", function() {
       it("should create a user successfully when all fields are present and valid", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {
@@ -34,7 +34,7 @@ describe("Models", function() {
       });
 
       it("should fail to create a user when the username is missing", function(done) {
-        var userJSON = {"password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"};
+        var userJSON = {"password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -42,7 +42,7 @@ describe("Models", function() {
       });
 
       it("should fail to create a user when the password is missing", function(done) {
-        var userJSON = {"username": "testuser", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"};
+        var userJSON = {"username": "testuser", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -50,7 +50,7 @@ describe("Models", function() {
       });
 
       it("should fail to create a user when the MIT ID is missing", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "phoneNumber": 1234567890, "dorm": "Maseeh"};
+        var userJSON = {"username": "testuser", "password": "123456", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -58,7 +58,7 @@ describe("Models", function() {
       });
 
       it("should fail to create a user when the phone number is missing", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "dorm": "Maseeh"};
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -66,7 +66,7 @@ describe("Models", function() {
       });
 
       it("should fail to create a user when the dorm is missing", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890};
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -74,7 +74,7 @@ describe("Models", function() {
       });
 
       it("should not allow empty usernames", function(done) {
-        var userJSON = {"username": "   ", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "   ", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -82,7 +82,7 @@ describe("Models", function() {
       });
 
       it("should not allow empty passwords", function(done) {
-        var userJSON = {"username": "testuser", "password": "   ", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "   ", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -90,7 +90,7 @@ describe("Models", function() {
       });
 
       it("should not allow invalid MIT ID", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 1234567890, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 1234567890, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -98,7 +98,7 @@ describe("Models", function() {
       });
 
       it("should not allow invalid phone number", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 12345678, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 12345678, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -106,7 +106,7 @@ describe("Models", function() {
       });
 
       it("should not allow invalid dorm", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 12345678, "dorm": "WILG"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 12345678, "dorm": "WILG", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -114,7 +114,7 @@ describe("Models", function() {
       });
 
       it("should have verified set to false when first got created", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {
@@ -128,7 +128,7 @@ describe("Models", function() {
 
     describe("setVerificationToken", function() {
       it("should set a verification token successfully", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {
@@ -144,7 +144,7 @@ describe("Models", function() {
 
     describe("verify", function() {
       it("should set verified to true", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {
@@ -163,7 +163,7 @@ describe("Models", function() {
 
     describe("verifyAccount", function() {
       it("should verify an account successfully when the token is correct", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {
@@ -182,7 +182,7 @@ describe("Models", function() {
       });
 
       it("should return an error when the token is incorrect", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {
@@ -200,7 +200,7 @@ describe("Models", function() {
       });
 
       it("should return an error when the username is invalid", function(done) {
-        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
         User.create(userJSON, function(err, user) {
           assert.isNull(err);
           User.findOne({"username": "testuser"}, function(err, user) {

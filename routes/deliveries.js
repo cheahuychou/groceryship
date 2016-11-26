@@ -77,17 +77,25 @@ router.post("/", utils.isAuthenticated, function(req, res){
 /** Removes a Delivery when the user cancels the request **/
 router.delete("/:id", utils.isAuthenticated, function(req, res){
     var userId = req.session.passport.user._id;
-    Delivery.findOne({_id: req.params.id, requester: userId, status: "pending"}) //verify that the current user is the one who requested it. Also,
-                                                                                 //verify that the request has not been claimed
-         .remove()
-         .exec(function(err, data) {
-            if (err) {
-                console.log(err);
-                res.json({success: false, message: err});
-            } else {
-                res.json({success: true});
-            }
-         });
+    Delivery.findOne({_id: req.params.id, requester: userId, status: "pending"}, function(err, current_delivery) { //verify that the current user is the one who requested it. Also,
+    	                                                                                                           //verify that the request has not been claimed
+        if (current_delivery === null) {
+        	err = new Error("cannot find specified request. Request might have been claimed");
+        }
+        if (err) {
+        	console.log(err);
+        	res.json({success: false, message: err});
+        } else {
+        	current_delivery.remove(function(err, data) {
+	            if (err) {
+	                console.log(err);
+	                res.json({success: false, message: err});
+	            } else {
+	                res.json({success: true});
+	            }
+        	});
+        }
+    });
 });
 
 /** Updates a Delivery when a user claims that delivery **/
