@@ -20,7 +20,7 @@ $(document).ready(function() {
         $('input').each(function() {
             // check that all inputs are nonempty
             // if empty, alert the user of the error and show where it is
-            if (!$(this).val() || $(this).val().trim()=='') {
+            if ($(this).attr('required') && (!$(this).val() || $(this).val().trim()=='')) {
                 if (!$(this).parent().hasClass('has-error')) {
                     $(this).parent().addClass('has-error');
                 }
