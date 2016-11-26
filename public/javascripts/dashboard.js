@@ -153,5 +153,4 @@ $(document).ready(function () {
             $('#deliver-now-modal').modal('toggle');
         }
     });
-
 });

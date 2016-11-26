@@ -1,0 +1,25 @@
+<div id="reject-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Reject Delivery</h3>
+      </div>
+      <div class="modal-body">
+        {{!-- handle how to iterate through items --}}
+        <div id="rejection">
+            <p>Reason for rejection:</p>
+            <select id='reason' class="form-control">
+                <option>The delivered item is not what I requested for.</option>
+                <option>The delivered item is not good condition.</option>
+                <option>I don't need the item anymore.</option>
+            </select>
+        </div>
+        <br>
+        {{> rating}}
+        {{!-- add button event handler --}}
+        <button id='deliver-confirm-button' class='btn btn-primary'>Rate</button>
+      </div>     
+    </div>
+  </div>
+</div>
