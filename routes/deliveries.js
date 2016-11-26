@@ -77,7 +77,8 @@ router.post("/", utils.isAuthenticated, function(req, res){
 /** Removes a Delivery when the user cancels the request **/
 router.delete("/:id", utils.isAuthenticated, function(req, res){
     var userId = req.session.passport.user._id;
-    Delivery.findOne({_id: req.params.id, requester: userId}) //verify that the current user is the one who requested it
+    Delivery.findOne({_id: req.params.id, requester: userId, status: "pending"}) //verify that the current user is the one who requested it. Also,
+                                                                                 //verify that the request has not been claimed
          .remove()
          .exec(function(err, data) {
             if (err) {
@@ -93,14 +94,22 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
-        currentDelivery.claim(user._id, function(err) {
-            if (err) {
-                console.log(err);
-                res.json({success: false, message: err});
-            } else {
-                res.json({success: true});
-            }
-        });
+    	if (currentDelivery === null) {
+    		err = new Error("cannot find specified request")
+    	}
+    	if (err) {
+    		console.log(err);
+    		res.json({success: false, message: err});
+    	} else {
+	        currentDelivery.claim(user._id, function(err) {
+	            if (err) {
+	                console.log(err);
+	                res.json({success: false, message: err});
+	            } else {
+	                res.json({success: true});
+	            }
+	        });
+    	}
     });
 });
 
@@ -112,31 +121,48 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, shopper: user._id})
         .populate('shopper').populate('requester').exec(function(err, currentDelivery) {
-            currentDelivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    email.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
-                    res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
-                }
-            });
+            if (currentDelivery === null) {
+                err = new Error("cannot find specified request")
+            }
+            if (err) {
+                console.log(err);
+                res.json({success: false, message: err});
+            } else {
+                currentDelivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
+                    if (err) {
+                        console.log(err);
+                        res.json({success: false, message: err});
+                    } else {
+                        email.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
+                        res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
+                    }
+                });
+            }
         });
 });
 
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
+<<<<<<< HEAD
     Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
-        currentDelivery.accept(function(err) {
-            if (err) {
-                console.log(err);
-                res.json({success: false, message: err});
-            } else {
-                email.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
-                res.json({success: true});
-            }
-        });
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.accept(function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    email.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
+                    res.json({success: true});
+                }
+            });
+        }
     });
 });
 
@@ -144,15 +170,23 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 router.put("/:id/reject", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
-        currentDelivery.reject(function(err) {
-            if (err) {
-                console.log(err);
-                res.json({success: false, message: err});
-            } else {
-                email.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
-                res.json({success: true});
-            }
-        });
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.reject(function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    email.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
+                    res.json({success: true});
+                }
+            });
+        }
     });
 });
 
