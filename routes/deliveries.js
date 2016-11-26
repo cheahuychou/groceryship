@@ -25,14 +25,32 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
 Populates the dashboard page of the user, returning the lists of his current requests and current deliveries
 fields rendered: title, requestItems, deliveryItems
 **/
-router.get("/:username", utils.isAuthenticated, function(req, res){
+router.get("/username/:username", utils.isAuthenticated, function(req, res){
     var now = Date.now();
     var user = req.session.passport.user;
     Delivery.getRequestsAndDeliveries(user._id, now, function(err, requestItems, deliveryItems) {
         if (err) {
             res.send({'success': false, 'message': err})
         } else {
-            res.render('dashboard', {username: user.username, title: 'Dashboard', requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
+            res.render('dashboard', {username: user.username, title: 'Dashboard', now: now, requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
+        }
+    });
+});
+
+/**
+Populates the notification popup, returning the relevant request or delivery
+fields rendered: delivery
+**/
+router.get("/id/:id", utils.isAuthenticated, function(req, res){
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
+        if (current_delivery === null) {
+        	err = new Error("cannot find specified request or delivery.");
+        }
+        if (err) {
+            res.json({'success': false, 'message': err})
+        } else {
+            res.json({'success': true, delivery: utils.formatDate([current_delivery])});
         }
     });
 });

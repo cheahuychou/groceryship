@@ -1,5 +1,93 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+
+    // populate notification modal
+    $('.view-notification').click(function() {
+        var id = $(this).attr('data-id');
+        var type = $(this).attr('data-type'); //type of notification
+
+        //function to populate notification modal given json response from ajax call
+        var populateNotification = function(resJSON) {
+            var delivery = resJSON.delivery[0];
+            if (delivery.itemDescription === null) {
+                delivery.itemDescription = 'N/A';
+            }
+
+            var row = $('<tr>', {
+                class: 'notification-item',
+                'data-id': delivery._id
+            });
+            row.append($('<td>', {text: delivery.itemName}));
+            row.append($('<td>', {text: delivery.itemQuantity}));
+            row.append($('<td>', {text: delivery.estimatedPrice}));
+            row.append($('<td>', {text: delivery.stores}));
+            row.append($('<td>', {text: delivery.deadline}));
+            row.append($('<td>', {text: delivery.pickupLocation}));
+            row.append($('<td>', {text: delivery.tips}));
+            row.append($('<td>', {text: delivery.itemDescription}));
+            if (type === "delivery") {
+                row.append($('<td>', {text: delivery.requester.username}));
+            } else {
+                row.append($('<td>', {text: delivery.shopper.username}));
+            }
+            row.append($('<td>', {text: delivery.pickupTime}));
+            row.append($('<td>', {text: delivery.actualPrice}));
+
+            $('#notification-modal tbody').append(row); //populates table
+
+            // Changes text based on whether the notification is a delivery or a request
+            if (type === "delivery") {
+                $('#notification-modal #requester-or-shopper').text("Requester");
+                $('#notification-modal #request-or-delivery').text("Delivery");
+            } else {
+                $('#notification-modal #requester-or-shopper').text("Shopper");
+                $('#notification-modal #request-or-delivery').text("Request");
+            }
+
+            // Create the appropriate buttons in the modal
+            if (type === "delivery") {
+                var confirmButton = $('<button>', {
+                    class: 'btn btn-primary',
+                    'data-id': delivery._id,
+                    text: 'Goods Delivered!'
+                });
+                $('#notification-buttons').append(confirmButton)
+            } else if (type === "delivering-request" || type === "due-request") {
+                var acceptButton = $('<button>', {
+                    class: 'btn btn-primary right-space',
+                    'data-id': delivery._id,
+                    text: 'Accept'
+                });
+                var rejectButton = $('<button>', {
+                    class: 'btn btn-primary right-space',
+                    'data-id': delivery._id,
+                    text: 'Reject'
+                });
+                $('#notification-buttons').append(acceptButton);
+                $('#notification-buttons').append(rejectButton);
+            }
+        };
+
+        $.ajax({
+            url: '/deliveries/id/'+id,
+            type: 'GET',
+            success: populateNotification,
+            error: function(err) {
+                console.log(err);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+            }
+        });
+    });
+
+    // clear modal information on close
+    $('#notification-modal').on('hidden.bs.modal', function (e) {
+        var blah = $('#notification-modal .notification-input').length;
+        console.log(blah);
+        $('#notification-modal .notification-input').each(function() {
+            $(this).empty();
+        });
+    });
+
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         $.ajax({

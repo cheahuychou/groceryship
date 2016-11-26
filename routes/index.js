@@ -16,7 +16,7 @@ var AUTHORIZE_URI = 'https://connect.stripe.com/oauth/authorize';
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
-		res.redirect('/deliveries/'+ req.session.passport.user.username);
+		res.redirect('/deliveries/username/'+ req.session.passport.user.username);
 	} else {
 		res.render('home', { title: 'GroceryShip' });
 	}
@@ -52,7 +52,7 @@ passport.deserializeUser(function (user, done) {
 
 
 router.post('/login', passport.authenticate('local', { failureRedirect: '/' }), function (req, res, next) {
-	res.redirect('/deliveries/'+ req.user.username);
+	res.redirect('/deliveries/username/'+ req.user.username);
 });
 
 router.post('/logout', function(req, res, next) {

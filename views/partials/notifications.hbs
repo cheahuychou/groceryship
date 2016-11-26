@@ -1,0 +1,50 @@
+{{!-- Author: Joseph Kuan --}}
+<div id="notifications-table">
+  <table class="table table-hover">
+    <tbody>
+      {{#each requestItems}}
+        {{#if shopper}}
+          {{#if pickupTime}}
+            {{#ifIsPast rawPickupTime ../now}}
+            <tr class='notification-row'>
+            <td>
+              <div class='notification-icon'><img src="/images/exclamation.jpg"></img></div>
+            </td>
+            <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from {{shopper.username}} now!</td>
+            <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='due-request'>View</button></td>
+            </tr>
+            {{else}}
+            <tr class='notification-row'>
+            <td>
+              <div class='notification-icon'><img src="/images/checklist.png"></img></div>
+            </td>
+            <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) is now being delivered by {{shopper.username}}! Arriving {{pickupTime}}</td>
+            <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='delivering-request'>View</button></td>
+            </tr>
+            {{/ifIsPast}}
+          {{else}}
+          <tr class='notification-row'>
+          <td>
+            <div class='notification-icon'><img src="/images/checklist.png"></img></div>
+          </td>
+          <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) has been claimed by {{shopper.username}}!</td>
+          <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='claimed-request'>View</button></td>
+          </tr>
+          {{/if}}
+        {{/if}}
+      {{/each}}
+      {{#each deliveryItems}}
+        {{#if actualPrice}}
+          <tr class='notification-row'>
+          <td>
+            <div class='notification-icon'><img src="/images/cart.png"></img></div>
+          </td>
+          <td class='notification-text'>You need to deliver {{itemName}} ({{itemQuantity}}) to {{requester.username}}! Deliver to {{pickupLocation}} at {{pickupTime}}</td>
+          <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='delivery'>View</button></td>
+          </tr>
+        {{/if}}
+      {{/each}}
+    </tbody>
+  </table>
+  {{> notification_item}}
+</div>
