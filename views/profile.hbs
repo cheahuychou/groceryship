@@ -31,7 +31,7 @@
         <h4 class="modal-title">Edit Profile</h4>
       </div>
       <div class="modal-body">
-        <form id='register-form' action='/users/{{user.username}}/profile/edit' method='post'>
+        <form id='register-form' action='/users/{{user.username}}/profile/edit' method='post' onsubmit='return checkEditForm()'>
           <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>
           <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
           <input id='phone-number-register-box' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
