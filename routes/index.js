@@ -74,7 +74,10 @@ router.post('/logout', function(req, res, next) {
 
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
 	User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
-		res.render('home', { title: 'GroceryShip', message: 'Your account has been verified. Now log in below:'});
+		if (err) {
+			return res.render('home', { title: 'GroceryShip', message: err.message});
+		}
+		return res.render('home', { title: 'GroceryShip', message: 'Your account has been verified. Now log in below:'});
 	})
 });
 
