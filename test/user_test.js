@@ -18,6 +18,7 @@ describe("Models", function() {
   });
 
   describe("User", function() {
+    var verificationToken = '00000000000000000000000000000000';
 
     describe("Create", function() {
       it("should create a user successfully when all fields are present and valid", function(done) {
@@ -124,5 +125,99 @@ describe("Models", function() {
       });
 
     });
+
+    describe("setVerificationToken", function() {
+      it("should set a verification token successfully", function(done) {
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            user.setVerificationToken(verificationToken, function (err, user) {
+                assert.isNull(err);
+                assert.isNotNull(user);
+                done();
+            });
+          });
+        });
+      });
+    });
+
+    describe("verify", function() {
+      it("should set verified to true", function(done) {
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            user.setVerificationToken(verificationToken, function (err, user) {
+                assert.isNull(err);
+                assert.isNotNull(user);
+                user.verify(function (err, user) {
+                    assert(user.verified);
+                    done();
+                });
+            });
+          });
+        });
+      });
+    });
+
+    describe("verifyAccount", function() {
+      it("should verify an account successfully when the token is correct", function(done) {
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            user.setVerificationToken(verificationToken, function (err, user) {
+                assert.isNull(err);
+                assert.isNotNull(user);
+                assert(!user.verified);
+                User.verifyAccount(user.username, verificationToken, function (err, user) {
+                    assert.isNull(err);
+                    assert(user.verified);
+                    done();
+                });
+            });
+          });
+        });
+      });
+
+      it("should return an error when the token is incorrect", function(done) {
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            user.setVerificationToken(verificationToken, function (err, user) {
+                assert.isNull(err);
+                assert.isNotNull(user);
+                assert(!user.verified);
+                User.verifyAccount(user.username, '0', function (err, user) {
+                    assert.isNotNull(err);
+                    done();
+                });
+            });
+          });
+        });
+      });
+
+      it("should return an error when the username is invalid", function(done) {
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh"}
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            user.setVerificationToken(verificationToken, function (err, user) {
+                assert.isNull(err);
+                assert.isNotNull(user);
+                assert(!user.verified);
+                User.verifyAccount('testuser1', verificationToken, function (err, user) {
+                    assert.isNotNull(err);
+                    done();
+                });
+            });
+          });
+        });
+      });
+
+    });
+
   });
 });

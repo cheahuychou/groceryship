@@ -15,14 +15,34 @@ var UserSchema = mongoose.Schema({
 
 });
 
+/**
+* Set a verification token for the user
+* @param {String} token - the 32-digit verification token
+* @param {Function} callback - the function that gets called after the token is set
+*/
+UserSchema.methods.setVerificationToken = function (token, callback) {
+    this.verificationToken = token;
+    this.save(callback);
+}
+
+/**
+* Sets verified to true
+* @param {Function} callback - the function that gets called after
+*/
 UserSchema.methods.verify = function (callback) {
     this.verified = true;
     this.save(callback);
 }
 
+/**
+* Verifies the account so that user can start using it
+* @param {String} kerberos - kerberos of the account to verify
+* @param {String} token - the 32-digit verification token
+* @param {Function} callback - the function that gets called after the account is verified
+*/
 UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
     this.findOne({username: kerberos}, function (err, user) {
-        if (err) {
+        if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid kerberos'});
         } else if (user.verified) {
             callback({success:false, message: 'The account is already verified, please log in below:'});
@@ -33,12 +53,6 @@ UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
         }
     });
 };
-
-UserSchema.methods.setVerificationToken = function (token, callback) {
-    this.verificationToken = token;
-    this.save(callback);
-}
-
 
 UserSchema.path("username").validate(function(username) {
     return username.trim().length > 0;
