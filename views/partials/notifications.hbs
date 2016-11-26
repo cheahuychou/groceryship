@@ -11,8 +11,10 @@
               <div class='notification-icon'><img src="/images/exclamation.jpg"></img></div>
             </td>
             <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from {{shopper.username}} now!</td>
-            <td><button id='accept-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal'>Accept</button></td>
-            <td><button id='reject-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#reject-modal'>Reject</button></td>
+            <td>
+              <button id='accept-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal'>Accept</button>
+              <button id='reject-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#reject-modal'>Reject</button>
+            </td>
             <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='due-request'>Details</button></td>
             </tr>
             {{else}}
@@ -34,6 +36,7 @@
             <div class='notification-icon'><img src="/images/checklist.png"></img></div>
           </td>
           <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) has been claimed by {{shopper.username}}!</td>
+          <td></td>
           <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='claimed-request'>Details</button></td>
           </tr>
           {{/if}}
