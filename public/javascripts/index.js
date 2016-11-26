@@ -1,60 +1,41 @@
+// Author: Czarina Lao
+
 /**
-* Checks that the kerberos and password for the login form are
-* non-empty strings and do not contain html elements, alert
-* the user if these are not satisified
-* @return {Boolean} false if the kerberos and password violate
-*					the constraints 
-*/
-var checkLogInForm = function () {
-	console.log('can you see me login');
-	var kerberos = $('#kerberos-box').val().trim();
-	var password = $('#password-box').val().trim();
-	if (kerberos.length === 0 || /<[a-z][\s\S]*>/i.test(kerberos)) {
-		alert('Please enter a valid kerberos');
-		return false; 
-	}
-	if (password.length === 0 || /<[a-z][\s\S]*>/i.test(password)) {
-		alert('Please enter a valid password');
-		return false; 
-	}
+ * Adds the message message to the area with id messages.
+ * @param {String} message  The message
+ * @param {String} type     The type of message: success, warning, info, or danger
+ * @param {Boolean} clearOld if true, clears old messages
+ */
+var addMessage = function(message, type, clearOld) {
+    if (clearOld) $('#messages').empty();
+    var messageDiv = $('<div/>');
+    messageDiv.addClass('alert alert-dismissible alert-'+type);
+    messageDiv.attr('role', 'alert');
+    messageDiv.text(message);
+    // dismiss button. code from bootstrap
+    messageDiv.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+    $('#messages').append(messageDiv);
 }
 
-
 /**
-* Checks that the fields in the signup form are non-empty strings,
-* valid and do not contain html elements, alert the user if
-* these are not satisified
-* @return {Boolean} false if the kerberos and password violate
-*					the constraints 
-*/
-var checkSignUpForm = function () {
-	console.log('can you see me signup');
-	var kerberos = $('#kerberos-register-box').val().trim();
-	var password = $('#password-register-box').val().trim();
-	var confirmPassword = $('#confirm-password-register-box').val().trim();
-	var mitId = $('#mit-id-register-box').val().trim();
-	var phoneNumber = $('#phone-number-register-box').val().trim();
-	var dorm = $('.dorm :selected').text().trim();
-	console.log(kerberos, password, confirmPassword, mitId, phoneNumber, dorm);
-	if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || /<[a-z][\s\S]*>/i.test(kerberos)) {
-		alert('Please enter a non-empty and valid kerberos');
-		return false; 
-	}
-	if (password.length === 0 || /<[a-z][\s\S]*>/i.test(password)) {
-		alert('Please enter a non-empty and valid password');
-		return false; 
-	}
-	if (confirmPassword !== password || /<[a-z][\s\S]*>/i.test(password)) {
-		alert('The password and confirm password you entered did not match, please try again.');
-		return false;
-	}
-	if (!mitId.match(/^\d+$/) || mitId.length != 9) {
-		alert('MIT ID must be a nine-digit number');
-		return false;
-	}
-	if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10) {
-		alert('please enter a valid US phone numbers with 10 digits');
-		return false;
-	}
+ * Check that the price given by priceString is valid.
+ * Accepts prices with more than 2 decimal points but rounds it to 2.
+ * @param  {String} priceString the price being checked
+ * @return {Float/Boolean}      the price rounded to 2 decimal places if the price is valid;
+ *                                  false otherwise
+ */
+var checkPriceFormat = function(priceString) {
+    var price = parseFloat(priceString).toFixed(2);
+    if (isNaN(price) || price < 0) return false;
+    return price;
+};
 
+var showPriceFormatErrors = function(element) {
+    var price = checkPriceFormat($(element).val());
+    if (price) {
+        $(element).val(price);
+        $(element).parent().removeClass('has-error');
+    } else if (!$(element).parent().hasClass('has-error')) {
+        $(element).parent().addClass('has-error');
+    }
 }
