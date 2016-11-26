@@ -1,5 +1,6 @@
 var nodemailer = require('nodemailer');
 var config = require('./config.js');
+var utils = require('./utils.js');
 
 var Email = function() {
 
@@ -52,10 +53,9 @@ var Email = function() {
    	*/
 	that.createVerificationToken = function (user, callback) {
 		// create random 32 character token
-		var numDigits = 32;
 		var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     	var token = '';
-    	for (var i = numDigits; i > 0; --i) {
+    	for (var i = utils.numTokenDigits(); i > 0; --i) {
       		token += chars[Math.round(Math.random() * (chars.length - 1))];
     	}
 		user.setVerificationToken(token, callback);
@@ -71,7 +71,7 @@ var Email = function() {
 	that.sendVerficationEmail = function (user) {
 		that.createVerificationToken(user, function (err, user) {
 			var subject = 'Confirm your GroceryShip Account, ' + user.username +'!';
-			var content = that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="http://localhost:3000/verify/' + user.verificationToken + '"><input type="submit" value="Confirm" /></form></center>';
+			var content = that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="http://localhost:3000/verify/' + user.username + '/' + user.verificationToken + '"><input type="submit" value="Confirm" /></form></center>';
 			return that.sendEmail(user.username, subject, content);
 		});
 	}

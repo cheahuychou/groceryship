@@ -144,7 +144,6 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-<<<<<<< HEAD
     Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
         if (currentDelivery === null) {
             err = new Error("cannot find specified request")

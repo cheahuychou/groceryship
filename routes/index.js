@@ -72,8 +72,8 @@ router.post('/logout', function(req, res, next) {
 	res.redirect('/');
 });
 
-router.get('/verify/:verificationToken', function(req, res, next) {
-	User.verifyAccount(req.params.verificationToken, function (err, user) {
+router.get('/verify/:username/:verificationToken', function(req, res, next) {
+	User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
 		res.render('home', { title: 'GroceryShip', message: 'Your account has been verified. Now log in below:'});
 	})
 });

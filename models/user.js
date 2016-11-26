@@ -20,19 +20,21 @@ UserSchema.methods.verify = function (callback) {
     this.save(callback);
 }
 
-UserSchema.statics.verifyAccount = function(token, callback) {
-    this.findOne({verificationToken: token}, function (err, user) {
+UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
+    this.findOne({username: kerberos}, function (err, user) {
         if (err) {
-            callback({success:false, message: 'Invalid token'});
+            callback({success:false, message: 'Invalid kerberos'});
         } else if (user.verified) {
             callback({success:false, message: 'The account is already verified'});
+        } else if (user.verificationToken !== token) {
+            callback({success:false, message: 'Invalid verification token'});
         }
         user.verify(callback);
     });
 };
 
 UserSchema.methods.setVerificationToken = function (token, callback) {
-    this.verificationToken = token
+    this.verificationToken = token;
     this.save(callback);
 }
 
@@ -63,8 +65,8 @@ UserSchema.path("verificationToken").validate(function(verificationToken) {
     if (!this.verificationToken) {
         return true
     }
-    return this.verificationToken.length == 16;
-}, "Verifacation token must be 16 digit");
+    return this.verificationToken.length == utils.numTokenDigits();
+}, "Verifacation token must have the correct number of digits");
 
 var UserModel = mongoose.model("User", UserSchema);
 

@@ -29,6 +29,13 @@ var Utils = function() {
 	};
 
 	/**
+	* @return {Integer} the number of digits in verification token
+	*/
+	that.numTokenDigits = function () {
+		return 32;
+	}
+
+	/**
 	* Reverse the given array (not in place)
 	* @param {Array} array - array to reverse
 	* @return {Array} a new reversed array 
