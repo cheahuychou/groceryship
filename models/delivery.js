@@ -1,6 +1,6 @@
 //Author: Joseph Kuan
 var mongoose = require("mongoose");
-var utils = require("../public/javascripts/utils.js");
+var utils = require("../javascripts/utils.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var DeliverySchema = mongoose.Schema({

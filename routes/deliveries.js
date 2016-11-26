@@ -3,8 +3,8 @@ var express = require('express');
 var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
-var utils = require('../public/javascripts/utils.js');
-var email = require('../public/javascripts/email.js');
+var utils = require('../javascripts/utils.js');
+var email = require('../javascripts/email.js');
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim

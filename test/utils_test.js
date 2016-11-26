@@ -1,7 +1,7 @@
 // Author: Cheahuychou Mao
 
 var assert = require("assert");
-var utils = require('../public/javascripts/utils.js');
+var utils = require('../javascripts/utils.js');
 var mongoose = require("mongoose");
 var User = require("../models/user");
 var Delivery = require("../models/delivery");

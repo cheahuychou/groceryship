@@ -3,8 +3,8 @@
 var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require("../models/user");
-var utils = require('../public/javascripts/utils.js');
-var email = require('../public/javascripts/email.js');
+var utils = require('../javascripts/utils.js');
+var email = require('../javascripts/email.js');
 
 describe("Email", function() {
   describe("createVerificationToken", function() {

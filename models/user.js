@@ -1,6 +1,8 @@
+// Author: Cheahuychou Mao
+
 var mongoose = require("mongoose");
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var utils = require("../public/javascripts/utils.js");
+var utils = require("../javascripts/utils.js");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
@@ -83,7 +85,7 @@ UserSchema.path("verificationToken").validate(function(verificationToken) {
         return true
     }
     return this.verificationToken.length == utils.numTokenDigits();
-}, "Verifacation token must have the correct number of digits");
+}, "Verification token must have the correct number of digits");
 
 /**
  * Connect a stripe ID to the user schema. Feeds an error into the callback if the Stripe account

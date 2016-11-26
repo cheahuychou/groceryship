@@ -89,7 +89,7 @@ var Email = function() {
 	}
 
 	/**
-   	* Sends an email to the specified requester receives when the specified shopper press "Deliver Now"
+   	* Sends an email to the specified requester when the specified shopper press "Deliver Now"
    	* @param {Object} shopper - the user object for the shopper of the delivery
    	* @param {Object} requester - the user object for the requester of the delivery
    	* @return {Object} object - object.success is true if the email was sent
