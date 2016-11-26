@@ -43,7 +43,7 @@ fields rendered: delivery
 **/
 router.get("/id/:id", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
+    Delivery.findOne({_id: req.params.id}).populate('shopper requester').lean().exec(function(err, current_delivery) {
         if (current_delivery === null) {
         	err = new Error("cannot find specified request or delivery.");
         }
