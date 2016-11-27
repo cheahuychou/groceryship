@@ -12,7 +12,9 @@
       <div class="modal-body">
         <div id="reimbursement">
             <p>Below is a summary of your delivery for {{requester.username}}:</p>
-            <p>Total Tips: {{totalTips}}</p>
+            <p>Total Cost: {{actualPrice}}</p>
+            <p>Tips received: {{tips}}</p>
+            <p>Total received: {{add actualPrice tips}}</p>
         </div>
         <br>
         {{> rating isRequest=false}}
