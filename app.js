@@ -26,7 +26,12 @@ db.once('open', function (callback) {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index'}));
+app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index', helpers: {ifIsPast: function(time, now, options) {
+    if (now >= time) {
+        return options.fn(this);
+    }
+    return options.inverse(this);
+}}}));
 app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
