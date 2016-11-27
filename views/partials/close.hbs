@@ -1,6 +1,8 @@
 {{!-- Author: Cheahuychou Mao --}}
 
-<div id="close-modal" class="modal fade" role="dialog">
+{{#each deliveryItems}}
+{{#if actualPrice}}
+<div id="close-modal-{{_id}}" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -8,16 +10,18 @@
         <h3 class="modal-title">Accept Delivery</h3>
       </div>
       <div class="modal-body">
-        {{!-- handle how to iterate through items --}}
         <div id="reimbursement">
             <p>Below is a summary of your delivery for {{requester.username}}:</p>
-            <p>Total Tips: {{totalTips}}</p>
+            <p>Total Cost: {{actualPrice}}</p>
+            <p>Tips received: {{tips}}</p>
+            <p>Total received: {{add actualPrice tips}}</p>
         </div>
         <br>
-        {{> rating}}
-        {{!-- add button event handler --}}
-        <button id='deliver-confirm-button' class='btn btn-primary'>Pay & Rate</button>
+        {{> rating isRequest=false}}
+        <button id='deliver-rate-button' class='btn btn-primary'>Rate &amp; Collect Money</button>
       </div>     
     </div>
   </div>
 </div>
+{{/if}}
+{{/each}}

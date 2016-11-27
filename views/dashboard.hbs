@@ -4,11 +4,12 @@
 <script src='/javascripts/rating.js'></script>
 
 <h1>{{title}}</h1>
+<div class='instructions'>
+  <p>View and keep track of your requests and deliveries on the dashboard. Under 'Your Requests' you can view all current grocery requests you have made, and also cancel any unclaimed requests. Under 'To Deliver' you can view all the grocery requests you have claimed, and click on 'Deliver Now' to enter the price information and pickup time. Once a delivery has been scheduled, they will appear under your notifications, where you can proceed to take further action.</p>
+</div>
 <div id='notifications'>
 	<h3>Notifications</h3>
-	<button id='accept-notification-items' class='btn btn-primary' data-toggle="modal" data-target='#accept-modal' style='float: right'>Accept</button>
-	<button id='reject-notification-items' class='btn btn-primary' data-toggle="modal" data-target='#reject-modal' style='float: right'>Reject</button>
-	<button id='close-notification-items' class='btn btn-primary' data-toggle="modal" data-target='#close-modal' style='float: right'>Close Delivery</button>
+  {{> notifications}}
 	{{> accept}}
 	{{> reject}}
 	{{> close}}

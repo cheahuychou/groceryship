@@ -1,5 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         $.ajax({

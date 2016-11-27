@@ -91,6 +91,7 @@ var Utils = function() {
 		return deliveries.map(function (delivery) {
 					delivery.deadline = dateFormat(delivery.deadline, "mmmm dS, h:MM TT");
 					if (delivery.pickupTime) {
+						delivery.rawPickupTime = new Date(delivery.pickupTime);
 						delivery.pickupTime = dateFormat(delivery.pickupTime, "mmmm dS, h:MM TT");
 					}
                 	return delivery;

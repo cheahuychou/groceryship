@@ -7,9 +7,19 @@ a {
   color: #00B7FF;
 }
 
+.notification-icon img {
+  height: 20px;
+  display: block;
+  margin: auto;
+}
+
 .feature img {
 	width: 80px;
 	height: 80px;
+}
+
+.right-space {
+  margin-right:15px;
 }
 
 #about {
