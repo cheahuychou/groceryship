@@ -1,102 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function () {
 
-    // populate notification modal
-    $('.view-notification').click(function() {
-        var id = $(this).attr('data-id');
-        var type = $(this).attr('data-type'); //type of notification
-
-        //function to populate notification modal given json response from ajax call
-        var populateNotification = function(delivery) {
-            if (delivery.itemDescription === null) {
-                delivery.itemDescription = 'N/A';
-            }
-
-            var row = $('<tr>', {
-                class: 'notification-item',
-                'data-id': delivery._id
-            });
-            row.append($('<td>', {text: delivery.itemName}));
-            row.append($('<td>', {text: delivery.itemQuantity}));
-            row.append($('<td>', {text: delivery.estimatedPrice}));
-            row.append($('<td>', {text: delivery.stores}));
-            row.append($('<td>', {text: delivery.deadline}));
-            row.append($('<td>', {text: delivery.pickupLocation}));
-            row.append($('<td>', {text: delivery.tips}));
-            row.append($('<td>', {text: delivery.itemDescription}));
-            if (type === "delivery") {
-                row.append($('<td>', {text: delivery.requester.username}));
-            } else {
-                row.append($('<td>', {text: delivery.shopper.username}));
-            }
-            row.append($('<td>', {text: delivery.pickupTime}));
-            row.append($('<td>', {text: delivery.actualPrice}));
-
-            $('#notification-modal tbody').append(row); //populates table
-
-            // Changes text based on whether the notification is a delivery or a request
-            if (type === "delivery") {
-                $('#notification-modal #requester-or-shopper').text("Requester");
-                $('#notification-modal #request-or-delivery').text("Delivery");
-            } else {
-                $('#notification-modal #requester-or-shopper').text("Shopper");
-                $('#notification-modal #request-or-delivery').text("Request");
-            }
-        };
-
-        $.ajax({
-            url: '/deliveries/id/'+id,
-            type: 'GET',
-            success: function(data) {
-                if (data.success) {
-                    populateNotification(data.delivery[0]);
-                } else {
-                    console.log(data.message);
-                    addMessage('Error fetching information', 'danger', true);
-                }
-            },
-            error: function(err) {
-                console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
-            }
-        });
-    });
-
-    // clear modal information on close
-    $('#notification-modal').on('hidden.bs.modal', function (e) {
-        $('#notification-modal .notification-input').each(function() {
-            $(this).empty();
-        });
-    });
-
-    // populate accept modal
-    $('.accept-notification-items').click(function() {
-        var id = $(this).attr('data-id');
-        $.ajax({
-            url: '/deliveries/id/'+id,
-            type: 'GET',
-            success: function(data) {
-                if (data.success) {
-                    var templateScript = $("#accept-modal-template").html();  
-                    var acceptModalTemplate = Handlebars.compile(templateScript);  
-                    $('#accept-modal').append(acceptModalTemplate(data));
-                } else {
-                    console.log(data.message);
-                    addMessage('Error fetching information', 'danger', true);
-                }
-            },
-            error: function(err) {
-                console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
-            }
-        });
-    });
-
-    // clear modal information on close
-    $('#accept-modal').on('hidden.bs.modal', function (e) {
-        $(this).empty();
-    });
-
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         $.ajax({

@@ -118,33 +118,12 @@ router.post('/signup', function(req, res, next) {
 					     						return next(err);
 					     					} else {
 					     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
-												User.create(user, 
-													function(err, user_obj) {
-														if (err) {
-															res.json({
-																'success': false, 
-																'message': err.message
-															});
-														} else {
-															// TODO: verify that the kerberos is valid
-															if (req.env === 'development') {
-																email.sendVerficationEmail(user_obj, true);
-															} else {
-																email.sendVerficationEmail(user_obj, false);
-															}
-															
-															res.render('home', { title: 'GroceryShip', message: 'We have sent you a verification email. Please check your MIT email.'});
-
-															// TODO: Please explain if this replaces the line above
-															// // Connect with the Stripe account.
-															// res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
-															//     response_type: 'code',
-															//     scope: 'read_write',
-															//     client_id: CLIENT_ID,
-															//     state: JSON.stringify(user)
-														 //  	}));	
-														};
-												});
+												res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
+												    response_type: 'code',
+												    scope: 'read_write',
+												    client_id: CLIENT_ID,
+												    state: JSON.stringify(user)
+											  	}));	
 					   						};
 					  				});
 				  				};
@@ -169,27 +148,43 @@ router.get('/oauth/callback', function(req, res) {
 			client_secret: API_KEY
 		}
   	}, function(err, r, body) {
-		var user = JSON.parse(req.query.state);
-		var stripeId = JSON.parse(body).stripe_user_id;
-		user['stripeId'] = stripeId;
-		stripe.accounts.retrieve(stripeId,
-			function(err, account){
-				user['stripeEmail'] = account.email;	
-				User.create(user, function(err, user_obj){
+  		if (err) {
+			res.json({
+				'success': false, 
+				'message': err.message
+			});
+  		} else {
+			var user = JSON.parse(req.query.state);
+			var stripeId = JSON.parse(body).stripe_user_id;
+			user['stripeId'] = stripeId;
+			stripe.accounts.retrieve(stripeId,
+				function(err, account){
 					if (err) {
 						res.json({
 							'success': false, 
 							'message': err.message
 						});
-					}
-					res.render('home', { 
-						title: 'GroceryShip', 
-						message: 'You have been registered. Now please log in below:'
-					});
-				});    
-			}
-		);
-		
+					} else {
+						user['stripeEmail'] = account.email;	
+						User.create(user, function(err, user_obj){
+							if (err) {
+								res.json({
+									'success': false, 
+									'message': err.message
+								});
+							} else {
+								if (req.env === 'development') {
+									email.sendVerficationEmail(user_obj, true);
+								} else {
+									email.sendVerficationEmail(user_obj, false);
+								}
+								res.render('home', { title: 'GroceryShip', message: 'Sign up successful! We have sent you a verification email. Please check your MIT email.'});
+							}
+						});
+					} 
+				}
+			);
+  		}
 	});
 });
 

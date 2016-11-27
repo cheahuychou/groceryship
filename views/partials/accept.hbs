@@ -1,9 +1,8 @@
 {{!-- Author: Cheahuychou Mao --}}
 
-<div id="accept-modal" class="modal fade" role="dialog">
-</div>
-
-<script id="accept-modal-template" type="text/x-handlebars-template">
+{{#each requestItems}}
+{{#if shopper}}
+<div id="accept-modal-{{_id}}" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -11,18 +10,18 @@
         <h3 class="modal-title">Accept Delivery</h3>
       </div>
       <div class="modal-body">
-        {{!-- handle how to iterate through items --}}
         <div id="payment">
             <p>Below is a summary of the delivery from {{shopper.username}}: </p>
-            <p>Total Cost: {{totalCost}}</p>
-            <p>Total Tips: {{totalTips}}</p>
-            <p>Total: {{total}}</p>
+            <p>Total Cost: {{actualPrice}}</p>
+            <p>Total Tips: {{tips}}</p>
+            <p>Total: {{add actualPrice tips}}</p>
         </div>
         <br>
-        {{> rating}}
-        {{!-- add button event handler --}}
-        <button id='deliver-confirm-button' class='btn btn-primary'>Pay & Rate</button>
+        {{> rating isRequest=true}}
+        <button id='pay-rate-button' class='btn btn-primary' data-id='{{_id}}'>Pay &amp; Rate</button>
       </div>     
     </div>
   </div>
-</script>
+</div>
+{{/if}}
+{{/each}}
