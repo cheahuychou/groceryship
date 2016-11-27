@@ -7,53 +7,54 @@ $(document).ready(function () {
         var type = $(this).attr('data-type'); //type of notification
 
         //function to populate notification modal given json response from ajax call
-        var populateNotification = function(data) {
-            if (data.success) {
-                var delivery = data.delivery[0];
-                if (delivery.itemDescription === null) {
-                    delivery.itemDescription = 'N/A';
-                }
+        var populateNotification = function(delivery) {
+            if (delivery.itemDescription === null) {
+                delivery.itemDescription = 'N/A';
+            }
 
-                var row = $('<tr>', {
-                    class: 'notification-item',
-                    'data-id': delivery._id
-                });
-                row.append($('<td>', {text: delivery.itemName}));
-                row.append($('<td>', {text: delivery.itemQuantity}));
-                row.append($('<td>', {text: delivery.estimatedPrice}));
-                row.append($('<td>', {text: delivery.stores}));
-                row.append($('<td>', {text: delivery.deadline}));
-                row.append($('<td>', {text: delivery.pickupLocation}));
-                row.append($('<td>', {text: delivery.tips}));
-                row.append($('<td>', {text: delivery.itemDescription}));
-                if (type === "delivery") {
-                    row.append($('<td>', {text: delivery.requester.username}));
-                } else {
-                    row.append($('<td>', {text: delivery.shopper.username}));
-                }
-                row.append($('<td>', {text: delivery.pickupTime}));
-                row.append($('<td>', {text: delivery.actualPrice}));
-
-                $('#notification-modal tbody').append(row); //populates table
-
-                // Changes text based on whether the notification is a delivery or a request
-                if (type === "delivery") {
-                    $('#notification-modal #requester-or-shopper').text("Requester");
-                    $('#notification-modal #request-or-delivery').text("Delivery");
-                } else {
-                    $('#notification-modal #requester-or-shopper').text("Shopper");
-                    $('#notification-modal #request-or-delivery').text("Request");
-                }
+            var row = $('<tr>', {
+                class: 'notification-item',
+                'data-id': delivery._id
+            });
+            row.append($('<td>', {text: delivery.itemName}));
+            row.append($('<td>', {text: delivery.itemQuantity}));
+            row.append($('<td>', {text: delivery.estimatedPrice}));
+            row.append($('<td>', {text: delivery.stores}));
+            row.append($('<td>', {text: delivery.deadline}));
+            row.append($('<td>', {text: delivery.pickupLocation}));
+            row.append($('<td>', {text: delivery.tips}));
+            row.append($('<td>', {text: delivery.itemDescription}));
+            if (type === "delivery") {
+                row.append($('<td>', {text: delivery.requester.username}));
             } else {
-                console.log(data.message);
-                addMessage('Error fetching information', 'danger', true);
+                row.append($('<td>', {text: delivery.shopper.username}));
+            }
+            row.append($('<td>', {text: delivery.pickupTime}));
+            row.append($('<td>', {text: delivery.actualPrice}));
+
+            $('#notification-modal tbody').append(row); //populates table
+
+            // Changes text based on whether the notification is a delivery or a request
+            if (type === "delivery") {
+                $('#notification-modal #requester-or-shopper').text("Requester");
+                $('#notification-modal #request-or-delivery').text("Delivery");
+            } else {
+                $('#notification-modal #requester-or-shopper').text("Shopper");
+                $('#notification-modal #request-or-delivery').text("Request");
             }
         };
 
         $.ajax({
             url: '/deliveries/id/'+id,
             type: 'GET',
-            success: populateNotification,
+            success: function(data) {
+                if (data.success) {
+                    populateNotification(data.delivery[0]);
+                } else {
+                    console.log(data.message);
+                    addMessage('Error fetching information', 'danger', true);
+                }
+            },
             error: function(err) {
                 console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', true);
@@ -63,8 +64,6 @@ $(document).ready(function () {
 
     // clear modal information on close
     $('#notification-modal').on('hidden.bs.modal', function (e) {
-        var blah = $('#notification-modal .notification-input').length;
-        console.log(blah);
         $('#notification-modal .notification-input').each(function() {
             $(this).empty();
         });

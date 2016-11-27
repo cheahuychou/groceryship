@@ -39,7 +39,7 @@ router.get("/username/:username", utils.isAuthenticated, function(req, res){
 
 /**
 Populates the notification popup, returning the relevant request or delivery
-fields rendered: delivery
+fields returned: delivery
 **/
 router.get("/id/:id", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
