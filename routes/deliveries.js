@@ -3,7 +3,8 @@ var express = require('express');
 var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
-var utils = require('../public/javascripts/utils.js');
+var utils = require('../javascripts/utils.js');
+var email = require('../javascripts/email.js');
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
@@ -60,7 +61,9 @@ Posts a new request from a user
 request body fields (TODO: MIGHT NEED TO BE CHANGED): stores, item-due, item-name, itemDescription, item-qty, item-price-estimate, item-tip, item-pickup
 **/
 router.post("/", utils.isAuthenticated, function(req, res){
-    var stores = [req.body.stores];
+    console.log(req.body);
+    var stores = req.body['stores[]'];
+    console.log('stores', stores);
     var deadline = new Date(req.body.itemDue);
     var itemName = req.body.itemName;
     var itemDescription = req.body.itemDescription;
@@ -116,15 +119,15 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id}, function(err, current_delivery) {
-    	if (current_delivery === null) {
+    Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
+    	if (currentDelivery === null) {
     		err = new Error("cannot find specified request")
     	}
     	if (err) {
     		console.log(err);
     		res.json({success: false, message: err});
     	} else {
-	        current_delivery.claim(user._id, function(err) {
+	        currentDelivery.claim(user._id, function(err) {
 	            if (err) {
 	                console.log(err);
 	                res.json({success: false, message: err});
@@ -142,69 +145,73 @@ request body fields: pickupTime, actualPrice
 **/
 router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, current_delivery) {
-    	if (current_delivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
-    	if (err) {
-    		console.log(err);
-    		res.json({success: false, message: err});
-    	} else {
-	        current_delivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
-	                res.json({success: true, item: utils.formatDate([current_delivery])[0]});
-	            }
-	        });
-    	}
-    });
+    Delivery.findOne({_id: req.params.id, shopper: user._id})
+        .populate('shopper').populate('requester').exec(function(err, currentDelivery) {
+            if (currentDelivery === null) {
+                err = new Error("cannot find specified request")
+            }
+            if (err) {
+                console.log(err);
+                res.json({success: false, message: err});
+            } else {
+                currentDelivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
+                    if (err) {
+                        console.log(err);
+                        res.json({success: false, message: err});
+                    } else {
+                        email.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
+                        res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
+                    }
+                });
+            }
+        });
 });
 
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, current_delivery) {
-    	if (current_delivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
-    	if (err) {
-    		console.log(err);
-    		res.json({success: false, message: err});
-    	} else {
-	        current_delivery.accept(function(err) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
-	                res.json({success: true});
-	            }
-	        });
-    	}
+    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.accept(function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    email.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
+                    res.json({success: true});
+                }
+            });
+        }
     });
 });
 
 /** Updates a Delivery when a user rejects the delivery **/
 router.put("/:id/reject", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, current_delivery) {
-    	if (current_delivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
-    	if (err) {
-    		console.log(err);
-    		res.json({success: false, message: err});
-    	} else {{
-	        current_delivery.reject(function(err) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
-	                res.json({success: true});
-	            }
-	        });
-    	}}
+    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.reject(function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    email.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
+                    res.json({success: true});
+                }
+            });
+        }
     });
 });
 

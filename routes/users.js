@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var utils = require('../public/javascripts/utils.js');
 var bcrypt = require('bcrypt');
 var User = require('../models/user.js');
+var utils = require('../javascripts/utils.js');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

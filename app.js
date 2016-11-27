@@ -53,6 +53,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function (req, res, next) {
+    // stores env so we can send the correct verification link
+    req.env = app.get('env');
+    next();
+});
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/deliveries', deliveries);

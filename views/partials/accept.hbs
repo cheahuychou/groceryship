@@ -1,0 +1,28 @@
+{{!-- Author: Cheahuychou Mao --}}
+
+<div id="accept-modal" class="modal fade" role="dialog">
+</div>
+
+<script id="accept-modal-template" type="text/x-handlebars-template">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Accept Delivery</h3>
+      </div>
+      <div class="modal-body">
+        {{!-- handle how to iterate through items --}}
+        <div id="payment">
+            <p>Below is a summary of the delivery from {{shopper.username}}: </p>
+            <p>Total Cost: {{totalCost}}</p>
+            <p>Total Tips: {{totalTips}}</p>
+            <p>Total: {{total}}</p>
+        </div>
+        <br>
+        {{> rating}}
+        {{!-- add button event handler --}}
+        <button id='deliver-confirm-button' class='btn btn-primary'>Pay & Rate</button>
+      </div>     
+    </div>
+  </div>
+</script>

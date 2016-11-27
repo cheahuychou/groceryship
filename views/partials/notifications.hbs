@@ -12,8 +12,8 @@
             </td>
             <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from {{shopper.username}} now!</td>
             <td>
-              <button id='accept-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal'>Accept</button>
-              <button id='reject-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#reject-modal'>Reject</button>
+              <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal' data-id='{{_id}}'>Accept</button>
+              <button class='reject-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#reject-modal' data-id='{{_id}}'>Reject</button>
             </td>
             <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='due-request'>Details</button></td>
             </tr>
@@ -24,8 +24,8 @@
             </td>
             <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) is now being delivered by {{shopper.username}}! Arriving {{pickupTime}}</td>
             <td>
-              <button id='accept-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal'>Accept</button>
-              <button id='reject-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#reject-modal'>Reject</button>
+              <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal' data-id='{{_id}}'>Accept</button>
+              <button class='reject-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#reject-modal' data-id='{{_id}}'>Reject</button>
             </td>
             <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='delivering-request'>Details</button></td>
             </tr>
@@ -49,7 +49,7 @@
             <div class='notification-icon'><img src="/images/cart.png"></img></div>
           </td>
           <td class='notification-text'>You need to deliver {{itemName}} ({{itemQuantity}}) to {{requester.username}}! Deliver to {{pickupLocation}} at {{pickupTime}}</td>
-          <td><button id='close-notification-items' class='btn btn-primary btn-xs' data-toggle="modal" data-target='#close-modal'>Goods Delivered!</button></td>
+          <td><button class='close-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#close-modal' data-id='{{_id}}'>Goods Delivered!</button></td>
           <td><button class='view-notification btn btn-primary btn-xs' data-toggle="modal" data-target='#notification-modal' data-id='{{_id}}' data-type='delivery'>Details</button></td>
           </tr>
         {{/if}}

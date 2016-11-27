@@ -69,6 +69,34 @@ $(document).ready(function () {
         });
     });
 
+    // populate accept modal
+    $('.accept-notification-items').click(function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            url: '/deliveries/id/'+id,
+            type: 'GET',
+            success: function(data) {
+                if (data.success) {
+                    var templateScript = $("#accept-modal-template").html();  
+                    var acceptModalTemplate = Handlebars.compile(templateScript);  
+                    $('#accept-modal').append(acceptModalTemplate(data));
+                } else {
+                    console.log(data.message);
+                    addMessage('Error fetching information', 'danger', true);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+            }
+        });
+    });
+
+    // clear modal information on close
+    $('#accept-modal').on('hidden.bs.modal', function (e) {
+        $(this).empty();
+    });
+
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         $.ajax({
@@ -139,12 +167,12 @@ $(document).ready(function () {
                 var requester = originalRow.attr('data-requester');
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
-                console.log(originalRow.children('.deadline').text());
+                var deadline = originalRow.children('.deadline').text();
 
                 var inputPickupTime = $('<input>', {
-                    class: 'form-control',
+                    class: 'form-control datetimepicker',
                     type: 'datetime-local',
-                    name: 'pickup-time'
+                    name: 'pickup-time',
                     // TODO: set min as current datetime
                     // TODO: set max as deadline
                     // and maybe use another better datetime picker
@@ -166,6 +194,7 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#deliver-now-modal tbody').append(row);
+                setMinMaxDateTime(deadline);
             }
         });
     });
@@ -266,5 +295,4 @@ $(document).ready(function () {
             });
         }
     });
-
 });

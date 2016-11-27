@@ -1,7 +1,11 @@
+// Author: Cheahuychou Mao
+
 var express = require('express');
 var router = express.Router();
 var request = require('request');
-var utils = require('../public/javascripts/utils.js');
+var utils = require('../javascripts/utils.js');
+var config = require('../javascripts/config.js');
+var email = require('../javascripts/email.js');
 var User = require('../models/user');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
@@ -25,15 +29,16 @@ router.get('/', function(req, res, next) {
 // Use passport.js for login authentication and bcrypt to encrypt passwords
 passport.use(new LocalStrategy(function (username, password, done) {
 	username = username.toLowerCase();
-	User.findOne({ username: username }, 'password', function (err, user) {
+	User.findOne({ username: username }, function (err, user) {
 		if (err || user == null) {
-			done(new Error('Please enter a valid username'));
+			console.log(done)
+			done({message:'Please enter a valid username'});
 		} else {
 			bcrypt.compare(password, user.password, function (err, response) {
         if (response == true) {
-          done(null, {username: username, _id: user._id});
+          	done(null, {username: username, _id: user._id, verified: user.verified});
         } else {
-          done(new Error('Please enter a correct password'));
+          	done({message:'Please enter a correct password'});
         }
       });
 		}
@@ -51,13 +56,37 @@ passport.deserializeUser(function (user, done) {
 });
 
 
-router.post('/login', passport.authenticate('local', { failureRedirect: '/' }), function (req, res, next) {
-	res.redirect('/deliveries/username/'+ req.user.username);
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) {
+    	return res.render('home', { title: 'GroceryShip', message: err.message});
+    }
+    if (!user) {
+    	return res.redirect('/');
+    } 
+    if (!user.verified) {
+    	return res.render('home', { title: 'GroceryShip', message: 'Your account has not been verified, please go to your mailbox to verify.'});
+    }
+
+    req.logIn(user, function(err) {
+      if (err) { return res.render('home', { title: 'GroceryShip', message: err.message}); }
+      res.redirect('/deliveries/username/'+ user.username);
+    });
+  })(req, res, next);
 });
 
 router.post('/logout', function(req, res, next) {
 	req.logout();
 	res.redirect('/');
+});
+
+router.get('/verify/:username/:verificationToken', function(req, res, next) {
+	User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
+		if (err) {
+			return res.render('home', { title: 'GroceryShip', message: err.message});
+		}
+		return res.render('home', { title: 'GroceryShip', message: 'Your account has been verified. Now log in below:'});
+	})
 });
 
 router.post('/signup', function(req, res, next) {
@@ -89,22 +118,42 @@ router.post('/signup', function(req, res, next) {
 					     						return next(err);
 					     					} else {
 					     						var user = { username: requestedUsername, password: hash, mitId: requestedMitId, phoneNumber: requestedPhoneNumber, dorm: dorm };
-												// Connect with the Stripe account.
-												res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
-												    response_type: 'code',
-												    scope: 'read_write',
-												    client_id: CLIENT_ID,
-												    state: JSON.stringify(user)
-											  	}));					
-					   						}
-					  				 	});	
-					  				}
-				  				});
-				  			}
-				  		});	
-					}	
-				});
-		}
+												User.create(user, 
+													function(err, user_obj) {
+														if (err) {
+															res.json({
+																'success': false, 
+																'message': err.message
+															});
+														} else {
+															// TODO: verify that the kerberos is valid
+															if (req.env === 'development') {
+																email.sendVerficationEmail(user_obj, true);
+															} else {
+																email.sendVerficationEmail(user_obj, false);
+															}
+															
+															res.render('home', { title: 'GroceryShip', message: 'We have sent you a verification email. Please check your MIT email.'});
+
+															// TODO: Please explain if this replaces the line above
+															// // Connect with the Stripe account.
+															// res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
+															//     response_type: 'code',
+															//     scope: 'read_write',
+															//     client_id: CLIENT_ID,
+															//     state: JSON.stringify(user)
+														 //  	}));	
+														};
+												});
+					   						};
+					  				});
+				  				};
+				  			});
+				  		};	
+					});	
+				};
+		});
+	}
 });
 
 router.get('/oauth/callback', function(req, res) {

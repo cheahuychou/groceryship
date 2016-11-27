@@ -1,9 +1,15 @@
 {{!-- Author: Czarina Lao --}}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src='/javascripts/dashboard.js'></script>
+<script src='/javascripts/rating.js'></script>
+
 <h1>{{title}}</h1>
 <div id='notifications'>
 	<h3>Notifications</h3>
   {{> notifications}}
+	{{> accept}}
+	{{> reject}}
+	{{> close}}
 </div>
 <div id='request'>
 	<h3>Your Requests</h3>
