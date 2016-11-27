@@ -37,12 +37,6 @@ app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index', helpers: {if
 }}}));
 app.set('view engine', 'hbs');
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
 // set up a secret to encrypt cookies
 app.use(session({ secret : process.env.SECRET || '6170GroceryShip', resave : true, saveUninitialized : true }));
 app.use(passport.initialize());

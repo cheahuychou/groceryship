@@ -139,18 +139,28 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, dueAfter, cal
  * @param {Date} dueAfter - only return deliveries whose deadline is after this date
  * @param {String[]} storesList - only search for deliveries from these stores. If "null", this criteria will not be used.
  * @param {String[]} pickupLocationList - only search for deliveries for these pickup locations. If "null", this criteria will not be used.
- * @param {[String, Number]} sortBy - Either "null", or a list with 2 parameters: first one is the field to sort the return list by, and the second
-                                      indicates whether to sort by increasing order (1) or decreasing order (-1). If "null", returned list will not be sorted
+ * @param {[String, Number]} sortBy - A list with 2 parameters: first one is the field to sort the return list by, and the second
+                                      indicates whether to sort by increasing order (1) or decreasing order (-1). If either is "null", returned list will not be sorted
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems)
  */
+ //TODO: possibly split sortBy into 2 parameters instead of tuple
 DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, sortBy, callback) {
-    if (storesList === null) {
+    if (!storesList) {
         storesList = utils.allStores();
     }
-    if (pickupLocationList === null) {
+    if (!pickupLocationList) {
         pickupLocationList = utils.allPickupLocations();
     }
-    if (sortBy !== null) {
+    console.log(sortBy[0] === undefined);
+    console.log(sortBy[0] === "undefined");
+    console.log('a');
+    console.log(sortBy[1] === undefined);
+    console.log(sortBy[1] === "undefined");
+    console.log('b');
+    console.log(sortBy[0] && sortBy[1]);
+    console.log(pickupLocationList);
+    console.log(storesList);
+    if (sortBy[0] && sortBy[1]) {
         this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
             .sort({[sortBy[0]]: sortBy[1]})
             .populate('requester').lean().exec(function(err, requestItems) {

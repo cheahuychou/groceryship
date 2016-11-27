@@ -1,0 +1,48 @@
+<!-- Author: Joseph Kuan-->
+<div class="row">
+  <div class="col-md-1">Filter by:</div>
+  <div class="col-md-2">Store
+    <select multiple id='filter-stores' name='filter-stores' class="form-control">
+      <option>Star Market</option>
+      <option>HMart</option>
+      <option>Trader Joe's</option>
+      <option>Whole Foods</option>
+    </select>
+  </div>
+  <div class="col-md-2">Pickup Location
+    <select multiple id='filter-pickup-location' name='filter-pickup' class="form-control">
+      <option>Baker</option>
+      <option>Burton Conner</option>
+      <option>East Campus</option>
+      <option>MacGregor</option>
+      <option>Maseeh</option>
+      <option>McCormick</option>
+      <option>New House</option>
+      <option>Next House</option>
+      <option>Random</option>
+      <option>Senior</option>
+      <option>Simmons</option>
+      <option>Lobby 7</option>
+      <option>Lobby 10</option>
+      <option>Stata</option>
+    </select>
+  </div>
+  <div class="col-md-1 col-md-offset-2">Sort by:</div>
+  <div class="col-md-2">
+    <select id='sort-by' class="form-control">
+      <option value='tips'>Tip</option>
+      <option value='deadline'>Due date</option>
+    </select>
+    <form id="sort-direction">
+      <div class="radio">
+        <label class="radio"><input type="radio" name="sort" value="1">Sort increasing</label>
+      </div>
+      <div class="radio">
+        <label class="radio"><input type="radio" name="sort" value="-1">Sort decreasing</label>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-2">
+    <button id='filter-sort' class='filter-sort btn btn-primary'>Filter &amp; Sort</button>
+  </div>
+</div>

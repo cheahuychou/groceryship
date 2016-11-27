@@ -13,7 +13,26 @@ fields rendered: title & requestItems
 router.get("/requests", utils.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.getRequests(user._id, now, null, null, null, function(err, requestItems) {
+    console.log('a');
+    console.log(Object.keys(req.query).length !== 0);
+    console.log('b');
+    console.log(req.query.stores);
+    console.log(typeof req.query.stores);
+    console.log('c');
+    if (Object.keys(req.query).length !== 0) {
+    	var stores = req.query.stores;
+    	var pickupLocations = req.query.pickupLocations;
+    }
+    var sortBy = req.query.sortBy;
+    var sortIncreasing = req.query.sortIncreasing;
+    console.log(stores);
+    console.log(pickupLocations);
+    console.log(sortBy);
+    console.log(sortIncreasing);
+    //var stores = JSON.parse("[" + req.params.stores + "]");
+    //var pickupLocations = JSON.parse("[" + req.params.pickupLocations + "]");
+    console.log([stores, pickupLocations, [sortBy, sortIncreasing]]);
+    Delivery.getRequests(user._id, now, stores, pickupLocations, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
             res.send({'success': false, 'message': err});
         } else {
@@ -38,6 +57,7 @@ router.get("/username/:username", utils.isAuthenticated, function(req, res){
     });
 });
 
+//TODO: Remove this route if not needed
 /**
 Populates the notification popup, returning the relevant request or delivery
 fields returned: delivery
