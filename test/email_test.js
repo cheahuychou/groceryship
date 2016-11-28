@@ -22,8 +22,9 @@ describe("Email", function() {
             con.connection.db.dropDatabase(function() { done(); });
         });
 
+        var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName", "lastName": "testLastName"};
+
         it("should have the correct number of digits", function(done) {
-            var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
             User.create(userJSON, function(err, user) {
                 assert.isNull(err);
                 email.createVerificationToken(user, function (err, token) {
@@ -34,7 +35,6 @@ describe("Email", function() {
         });
 
         it("should get saved in the user's field and the token should be random", function(done) {
-            var userJSON = {"username": "testuser", "password": "123456", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail"}
             User.create(userJSON, function(err, user) {
                 assert.isNull(err);
                 email.createVerificationToken(user, function (err, token) {
