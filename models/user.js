@@ -13,10 +13,11 @@ var UserSchema = mongoose.Schema({
     stripeId: {type: String, required: true},
     stripeEmail: {type: String, required: true},
     completedRequests: {type: [{type: ObjectId, ref: "delivery"}], default: []},
+    avgRequestRating: {type: Number, default: 5},
     completedShippings: {type: [{type: ObjectId, ref: "delivery"}], default: []},
+    avgShippingRating:  {type:Number, default: 5},
     verified: {type:Boolean, default: false},
     verificationToken: {type:String, default: null}
-
 });
 
 /**
@@ -58,6 +59,32 @@ UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
     });
 };
 
+/**
+ * Adds a delivery ID to the completed requests field. Updates the average request rating.  
+ * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
+ * @param {Number} rating - The rating of the new completed request. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
+    this.completedRequests.push(deliveryId);
+    var newLength = this.completedRequests.length;
+    this.avgRequestRating = parseFloat((this.avgRequestRating * (newLength - 1) + rating) / newLength).toFixed(1)
+};
+
+/**
+ * Adds a delivery ID to the completed shippings field. Updates the average request rating.  
+ * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
+ * @param {Number} rating - The rating of the new completed request. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
+    this.completedShippings.push(deliveryId);
+    var newLength = this.completedShippings.length;
+    this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1)
+};
+
 UserSchema.path("username").validate(function(username) {
     return username.trim().length > 0;
 }, "No empty kerberos.");
@@ -86,24 +113,6 @@ UserSchema.path("verificationToken").validate(function(verificationToken) {
     }
     return this.verificationToken.length == utils.numTokenDigits();
 }, "Verification token must have the correct number of digits");
-
-/**
- * Connect a stripe ID to the user schema. Feeds an error into the callback if the Stripe account
- * has already been used.
- * @param {String} stripeId - The stripe id of the user. 
- * @param {Function} callback - The function to execute after the account is connected. Callback
- * function takes 1 parameter: an error when the request is not properly claimed
- */
-UserSchema.methods.connect = function(stripeId, callback) {
-    User.findOne({"stripeId": stripeId}, function(err, user){
-        if (user.length){
-            callback(new Error("The Stripe account has been used by another user."));
-        } else {
-            this.stripeId = stripeId;
-            this.save(callback);
-        }
-    });
-};
 
 var UserModel = mongoose.model("User", UserSchema);
 

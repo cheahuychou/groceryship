@@ -75,5 +75,35 @@ describe("App", function() {
 				done();
   			});
 		});
+
+	  	it("the user has a default average rating", function(done){
+			assert.strictEqual(testUser1.completedRequests.length, 0);
+  			assert.strictEqual(testUser1.avgRequestRating, 5);
+  			assert.strictEqual(testUser1.completedShippings.length, 0);
+  			assert.strictEqual(testUser1.avgShippingRating, 5);
+  			done();
+ 		});
+
+		it("can add a completed request to the user model and update the average rating", function(done){
+			testDeliveryJSON["requesterRating"] = 4;
+  			Delivery.create(testDeliveryJSON, function(err, delivery){
+  				testUser1.addCompletedRequest(delivery._id, delivery.requesterRating);
+  				assert.strictEqual(testUser1.completedRequests.length, 1);
+  				assert.strictEqual(testUser1.avgRequestRating, 4);
+  				done();
+  			});
+		});
+
+		it("can add a completed shipping to the user model and update the average rating", function(done){
+			testDeliveryJSON["shopperRating"] = 5;
+  			Delivery.create(testDeliveryJSON, function(err, delivery){
+  				testUser1.addCompletedShipping(delivery._id, delivery.shopperRating);
+  				delivery["shopperRating"] = 4;
+  				testUser1.addCompletedShipping(delivery._id, delivery.shopperRating);
+  				assert.strictEqual(testUser1.completedShippings.length, 2);
+  				assert.strictEqual(testUser1.avgShippingRating, 4.5);
+  				done();
+  			});
+		});
 	});
 });
