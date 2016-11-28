@@ -7,9 +7,19 @@ a {
   color: #00B7FF;
 }
 
+.notification-icon img {
+  height: 20px;
+  display: block;
+  margin: auto;
+}
+
 .feature img {
 	width: 80px;
 	height: 80px;
+}
+
+.right-space {
+  margin-right:15px;
 }
 
 #about {
@@ -18,6 +28,14 @@ a {
 
 #login-content {
 	float: right;
+}
+
+.fa-star-o, .fa-star {
+  color:  #FFD700;
+}
+
+#main-content {
+    margin-top: 20px;
 }
 
 @media screen and (min-width: 768px) {

@@ -1,0 +1,27 @@
+{{!-- Author: Cheahuychou Mao --}}
+
+{{#each requestItems}}
+{{#if shopper}}
+<div id="accept-modal-{{_id}}" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Accept Delivery</h3>
+      </div>
+      <div class="modal-body">
+        <div id="payment">
+            <p>Below is a summary of the delivery from {{shopper.username}}: </p>
+            <p>Total Cost: {{actualPrice}}</p>
+            <p>Total Tips: {{tips}}</p>
+            <p>Total: {{add actualPrice tips}}</p>
+        </div>
+        <br>
+        {{> rating isRequest=true}}
+        <button id='pay-rate-button' class='btn btn-primary' data-id='{{_id}}'>Pay &amp; Rate</button>
+      </div>     
+    </div>
+  </div>
+</div>
+{{/if}}
+{{/each}}

@@ -26,7 +26,15 @@ db.once('open', function (callback) {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index'}));
+app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index', helpers: {ifIsPast: function(time, now, options) {
+        if (now >= time) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    },
+    add: function(a, b) {
+        return a+b;
+}}}));
 app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
@@ -47,6 +55,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function (req, res, next) {
+    // stores env so we can send the correct verification link
+    req.env = app.get('env');
+    next();
+});
 
 app.use('/', routes);
 app.use('/users', users);

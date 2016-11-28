@@ -1,3 +1,4 @@
+{{!-- Author: Czarina Lao --}}
 <div id="deliveries-table">
   <table class="table table-hover">
     <thead>
@@ -13,7 +14,7 @@
       {{#each deliveryItems}}
       <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
         {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
-        <td class='checkbox-cell'>{{#unless pickupTime}}<input type='checkbox'>{{/unless}}</td>
+        <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
         {{> item_row this}}
         
         <td class='requester'>{{#if requester}}{{requester.username}}{{else}}N/A{{/if}}</td>
@@ -23,6 +24,6 @@
     </tbody>
   </table>
   {{!-- TODO: button should be disabled if there are no items / no items selected --}}
-  <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#deliver-now-modal' style='float: right'>Deliver Now</button>
+  <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#deliver-now-modal' style='float: right' disabled>Deliver Now</button>
   {{> deliver_now}}
 </div>

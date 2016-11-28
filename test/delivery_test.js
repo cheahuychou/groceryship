@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var User = require('../models/user');
 var Delivery = require('../models/delivery');
 
-describe("App", function() {
+describe("Models", function() {
   // The mongoose connection object.
   var con;
 
@@ -16,7 +16,7 @@ describe("App", function() {
 
   // Before running any test, connect to the database & drop database. Also, create some test users and deliveries
   before(function(done) {
-    con = mongoose.connect("mongodb://localhost/grocerydb-delivery_test", function() {
+    con = mongoose.connect("mongodb://localhost/grocerydb-delivery-test", function() {
 
       con.connection.db.dropDatabase(function() {
 
@@ -25,7 +25,9 @@ describe("App", function() {
           "password": "something1",
           "mitId": 123456789,
           "phoneNumber": 1234567890,
-          "dorm": "Baker"
+          "dorm": "Baker",
+          "stripeId":"testuserStripeId",
+          "stripeEmail": "testuserStripeEmail"
         });
 
         var testUser2 = new User({
@@ -33,7 +35,9 @@ describe("App", function() {
           "password": "something2",
           "mitId": 234567890,
           "phoneNumber": 2345678901,
-          "dorm": "MacGregor"
+          "dorm": "MacGregor",
+          "stripeId":"testuserStripeId",
+          "stripeEmail": "testuserStripeEmail"
         });
 
         var testUser3 = new User({
@@ -41,7 +45,9 @@ describe("App", function() {
           "password": "something3",
           "mitId": 345678901,
           "phoneNumber": 3456789012,
-          "dorm": "New House"
+          "dorm": "New House",
+          "stripeId":"testuserStripeId",
+          "stripeEmail": "testuserStripeEmail"
         });
 
         User.create([testUser1, testUser2, testUser3], function(err, users) {

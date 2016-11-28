@@ -1,0 +1,27 @@
+{{!-- Author: Cheahuychou Mao --}}
+
+{{#each deliveryItems}}
+{{#if actualPrice}}
+<div id="close-modal-{{_id}}" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Accept Delivery</h3>
+      </div>
+      <div class="modal-body">
+        <div id="reimbursement">
+            <p>Below is a summary of your delivery for {{requester.username}}:</p>
+            <p>Total Cost: {{actualPrice}}</p>
+            <p>Tips received: {{tips}}</p>
+            <p>Total received: {{add actualPrice tips}}</p>
+        </div>
+        <br>
+        {{> rating isRequest=false}}
+        <button id='deliver-rate-button' class='btn btn-primary'>Rate &amp; Collect Money</button>
+      </div>     
+    </div>
+  </div>
+</div>
+{{/if}}
+{{/each}}

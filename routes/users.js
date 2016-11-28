@@ -1,7 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var utils = require('../public/javascripts/utils.js');
 var request = require('request');
+var bcrypt = require('bcrypt');
+var User = require('../models/user.js');
+var utils = require('../javascripts/utils.js');
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -45,6 +48,39 @@ router.get('/:username/validate', function(req, res) {
             console.log(err, body);
         });
     // }
+});
+
+router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
+	User.findOne({'username': req.params.username}, function(err, user){
+		res.render('profile', {title: 'Profile Page', user: user, username: req.params.username});
+	});
+});
+
+router.post('/:username/profile/edit', utils.isAuthenticated, function(req, res, next){
+	var newPassword = req.body.newPassword.trim();
+	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
+	var dorm = req.body.dorm.trim();
+	bcrypt.genSalt(function(err, salt) {
+		if (err) {
+	  		return next(err);
+	  	} else {
+	  		bcrypt.hash(newPassword, salt, function(err, hash) {
+	  			if (err) {
+	  				return next(err);
+	  			} else {
+	  				User.findOneAndUpdate({'username': req.params.username}, { 
+							"$set": {"password": hash, "phoneNumber": newPhoneNumber, "dorm": dorm}
+					}).exec(function(err, user){
+						if (err) {
+							return next(err);
+						} else {
+							res.redirect('back');
+						}
+					});
+	  			}
+	  		});
+	  	}
+	});
 });
 
 
