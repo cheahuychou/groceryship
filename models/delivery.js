@@ -17,7 +17,9 @@ var DeliverySchema = mongoose.Schema({
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
     pickupTime: {type: Date, default: null},
-    rating: {type: ObjectId, ref: "Rating", default: null}
+    requesterRating: {type: Number, default: null},
+    shopperRating: {type: Number, default: null},
+    rejectedReason: {type: String, required: false}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -41,6 +43,18 @@ DeliverySchema.path("deadline").validate(function(deadline) {
 DeliverySchema.path("pickupLocation").validate(function(value) {
     return value.trim().length > 0 && utils.allPickupLocations().indexOf(value) > -1;
 }, "Not a valid dorm name");
+
+DeliverySchema.path("requesterRating").validate(function(rating) {
+    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5;
+}, "A requester rating should be ranged from 1 to 5.");
+
+DeliverySchema.path("shopperRating").validate(function(rating) {
+    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5;
+}, "A shopper rating should be ranged from 1 to 5.");
+
+DeliverySchema.path("rejectedReason").validate(function(reason) {
+    return reason === null || reason.trim().length > 0;
+}, "A rejection reason cannot be an empty string.");
 
 /**
  * Claims a pending request. Feeds an error into the callback if the request has already been claimed.

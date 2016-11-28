@@ -12,8 +12,8 @@ var UserSchema = mongoose.Schema({
     dorm: {type: String, required: true},
     stripeId: {type: String, required: true},
     stripeEmail: {type: String, required: true},
-    requesterRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
-    shopperRatings: {type: [{type: ObjectId, ref: "rating"}], default: []},
+    completedRequests: {type: [{type: ObjectId, ref: "delivery"}], default: []},
+    completedShippings: {type: [{type: ObjectId, ref: "delivery"}], default: []},
     verified: {type:Boolean, default: false},
     verificationToken: {type:String, default: null}
 

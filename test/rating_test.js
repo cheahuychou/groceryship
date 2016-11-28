@@ -2,7 +2,6 @@ var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require("../models/user");
 var Delivery = require("../models/delivery");
-var Rating = require("../models/rating");
 
 describe("App", function() {
 	// The mongoose connection object.
@@ -26,7 +25,9 @@ describe("App", function() {
 			"password": "something",
 			"mit_id": 1,
 			"phone_number": 1,
-			"dorm": "Baker"}
+			"dorm": "Baker",
+			"stripeId":"testuserStripeId", 
+			"stripeEmail": "testuserStripeEmail"}
 		);
 		var id1 = testUser1._id;
 
@@ -35,11 +36,13 @@ describe("App", function() {
 			"password": "something2",
 			"mit_id": 2,
 			"phone_number": 2,
-			"dorm": "Random"}
+			"dorm": "Random",
+			"stripeId":"testuserStripeId", 
+			"stripeEmail": "testuserStripeEmail"}
 		);
 		var id2 = testUser2._id;
 
-		var testDelivery1 = new Delivery({
+		var testDeliveryJSON = {
 		    stores: ["HMart"],
 	        status: "pending",
 	      	deadline: new Date('2016-11-21T23:59:59'),
@@ -50,95 +53,25 @@ describe("App", function() {
 	        tips: 0.5,
 	        pickupLocation: "Baker",
 	        requester: id1,
-	      	shopper: id2}
-		);
-		var deliveryId = testDelivery1._id;
+	      	shopper: id2
+	    }
 
-	  	it("should be able to create a rating object", function(done) {
-  			Rating.create({
-  				delivery: deliveryId,
-  				requester: id1,
-  				shopper: id2,
-  				requesterRating: 5,
-  				shopperRating: 4,
-  			}, function (err, rating){
-				assert.isNull(err);
+	  	it("can contain requester and shopper ratings in the delivery model", function(done) {
+  			testDeliveryJSON["requesterRating"] = 4;
+  			testDeliveryJSON["shopperRating"] = 5;
+  			Delivery.create(testDeliveryJSON, function (err, delivery){
+				assert.strictEqual(delivery.requesterRating, 4);
+				assert.strictEqual(delivery.shopperRating, 5);
 				done();
   			});
 		});
 
-	  	it("should not miss the delivery field", function(done) {
-  			Rating.create({
-  				requester: id1,
-  				shopper: id2,
-  				requesterRating: 5,
-  				shopperRating: 4,
-  			}, function (err, rating){
-				assert.isNotNull(err);
-				done();
-  			});
-		});
-
-		it("should not miss the requester field", function(done) {
-  			Rating.create({
-  				delivery: deliveryId,
-  				shopper: id2,
-  				requesterRating: 5,
-  				shopperRating: 4,
-  			}, function (err, rating){
-				assert.isNotNull(err);
-				done();
-  			});
-		});
-
-	  	it("should not miss the shopper field", function(done) {
-  			Rating.create({
-  				delivery: deliveryId,
-  				requester: id1,
-  				requesterRating: 5,
-  				shopperRating: 4,
-  			}, function (err, rating){
-				assert.isNotNull(err);
-				done();
-  			});
-		});
-
-		it("should not have a illegal requester rating", function(done) {
-  			Rating.create({
-  				delivery: deliveryId,
-  				requester: id1,
-  				shopper: id2,
-  				requesterRating: 6,
-  				shopperRating: 4,
-  			}, function (err, rating){
-				assert.isNotNull(err);
-				done();
-  			});
-		});
-
-		it("should not have a illegal shopper rating", function(done) {
-  			Rating.create({
-  				delivery: deliveryId,
-  				requester: id1,
-  				shopper: id2,
-  				requesterRating: 5,
-  				shopperRating: -1,
-  			}, function (err, rating){
-				assert.isNotNull(err);
-				done();
-  			});
-		});
-
-		it("should contain the requester and the shopper of a rating", function(done) {
-  			Rating.create({
-  				delivery: deliveryId,
-  				requester: id1,
-  				shopper: id2,
-  				requesterRating: 5,
-  				shopperRating: 4,
-  			}, function (err, rating){
-				assert.strictEqual(rating.requester, id1);
-				assert.strictEqual(rating.shopper, id2);
+	  	it("can contain a rejected reason in the delivery model", function(done) {
+  			testDeliveryJSON["rejectedReason"] = "I don't need the item anymore.";
+  			testDeliveryJSON["shopperRating"] = 2;
+  			Delivery.create(testDeliveryJSON, function (err, delivery){
+				assert.strictEqual(delivery.rejectedReason, "I don't need the item anymore.");
+				assert.strictEqual(delivery.shopperRating, 2);
 				done();
   			});
 		});
