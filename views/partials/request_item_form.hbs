@@ -11,7 +11,7 @@
   </td>
   <td>
     {{!-- TODO: Fix size --}}
-    <select multiple id='item-stores-{{n}}' name='item-stores' class="form-control">
+    <select multiple id='item-stores-{{n}}' name='item-stores' class="selectpicker" data-width="100%">
       <option>Star Market</option>
       <option>HMart</option>
       <option>Trader Joe's</option>
@@ -22,7 +22,7 @@
   <td><input id='item-due-{{n}}' type='datetime-local' name='item-due' class="form-control datetimepicker" onfocus="setMinMaxDateTime()" required/></td>
   <td>
     {{!-- TODO: Fix size --}}
-    <select id='item-pickup-location-{{n}}' name='item-pickup' class="form-control">
+    <select id='item-pickup-location-{{n}}' name='item-pickup' class="selectpicker" data-width="100%">
       <option>Baker</option>
       <option>Burton Conner</option>
       <option>East Campus</option>

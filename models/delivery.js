@@ -151,15 +151,6 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
     if (!pickupLocationList) {
         pickupLocationList = utils.allPickupLocations();
     }
-    console.log(sortBy[0] === undefined);
-    console.log(sortBy[0] === "undefined");
-    console.log('a');
-    console.log(sortBy[1] === undefined);
-    console.log(sortBy[1] === "undefined");
-    console.log('b');
-    console.log(sortBy[0] && sortBy[1]);
-    console.log(pickupLocationList);
-    console.log(storesList);
     if (sortBy[0] && sortBy[1]) {
         this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
             .sort({[sortBy[0]]: sortBy[1]})

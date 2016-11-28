@@ -16,20 +16,7 @@ $(document).ready(function () {
             sortIncreasing = parseInt(sortIncreasing);
         }
         var input = {stores: stores, pickupLocations: pickupLocations, sortBy: sortBy, sortIncreasing: sortIncreasing};
-        $.ajax({
-            url: '/deliveries/requests?' + $.param(input),
-            type: 'GET',
-            success: function(data) {
-                if (!data.success) {
-                    console.log(data.message);
-                    addMessage('Error occurred while attempting to filter and sort.', 'danger', true);
-                }
-            },
-            error: function(err) {
-                console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
-            }
-        });
+        window.location.replace("/deliveries/requests?" + $.param(input));
     });
 
     $('.claim-request').click(function() {

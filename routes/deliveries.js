@@ -13,27 +13,15 @@ fields rendered: title & requestItems
 router.get("/requests", utils.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
-    console.log('a');
-    console.log(Object.keys(req.query).length !== 0);
-    console.log('b');
-    console.log(req.query.stores);
-    console.log(typeof req.query.stores);
-    console.log('c');
-    if (Object.keys(req.query).length !== 0) {
-    	var stores = req.query.stores;
-    	var pickupLocations = req.query.pickupLocations;
-    }
+    var stores = req.query.stores;
+    var pickupLocations = req.query.pickupLocations;
     var sortBy = req.query.sortBy;
-    var sortIncreasing = req.query.sortIncreasing;
-    console.log(stores);
-    console.log(pickupLocations);
-    console.log(sortBy);
-    console.log(sortIncreasing);
-    //var stores = JSON.parse("[" + req.params.stores + "]");
-    //var pickupLocations = JSON.parse("[" + req.params.pickupLocations + "]");
-    console.log([stores, pickupLocations, [sortBy, sortIncreasing]]);
+    if (req.query.sortIncreasing) {
+    	var sortIncreasing = parseInt(req.query.sortIncreasing);
+    }
     Delivery.getRequests(user._id, now, stores, pickupLocations, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
+        	console.log(err);
             res.send({'success': false, 'message': err});
         } else {
             res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
