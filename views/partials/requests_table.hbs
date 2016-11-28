@@ -24,12 +24,12 @@
         {{!-- cancel button should only appear for own requests --}}
         {{#unless shopper}}
         {{#if ../own}}
-        <td><button class='cancel-request btn btn-primary'>Cancel</button></td>
+        <td><button class='cancel-request btn btn-primary btn-sm'>Cancel</button></td>
         {{else}}
         {{!-- claim button should only appear for others' requests --}}
         {{!-- TODO: should show 'Unclaim' if has been claimed by current user --}}
         <td class='requester'>{{requester.username}}</td>
-        <td><button class='claim-request btn btn-primary'>Claim</button></td>
+        <td><button class='claim-request btn btn-primary btn-sm'>Claim</button></td>
         {{/if}}
         {{/unless}}
       </tr>
