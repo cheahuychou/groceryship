@@ -38,12 +38,14 @@ a {
     margin-top: 20px;
 }
 
+/* Accomodate the long tables in the modals */
 @media screen and (min-width: 768px) {
     .modal-dialog {
-      width: 750px; /* New width for default modal */
+      /* Possible overflow! TODO: find a better solution */
+      width: 820px; /* New width for default modal */
     }
     .modal-sm {
-      width: 550px; /* New width for small modal */
+      width: 600px; /* New width for small modal */
     }
 }
 @media screen and (min-width: 992px) {
