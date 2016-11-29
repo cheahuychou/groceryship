@@ -9,7 +9,6 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-//TODO: remove this as I think it's no longer used?
 router.get('/:username', utils.isAuthenticated, function (req, res, next) { 
 	res.render('dashboard', { title: 'Dashboard', username: req.params.username});
 });

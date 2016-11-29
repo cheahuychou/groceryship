@@ -35,7 +35,7 @@
           <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>
           <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
           <input id='phone-number-register-box' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
-          <select name={{user.dorm}} id='edit-dormlist'>
+          <select name={{user.dorm}} id='edit-dormlist' required>
             {{#each allDorms}}
             <option>{{this}}</option>
             {{/each}}
