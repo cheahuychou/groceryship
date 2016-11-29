@@ -5,16 +5,6 @@ $(document).ready(function () {
         var pickupLocations = $('#filter-pickup-location').val();
         var sortBy = $('#sort-by').val();
         var sortIncreasing = $("#sort-direction input[type='radio']:checked").val();
-        if (stores === null) {
-            stores = ["HMart", "Star Market", "Trader Joe's", "Whole Foods"];
-        }
-        if (pickupLocations === null) {
-            pickupLocations = ['Maseeh', 'McCormick', 'Baker', 'Burton Conner', 'MacGregor', 'New House', 'Next House',
-                    'East Campus', 'Senior', 'Random', 'Simmons', 'Lobby 7', 'Lobby 10', 'Stata'];
-        }
-        if (sortIncreasing !== undefined) {
-            sortIncreasing = parseInt(sortIncreasing);
-        }
         var input = {stores: stores, pickupLocations: pickupLocations, sortBy: sortBy, sortIncreasing: sortIncreasing};
         window.location.replace("/deliveries/requests?" + $.param(input));
     });

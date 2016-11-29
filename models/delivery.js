@@ -137,13 +137,13 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, dueAfter, cal
  * Searches for all relevant pending deliveries
  * @param {ObjectId} userID - returned list will NOT include requests made by this user
  * @param {Date} dueAfter - only return deliveries whose deadline is after this date
- * @param {String[]} storesList - only search for deliveries from these stores. If "null", this criteria will not be used.
- * @param {String[]} pickupLocationList - only search for deliveries for these pickup locations. If "null", this criteria will not be used.
+ * @param {String[]} storesList - only search for deliveries from these stores. If null/undefined/empty, this criteria will not be used.
+ * @param {String[]} pickupLocationList - only search for deliveries for these pickup locations. If null/undefined/empty, this criteria will not be used.
  * @param {[String, Number]} sortBy - A list with 2 parameters: first one is the field to sort the return list by, and the second
-                                      indicates whether to sort by increasing order (1) or decreasing order (-1). If either is "null", returned list will not be sorted
+                                      indicates whether to sort by increasing order (1) or decreasing order (-1). If either parameter is
+                                      null/undefined/empty, returned list will not be sorted
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems)
  */
- //TODO: possibly split sortBy into 2 parameters instead of tuple
 DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, sortBy, callback) {
     if (!storesList) {
         storesList = utils.allStores();
