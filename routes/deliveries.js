@@ -28,7 +28,11 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
             	                   title: 'Request Feed',
             	                   requestItems: utils.formatDate(requestItems),
             	                   allPickupLocations: utils.allPickupLocations(),
-            	                   allStores: utils.allStores()
+            	                   allStores: utils.allStores(),
+            	                   previousStores: stores,
+            	                   previousPickupLocations: pickupLocations,
+            	                   previousSortBy: sortBy,
+            	                   previousSortIncreasing: sortIncreasing
             	               });
         }
     });

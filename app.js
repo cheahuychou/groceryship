@@ -34,7 +34,23 @@ app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index', helpers: {if
     },
     add: function(a, b) {
         return a+b;
-}}}));
+    },
+    ifContains: function(a, b, options) {
+        if (a instanceof Array) {
+            if (a.indexOf(b) > -1) {
+                return options.fn(this);
+            } else {
+                return options.inverse(this);
+            }
+        } else {
+            if (a === b) {
+                return options.fn(this);
+            } else {
+                return options.inverse(this);
+            }
+        }
+    }
+}}));
 app.set('view engine', 'hbs');
 
 // set up a secret to encrypt cookies
