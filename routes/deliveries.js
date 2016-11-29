@@ -24,7 +24,12 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
         	console.log(err);
             res.send({'success': false, 'message': err});
         } else {
-            res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
+            res.render('deliver', {username: user.username,
+            	                   title: 'Request Feed',
+            	                   requestItems: utils.formatDate(requestItems),
+            	                   allPickupLocations: utils.allPickupLocations(),
+            	                   allStores: utils.allStores()
+            	               });
         }
     });
 });
@@ -40,7 +45,12 @@ router.get("/username/:username", utils.isAuthenticated, function(req, res){
         if (err) {
             res.send({'success': false, 'message': err})
         } else {
-            res.render('dashboard', {username: user.username, title: 'Dashboard', now: now, requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
+            res.render('dashboard', {username: user.username,
+            	                     title: 'Dashboard',
+            	                     now: now,
+            	                     requestItems: utils.formatDate(requestItems),
+            	                     deliveryItems: utils.formatDate(deliveryItems),
+            	                 });
         }
     });
 });

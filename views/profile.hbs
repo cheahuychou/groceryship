@@ -36,17 +36,9 @@
           <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
           <input id='phone-number-register-box' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
           <select name={{user.dorm}} id='edit-dormlist'>
-            <option>Baker</option>
-            <option>Burton Conner</option>
-            <option>East Campus</option>
-            <option>MacGregor</option>
-            <option>Maseeh</option>
-            <option>McCormick</option>
-            <option>New House</option>
-            <option>Next House</option>
-            <option>Random</option>
-            <option>Senior</option>
-            <option>Simmons</option>
+            {{#each allDorms}}
+            <option>{{this}}</option>
+            {{/each}}
           </select><br>
           <input type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm' value="Confirm Changes">
         </form>

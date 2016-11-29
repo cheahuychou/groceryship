@@ -3,28 +3,16 @@
   <strong class="col-sm-1">Filter by:</strong>
   <div class="col-sm-2">Store&nbsp;
     <select multiple id='filter-stores' name='filter-stores' class="selectpicker" data-none-selected-text="Any store" data-width="100%">
-      <option>Star Market</option>
-      <option>HMart</option>
-      <option>Trader Joe's</option>
-      <option>Whole Foods</option>
+      {{#each allStores}}
+      <option>{{this}}</option>
+      {{/each}}
     </select>
   </div>
   <div class="col-sm-2">Pickup Location&nbsp;
     <select multiple id='filter-pickup-location' name='filter-pickup' class="selectpicker" data-none-selected-text="Any location" data-width="100%">
-      <option>Baker</option>
-      <option>Burton Conner</option>
-      <option>East Campus</option>
-      <option>MacGregor</option>
-      <option>Maseeh</option>
-      <option>McCormick</option>
-      <option>New House</option>
-      <option>Next House</option>
-      <option>Random</option>
-      <option>Senior</option>
-      <option>Simmons</option>
-      <option>Lobby 7</option>
-      <option>Lobby 10</option>
-      <option>Stata</option>
+      {{#each allPickupLocations}}
+      <option>{{this}}</option>
+      {{/each}}
     </select>
   </div>
   <strong class="col-sm-1 col-sm-offset-2">Sort by:</strong>

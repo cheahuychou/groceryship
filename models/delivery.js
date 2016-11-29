@@ -42,7 +42,7 @@ DeliverySchema.path("deadline").validate(function(deadline) {
 
 DeliverySchema.path("pickupLocation").validate(function(value) {
     return value.trim().length > 0 && utils.allPickupLocations().indexOf(value) > -1;
-}, "Not a valid dorm name");
+}, "Not a valid pickup location name");
 
 DeliverySchema.path("requesterRating").validate(function(rating) {
     return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5;
