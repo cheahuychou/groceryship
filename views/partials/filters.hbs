@@ -15,7 +15,16 @@
       {{/each}}
     </select>
   </div>
-  <strong class="col-sm-1 col-sm-offset-2">Sort by:</strong>
+  <div class="col-sm-1">Minimum Rating&nbsp;
+    <select id='filter-rating' name='filter-rating' class="selectpicker" data-width="auto">
+      <option {{#ifContains previousMinRating 1}}selected{{/ifContains}}>Any</option>
+      <option {{#ifContains previousMinRating 6}}selected{{/ifContains}}>6</option>
+      <option {{#ifContains previousMinRating 4}}selected{{/ifContains}}>4</option>
+      <option {{#ifContains previousMinRating 3}}selected{{/ifContains}}>3</option>
+      <option {{#ifContains previousMinRating 2}}selected{{/ifContains}}>2</option>
+    </select>
+  </div>
+  <strong class="col-sm-1 col-sm-offset-1">Sort by:</strong>
   <div class="col-sm-2">
     <select id='sort-by' class="form-control">
       <option value='tips' {{#ifContains previousSortBy "tips"}}selected{{/ifContains}}>Tip</option>

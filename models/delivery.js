@@ -45,11 +45,11 @@ DeliverySchema.path("pickupLocation").validate(function(value) {
 }, "Not a valid pickup location name");
 
 DeliverySchema.path("requesterRating").validate(function(rating) {
-    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5;
+    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5 || rating === null;
 }, "A requester rating should be ranged from 1 to 5.");
 
 DeliverySchema.path("shopperRating").validate(function(rating) {
-    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5;
+    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5 || rating === null;
 }, "A shopper rating should be ranged from 1 to 5.");
 
 DeliverySchema.path("rejectedReason").validate(function(reason) {
@@ -139,27 +139,39 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, dueAfter, cal
  * @param {Date} dueAfter - only return deliveries whose deadline is after this date
  * @param {String[]} storesList - only search for deliveries from these stores. If null/undefined/empty, this criteria will not be used.
  * @param {String[]} pickupLocationList - only search for deliveries for these pickup locations. If null/undefined/empty, this criteria will not be used.
+ * @param {Integer} minRating - only search for deliveries where the requester has a rating above or equal to minRating. If null/undefined/empty, this criteria will not be used.
  * @param {[String, Number]} sortBy - A list with 2 parameters: first one is the field to sort the return list by, and the second
                                       indicates whether to sort by increasing order (1) or decreasing order (-1). If either parameter is
                                       null/undefined/empty, returned list will not be sorted
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems)
  */
-DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, sortBy, callback) {
+DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, minRating, sortBy, callback) {
     if (!storesList) {
         storesList = utils.allStores();
     }
     if (!pickupLocationList) {
         pickupLocationList = utils.allPickupLocations();
     }
+    if (!minRating) {
+        minRating = 1;
+    }
     if (sortBy[0] && sortBy[1]) {
         this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
             .sort({[sortBy[0]]: sortBy[1]})
-            .populate('requester').lean().exec(function(err, requestItems) {
+            .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
+            .lean().exec(function(err, requestItems) {
+                requestItems = requestItems.filter(function(item) {
+                    return item.requester;
+                });
                 callback(err, requestItems);
             });  
         } else {
         this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
-            .populate('requester').lean().exec(function(err, requestItems) {
+            .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
+            .lean().exec(function(err, requestItems) {
+                requestItems = requestItems.filter(function(item) {
+                    return item.requester;
+                });
                 callback(err, requestItems);
             });
         }

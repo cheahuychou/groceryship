@@ -15,11 +15,14 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
     var user = req.session.passport.user;
     var stores = req.query.stores;
     var pickupLocations = req.query.pickupLocations;
+    if (req.query.minRating) {
+    	var minRating = parseInt(req.query.minRating);
+    }
     var sortBy = req.query.sortBy;
     if (req.query.sortIncreasing) {
     	var sortIncreasing = parseInt(req.query.sortIncreasing);
     }
-    Delivery.getRequests(user._id, now, stores, pickupLocations, [sortBy, sortIncreasing], function(err, requestItems) {
+    Delivery.getRequests(user._id, now, stores, pickupLocations, minRating, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
         	console.log(err);
             res.send({'success': false, 'message': err});
@@ -31,6 +34,7 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
             	                   allStores: utils.allStores(),
             	                   previousStores: stores,
             	                   previousPickupLocations: pickupLocations,
+            	                   previousMinRating: minRating,
             	                   previousSortBy: sortBy,
             	                   previousSortIncreasing: sortIncreasing
             	               });

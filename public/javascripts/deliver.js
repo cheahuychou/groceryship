@@ -3,9 +3,13 @@ $(document).ready(function () {
     $('#filter-sort').click(function() {
         var stores = $('#filter-stores').val();
         var pickupLocations = $('#filter-pickup-location').val();
+        var minRating = $('#filter-rating').val();
+        if (minRating === "Any") {
+            minRating = 1;
+        }
         var sortBy = $('#sort-by').val();
         var sortIncreasing = $("#sort-direction input[type='radio']:checked").val();
-        var input = {stores: stores, pickupLocations: pickupLocations, sortBy: sortBy, sortIncreasing: sortIncreasing};
+        var input = {stores: stores, pickupLocations: pickupLocations, minRating: minRating, sortBy: sortBy, sortIncreasing: sortIncreasing};
         window.location.replace("/deliveries/requests?" + $.param(input));
     });
 
