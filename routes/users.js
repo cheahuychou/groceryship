@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt');
 var User = require('../models/user.js');
 var utils = require('../javascripts/utils.js');
 
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
@@ -62,5 +63,6 @@ router.post('/:username/profile/edit', utils.isAuthenticated, function(req, res,
 	  	}
 	});
 });
+
 
 module.exports = router;

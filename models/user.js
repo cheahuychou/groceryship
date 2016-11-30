@@ -7,6 +7,8 @@ var utils = require("../javascripts/utils.js");
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
     password: {type: String, required: true}, // should be just the hash
+    firstName: {type: String, required: true},
+    lastName: {type: String, required: true},
     mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
@@ -93,6 +95,13 @@ UserSchema.path("password").validate(function(password) {
     return password.trim().length > 0;
 }, "No empty passwords.");
 
+UserSchema.path("firstName").validate(function(firstName) {
+    return firstName.trim().length > 0;
+}, "No empty first names.");
+
+UserSchema.path("lastName").validate(function(lastName) {
+    return lastName.trim().length > 0;
+}, "No empty last names.");
 
 UserSchema.path("mitId").validate(function(value) {
     return value.toString().length <= 9; //An MIT ID with leading zeros would be represented by a number with less than 9 digits (leading 0s are omitted)
