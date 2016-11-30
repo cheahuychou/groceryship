@@ -27,24 +27,22 @@ $(document).ready(function() {
                 hasError = true;
                 alert('All fields must be filled out.');
                 return false;
-            } else if ($(this).parent().hasClass('has-error')) {
-                $(this).parent().removeClass('has-error');
-            }
-
-            // check if deadline is in the future
-            // TODO: the datetimepicker should have datetimes < now disabled
-            if ($(this).attr('name') == 'item-due'
+            } else if ($(this).attr('name') == 'item-due'
                 && $(this).parent().hasClass('has-error')) {
+                // check if deadline is in the future
+                // TODO: the datetimepicker should have datetimes < now disabled
                     hasError = true;
                     alert('Please enter a date and time after the current date and time.');
                     return false;
 
-            } else if ($(this).attr('name') == 'price'
+            } else if ($(this).hasClass('price')
                 && $(this).parent().hasClass('has-error')) {
                 // check if valid prices are entered
                 hasError = true;
                 alert('Please enter a valid price.');
                 return false;
+            } else if ($(this).parent().hasClass('has-error')) {
+                $(this).parent().removeClass('has-error');
             }
         });
 
@@ -62,11 +60,12 @@ $(document).ready(function() {
                 var tips = $(this).find('#item-tip-'+num).val();
                 var description = $(this).find('#item-description-'+num).val();
                 console.log(name, quantity, priceEstimate, stores, deadline, pickupLocation, tips, description);
+
                 $.post('/deliveries', {
                     itemName: name,
                     itemQty: quantity,
                     itemPriceEstimate: priceEstimate,
-                    itemDue: deadline,
+                    itemDue: new Date(deadline+getFormattedTimezoneOffset()),
                     stores: stores,
                     itemDescription: description,
                     itemTips: tips,

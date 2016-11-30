@@ -30,6 +30,13 @@ var checkPriceFormat = function(priceString) {
     return price;
 };
 
+/**
+ * Adds a 'has-error' class to the parent element of a price
+ * if it's not valid (negative or not a number).
+ * Accepts prices with more than 2 decimal points but rounds it to 2.
+ * Removes the 'has-error' class if it exists on a valid price.
+ * @param  {Object} element the element containing the price
+ */
 var showPriceFormatErrors = function(element) {
     var price = checkPriceFormat($(element).val());
     if (price) {
@@ -62,3 +69,34 @@ var setMinMaxDateTime = function (deadline) {
         $('.datetimepicker').attr('max', maxDateTime);
     }
 }
+
+// Adapted from: http://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript
+
+/**
+ * Returns number as a rounded positive 2-digit string.
+ * If number is 1-digit then a 0 is prepended
+ * as in the timezone offset format
+ * @param  {Float} number  a number for a part of the timezone offset
+ * @return {String}        formatted number as defined above
+ */
+var numberToTimezoneOffsetFormat = function(number) {
+    var norm = Math.abs(Math.floor(number));
+    return (norm < 10 ? '0' : '') + norm;
+};
+
+/**
+ * Returns the system's timezone offset
+ * in the format used by Javascript's Date
+ * e.g. '-05:00' for the timezone GMT-5
+ * @return {String} timezone offset string
+ */
+var getFormattedTimezoneOffset = function() {
+    // we need to negate this because .getTimezoneOffset is positive if the time is behind and vice versa
+    var timezoneOffsetMinutes = -(new Date().getTimezoneOffset());
+    var sign = timezoneOffsetMinutes >= 0 ? '+' : '-';
+    var hoursOffset = timezoneOffsetMinutes / 60;
+    var modMinutesOffset = timezoneOffsetMinutes % 60;
+
+    return sign + numberToTimezoneOffsetFormat(hoursOffset) + ':' + numberToTimezoneOffsetFormat(modMinutesOffset);
+};
+
