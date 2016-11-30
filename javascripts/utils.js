@@ -134,7 +134,7 @@ var Utils = function() {
                 if (result.errorCode == 400) {
                     // this error code means that the kerberos is not valid
                     callback({success: true, isValidKerberos: false});
-                } else { // error is in the request made an not on the kerberos
+                } else { // error is in the request made and not on the kerberos
                     // handle other error codes
                     // if you want to handle other error codes in a different way,
                     // the documentation of API specifies what the other error codes are

@@ -94,7 +94,7 @@ describe("Models", function() {
       });
 
       it("should not allow empty first names", function(done) {
-        var userJSON = {"username": "testuser", "password": "   ", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "   ", "lastName": lastName};
+        var userJSON = {"username": "testuser", "password": "1234567890", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "   ", "lastName": lastName};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();
@@ -102,7 +102,7 @@ describe("Models", function() {
       });
 
       it("should not allow empty last names", function(done) {
-        var userJSON = {"username": "testuser", "password": "   ", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": firstName, "lastName": "      "};
+        var userJSON = {"username": "testuser", "password": "123456789", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": firstName, "lastName": "      "};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);
           done();

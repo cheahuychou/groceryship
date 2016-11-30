@@ -59,17 +59,17 @@ passport.deserializeUser(function (user, done) {
 router.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) {
-        return res.render('home', { title: 'GroceryShip', message: err.message});
+        return res.render('home', { title: 'GroceryShip', message: err.message, allDorms: utils.allDorms()});
     }
     if (!user) {
         return res.redirect('/');
     } 
     if (!user.verified) {
-        return res.render('home', { title: 'GroceryShip', message: 'Your account has not been verified, please go to your mailbox to verify.'});
+        return res.render('home', { title: 'GroceryShip', message: 'Your account has not been verified, please go to your mailbox to verify.', allDorms: utils.allDorms()});
     }
 
     req.logIn(user, function(err) {
-      if (err) { return res.render('home', { title: 'GroceryShip', message: err.message}); }
+      if (err) { return res.render('home', { title: 'GroceryShip', message: err.message, allDorms: utils.allDorms()}); }
       res.redirect('/deliveries/username/'+ user.username);
     });
   })(req, res, next);
@@ -83,9 +83,9 @@ router.post('/logout', function(req, res, next) {
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
     User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
         if (err) {
-            return res.render('home', { title: 'GroceryShip', message: err.message});
+            return res.render('home', { title: 'GroceryShip', message: err.message, allDorms: utils.allDorms()});
         }
-        return res.render('home', { title: 'GroceryShip', message: 'Your account has been verified. Now log in below:'});
+        return res.render('home', { title: 'GroceryShip', message: 'Your account has been verified. Now log in below:', allDorms: utils.allDorms()});
     })
 });
 
@@ -97,7 +97,7 @@ router.post('/signup', function(req, res, next) {
     var dorm = req.body.dorm.trim();
 
     if (requestedUsername.length == 0 || requestedPassword.length == 0) {
-        res.render('home', { title: 'GroceryShip', message: 'Please enter your kerberos and password below'});
+        res.render('home', { title: 'GroceryShip', message: 'Please enter your kerberos and password below', allDorms: utils.allDorms()});
     } else {
         // even if in development, we call getMitInfo so that the function is used
         // and we can see if it functions correctly
@@ -107,12 +107,12 @@ router.post('/signup', function(req, res, next) {
                 User.count({ username: requestedUsername },
                     function (err, count) {
                         if (count > 0) {
-                            res.render('home', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly'});
+                            res.render('home', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly', allDorms: utils.allDorms()});
                         } else {
                             User.count({ mitId: requestedMitId },
                                 function (err, count) {
                                     if (count > 0) {
-                                        res.render('home', { title: 'GroceryShip', message: 'There is already an account with this MIT ID, make sure you enter your MIT ID correctly'});
+                                        res.render('home', { title: 'GroceryShip', message: 'There is already an account with this MIT ID, make sure you enter your MIT ID correctly', allDorms: utils.allDorms()});
                                     } else {
                                         bcrypt.genSalt(function(err, salt) {
                                             if (err) {
@@ -148,9 +148,9 @@ router.post('/signup', function(req, res, next) {
                         }
                 });
             } else if (!data.success) {
-                res.render('home', { title: 'GroceryShip', message: 'Sorry, we aren\'t able to verify your kerberos at the moment. Please try again.'});
+                res.render('home', { title: 'GroceryShip', message: 'Sorry, we aren\'t able to verify your kerberos at the moment. Please try again.', allDorms: utils.allDorms()});
             } else { //(!data.isValidKerberos)
-                res.render('home', { title: 'GroceryShip', message: 'Your kerberos isn\'t valid. You need a valid MIT kerberos to sign up.'});
+                res.render('home', { title: 'GroceryShip', message: 'Your kerberos isn\'t valid. You need a valid MIT kerberos to sign up.', allDorms: utils.allDorms()});
             }
         });
     }
@@ -200,7 +200,7 @@ router.get('/oauth/callback', function(req, res) {
                                 } else {
                                     email.sendVerficationEmail(userObject, false);
                                 }
-                                res.render('home', { title: 'GroceryShip', message: 'Sign up successful! We have sent you a verification email. Please check your MIT email.'});
+                                res.render('home', { title: 'GroceryShip', message: 'Sign up successful! We have sent you a verification email. Please check your MIT email.', allDorms: utils.allDorms()});
                             }
                         });
                     } 
