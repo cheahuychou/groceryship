@@ -25,7 +25,6 @@ describe("Models", function() {
           "password": "something1",
           "firstName": "firstName1",
           "lastName": "lastName1",
-          "mitId": 123456789,
           "phoneNumber": 1234567890,
           "dorm": "Baker",
           "stripeId":"testuserStripeId",
@@ -37,7 +36,6 @@ describe("Models", function() {
           "password": "something2",
           "firstName": "firstName2",
           "lastName": "lastName2",
-          "mitId": 234567890,
           "phoneNumber": 2345678901,
           "dorm": "MacGregor",
           "stripeId":"testuserStripeId",
@@ -49,7 +47,6 @@ describe("Models", function() {
           "password": "something3",
           "firstName": "firstName3",
           "lastName": "lastName3",
-          "mitId": 345678901,
           "phoneNumber": 3456789012,
           "dorm": "New House",
           "stripeId":"testuserStripeId",
@@ -353,7 +350,6 @@ describe("Models", function() {
               assert.strictEqual(requestItems[0].itemName, "test-item-beer");
               assert.strictEqual(deliveryItems[0].itemName, "test-item-sausages");
               assert.strictEqual(deliveryItems[0].requester.username, "username2");
-              assert.strictEqual(deliveryItems[0].requester.mitId, 234567890);
               done();
             });
           });

@@ -167,8 +167,8 @@ router.put("/:id/claim", utils.isAuthenticated, function(req, res){
                     Delivery.findOne({_id: req.params.id})
                         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
                         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
-                            email.sendDeliveryEmail(currentDelivery)
-	                       res.json({success: true});
+                            email.sendClaimEmail(currentDelivery);
+	                        res.json({success: true});
                        });
 	            }
 	        });
@@ -198,7 +198,9 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
                         console.log(err);
                         res.json({success: false, message: err});
                     } else {
-                        res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
+                        var formattedDelivery = utils.formatDate([currentDelivery])[0]
+                        email.sendDeliveryEmail(formattedDelivery);
+                        res.json({success: true, item: formattedDelivery});
                     }
                 });
             }

@@ -93,7 +93,6 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
 router.post('/signup', function(req, res, next) {
     var requestedUsername = req.body.requestedKerberos.trim().toLowerCase();
     var requestedPassword = req.body.requestedPassword.trim();
-    var requestedMitId = parseInt(req.body.requestedMitId.trim());
     var requestedPhoneNumber = parseInt(req.body.requestedPhoneNumber.trim());
     var dorm = req.body.dorm.trim();
 
@@ -110,43 +109,35 @@ router.post('/signup', function(req, res, next) {
                         if (count > 0) {
                             res.render('home', { title: 'GroceryShip', message: 'There is already an account with this kerberos, make sure you enter your kerberos correctly', allDorms: utils.allDorms()});
                         } else {
-                            User.count({ mitId: requestedMitId },
-                                function (err, count) {
-                                    if (count > 0) {
-                                        res.render('home', { title: 'GroceryShip', message: 'There is already an account with this MIT ID, make sure you enter your MIT ID correctly', allDorms: utils.allDorms()});
-                                    } else {
-                                        bcrypt.genSalt(function(err, salt) {
-                                            if (err) {
-                                                return next(err);
-                                            } else {
-                                                bcrypt.hash(requestedPassword, salt, function(err, hash) {
-                                                    if (err) {
-                                                        return next(err);
-                                                    } else {
-                                                        var firstName = data.person ? data.person.givenName : 'FirstNameTest';
-                                                        var lastName = data.person ? data.person.familyName : 'LastNameTest';
-                                                        var user = {
-                                                            username: requestedUsername,
-                                                            password: hash,
-                                                            firstName: firstName,
-                                                            lastName: lastName,
-                                                            mitId: requestedMitId,
-                                                            phoneNumber: requestedPhoneNumber,
-                                                            dorm: dorm
-                                                        };
-                                                        res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
-                                                            response_type: 'code',
-                                                            scope: 'read_write',
-                                                            client_id: CLIENT_ID,
-                                                            state: JSON.stringify(user)
-                                                        }));
-                                                    };
-                                            });
+                            bcrypt.genSalt(function(err, salt) {
+                                if (err) {
+                                    return next(err);
+                                } else {
+                                    bcrypt.hash(requestedPassword, salt, function(err, hash) {
+                                        if (err) {
+                                            return next(err);
+                                        } else {
+                                            var firstName = data.person ? data.person.givenName : 'FirstNameTest';
+                                            var lastName = data.person ? data.person.familyName : 'LastNameTest';
+                                            var user = {
+                                                username: requestedUsername,
+                                                password: hash,
+                                                firstName: firstName,
+                                                lastName: lastName,
+                                                phoneNumber: requestedPhoneNumber,
+                                                dorm: dorm
+                                            };
+                                            res.redirect(AUTHORIZE_URI + '?' + qs.stringify({
+                                                response_type: 'code',
+                                                scope: 'read_write',
+                                                client_id: CLIENT_ID,
+                                                state: JSON.stringify(user)
+                                            }));
                                         };
-                                    });
-                                };
-                            }); 
-                        }
+                                });
+                            };
+                        });
+                    }
                 });
             } else if (!data.success) {
                 res.render('home', { title: 'GroceryShip', message: 'Sorry, we aren\'t able to verify your kerberos at the moment. Please try again.', allDorms: utils.allDorms()});

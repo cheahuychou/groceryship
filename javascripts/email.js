@@ -85,7 +85,7 @@ var Email = function() {
 			} else {
 				link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
 			}
-			var content = '{}<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="{}"><input type="submit" value="Confirm" /></form></center>'.format(that.welcomeMessage, link);
+			var content = '{}<center><p>Hi {}! Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="{}"><input type="submit" value="Confirm" /></form></center>'.format(that.welcomeMessage, user.firstName, link);
 			return that.sendEmail(user.username, subject, content);
 		});
 	}
@@ -95,8 +95,8 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {String} the body of the email to the requester
    	*/
-	that.deliveryEmailContent = function (delivery) {
-		return  '{}<center><p> Hi {}! {} has bought {} of {} you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.</p>'.format(that.welcomeMessage, delivery.requester.username, delivery.shopper.username, delivery.itemQuantity, delivery.itemName, delivery.shopper.phoneNumber)		
+	that.claimEmailContent = function (delivery) {
+		return  '{}<center><p> Hi {} {}! {} {} has bought {} of {} you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.shopper.phoneNumber)		
 	}
 
 	/**
@@ -105,8 +105,28 @@ var Email = function() {
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendDeliveryEmail = function (delivery) {
+	that.sendClaimEmail = function (delivery) {
 		var subject = 'Updates on your pending request for {}'.format(delivery.itemName)
+		return that.sendEmail(delivery.requester.username, subject, that.claimEmailContent(delivery));
+	}
+
+	/**
+   	* Makes the body of the email that a requester receives when the shopper presses "Deliver Now"
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
+   	* @return {String} the body of the email to the requester
+   	*/
+	that.deliveryEmailContent = function (delivery) {
+		return  '{}<center><p> Hi {} {}! {} {} is deliverying {} of {} to {} at {}. Please be sure to be there in time!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.pickupLocation, delivery.pickupTime);		
+	}
+
+	/**
+   	* Sends an email to the requester of a delivery when the shopper presses "Deliver Now"
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
+   	* @return {Object} object - object.success is true if the email was sent
+   								successfully, false otherwise
+   	*/
+	that.sendDeliveryEmail = function (delivery) {
+		var subject = 'Upcoming Delivery for {}'.format(delivery.itemName)
 		return that.sendEmail(delivery.requester.username, subject, that.deliveryEmailContent(delivery));
 	}
 
