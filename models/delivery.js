@@ -90,25 +90,32 @@ DeliverySchema.methods.deliver = function(pickupTime, actualPrice, callback) {
  * @param {Function} callback - The function to execute after request is accepted. Callback
  * function takes 1 parameter: an error when the accept is not properly saved
  */
-DeliverySchema.methods.accept = function(callback) {
+DeliverySchema.methods.accept = function(shopperRating, callback) {
     if (this.status !== "claimed") {
         callback(new Error("request is either pending or is already accepted/rejected"));
     } else {
         this.status = "accepted";
+        this.shopperRating = shopperRating;
         this.save(callback);
     }
 };
 
 /**
  * Rejects a claimed request. Feeds an error into the callback if the request is not in claimed stage
+ * @param {String} reason - The requester's reason for rejecting the delivery
+ * @param {Integer} shopperRating - The rating that the requester gives to the shopper, must be between 1 to 5
  * @param {Function} callback - The function to execute after request is rejected. Callback
  * function takes 1 parameter: an error when the reject is not properly saved
  */
-DeliverySchema.methods.reject = function(callback) {
+DeliverySchema.methods.reject = function(reason, shopperRating, callback) {
     if (this.status !== "claimed") {
         callback(new Error("request is either pending or is already accepted/rejected"));
+    } else if (reason.length == 0) {
+        callback(new Error("reason cannot be empty"));
     } else {
         this.status = "rejected";
+        this.rejectedReason = reason;
+        this.shopperRating = shopperRating;
         this.save(callback);
     }
 };

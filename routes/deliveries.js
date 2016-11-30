@@ -220,12 +220,12 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.accept(function(err) {
+            currentDelivery.accept(req.body.shopperRating, function(err) {
                 if (err) {
                     console.log(err);
                     res.json({success: false, message: err});
                 } else {
-                    email.sendAcceptanceEmails(currentDelivery.shopper, currentDelivery.requester)
+                    email.sendAcceptanceEmails(utils.formatDate([currentDelivery])[0]);
                     res.json({success: true});
                 }
             });
@@ -246,12 +246,12 @@ router.put("/:id/reject", utils.isAuthenticated, function(req, res){
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.reject(function(err) {
+            currentDelivery.reject(req.body.reason, req.body.shopperRating, function(err) {
                 if (err) {
                     console.log(err);
                     res.json({success: false, message: err});
                 } else {
-                    email.sendRejectionEmails(currentDelivery.shopper, currentDelivery.requester)
+                    email.sendRejectionEmails(utils.formatDate([currentDelivery])[0]);
                     res.json({success: true});
                 }
             });
