@@ -83,7 +83,7 @@ $(document).ready(function () {
                 });
 
                 var inputPrice = $('<input>', {
-                    class: 'form-control',
+                    class: 'price form-control',
                     type: 'String',
                     name: 'price'
                 }).change(function() {
@@ -121,13 +121,9 @@ $(document).ready(function () {
                 hasError = true;
                 alert('All fields must be filled out.');
                 return false;
-            } else if ($(this).parent().hasClass('has-error')) {
-                $(this).parent().removeClass('has-error');
-            }
-
-            // check if pickup time is in the future
-            // TODO: the datetimepicker should have datetimes < now disabled
-            if ($(this).attr('name') == 'pickup-time') {
+            } else if ($(this).attr('name') == 'pickup-time') {                
+                // check if pickup time is in the future
+                // TODO: the datetimepicker should have datetimes < now disabled
                 if (new Date($(this).val()) < Date.now()) {
                     if (!$(this).parent().hasClass('has-error')) {
                         $(this).parent().addClass('has-error');
@@ -136,13 +132,14 @@ $(document).ready(function () {
                     alert('Please enter a date and time after the current date and time.');
                     return false;
                 }
-            } else if ($(this).attr('name') == 'price') {
+            } else if ($(this).hasClass('price')
+                && $(this).parent().hasClass('has-error')) {
                 // check if valid prices are entered
-                if ($(this).parent().hasClass('has-error')) {
-                    hasError = true;
-                    alert('Please enter a valid price.');
-                    return false;
-                }
+                hasError = true;
+                alert('Please enter a valid price.');
+                return false;
+            } else if ($(this).parent().hasClass('has-error')) {
+                $(this).parent().removeClass('has-error');
             }
         });
 

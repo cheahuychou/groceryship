@@ -34,7 +34,6 @@ $(document).ready(function() {
                     hasError = true;
                     alert('Please enter a date and time after the current date and time.');
                     return false;
-
             } else if ($(this).hasClass('price')
                 && $(this).parent().hasClass('has-error')) {
                 // check if valid prices are entered
