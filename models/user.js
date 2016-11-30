@@ -75,7 +75,7 @@ UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) 
 };
 
 /**
- * Adds a delivery ID to the completed shippings field. Updates the average request rating.  
+ * Adds a delivery ID to the completed shippings field. Updates the average shipping rating.  
  * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
  * @param {Number} rating - The rating of the new completed request. 
  * @param {Function} callback - The function to execute after the account is connected. Callback

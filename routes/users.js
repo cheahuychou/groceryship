@@ -15,16 +15,25 @@ router.get('/:username', utils.isAuthenticated, function (req, res, next) {
 });
 
 router.get('/:username/request', utils.isAuthenticated, function (req, res, next) { 
-	res.render('request', { title: 'Request for a Delivery', username: req.params.username});
+	res.render('request', { title: 'Request for a Delivery',
+		                    username: req.params.username,
+      	                    allPickupLocations: utils.allPickupLocations(),
+    	                    allStores: utils.allStores()
+		                });
 });
 
+//TODO: remove this as I think it's no longer used?
 router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next) { 
 	res.render('deliver', { title: 'Request Feed', username: req.params.username});
 });
 
 router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
 	User.findOne({'username': req.params.username}, function(err, user){
-		res.render('profile', {title: 'Profile Page', user: user, username: req.params.username});
+		res.render('profile', {title: 'Profile Page',
+			                   user: user,
+			                   username: req.params.username,
+			                   allDorms: utils.allDorms()
+			               });
 	});
 });
 

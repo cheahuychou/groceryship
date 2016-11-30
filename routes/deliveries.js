@@ -13,11 +13,31 @@ fields rendered: title & requestItems
 router.get("/requests", utils.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.getRequests(user._id, now, null, null, null, function(err, requestItems) {
+    var stores = req.query.stores;
+    var pickupLocations = req.query.pickupLocations;
+    if (req.query.minRating) {
+    	var minRating = parseInt(req.query.minRating);
+    }
+    var sortBy = req.query.sortBy;
+    if (req.query.sortIncreasing) {
+    	var sortIncreasing = parseInt(req.query.sortIncreasing);
+    }
+    Delivery.getRequests(user._id, now, stores, pickupLocations, minRating, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
+        	console.log(err);
             res.send({'success': false, 'message': err});
         } else {
-            res.render('deliver', {username: user.username, title: 'Request Feed', requestItems: utils.formatDate(requestItems)});
+            res.render('deliver', {username: user.username,
+            	                   title: 'Request Feed',
+            	                   requestItems: utils.formatDate(requestItems),
+            	                   allPickupLocations: utils.allPickupLocations(),
+            	                   allStores: utils.allStores(),
+            	                   previousStores: stores,
+            	                   previousPickupLocations: pickupLocations,
+            	                   previousMinRating: minRating,
+            	                   previousSortBy: sortBy,
+            	                   previousSortIncreasing: sortIncreasing
+            	               });
         }
     });
 });
@@ -33,15 +53,21 @@ router.get("/username/:username", utils.isAuthenticated, function(req, res){
         if (err) {
             res.send({'success': false, 'message': err})
         } else {
-            res.render('dashboard', {username: user.username, title: 'Dashboard', now: now, requestItems: utils.formatDate(requestItems), deliveryItems: utils.formatDate(deliveryItems)});
+            res.render('dashboard', {username: user.username,
+            	                     title: 'Dashboard',
+            	                     now: now,
+            	                     requestItems: utils.formatDate(requestItems),
+            	                     deliveryItems: utils.formatDate(deliveryItems),
+            	                 });
         }
     });
 });
 
+//TODO: Remove this route if not needed.
+//TODO: If implemented, remove sensitive information from json response.
 /**
 Populates the notification popup, returning the relevant request or delivery
 fields returned: delivery
-**/
 router.get("/id/:id", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id}).populate('shopper requester').lean().exec(function(err, current_delivery) {
@@ -55,15 +81,18 @@ router.get("/id/:id", utils.isAuthenticated, function(req, res){
         }
     });
 });
+**/
 
 /**
 Posts a new request from a user
-request body fields (TODO: MIGHT NEED TO BE CHANGED): stores, item-due, item-name, itemDescription, item-qty, item-price-estimate, item-tip, item-pickup
+request body fields: stores, itemDue, itemName, itemDescription, itemQty, itemPriceEstimate, itemTips, itemPickupLocation
 **/
 router.post("/", utils.isAuthenticated, function(req, res){
     console.log(req.body);
     var stores = req.body['stores[]'];
-    console.log('stores', stores);
+    if (!stores) {
+    	stores = utils.allStores();
+    }
     var deadline = new Date(req.body.itemDue);
     var itemName = req.body.itemName;
     var itemDescription = req.body.itemDescription;
@@ -119,7 +148,10 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
+    Delivery.findOne({_id: req.params.id})
+        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+        console.log(currentDelivery);
     	if (currentDelivery === null) {
     		err = new Error("cannot find specified request")
     	}
@@ -146,7 +178,9 @@ request body fields: pickupTime, actualPrice
 router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, shopper: user._id})
-        .populate('shopper').populate('requester').exec(function(err, currentDelivery) {
+        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+        	console.log(currentDelivery);
             if (currentDelivery === null) {
                 err = new Error("cannot find specified request")
             }
@@ -170,7 +204,9 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
+    Delivery.findOne({_id: req.params.id, requester: user._id})
+        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
         if (currentDelivery === null) {
             err = new Error("cannot find specified request")
         }
@@ -194,7 +230,9 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user rejects the delivery **/
 router.put("/:id/reject", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id}, function(err, currentDelivery) {
+    Delivery.findOne({_id: req.params.id, requester: user._id})
+        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
         if (currentDelivery === null) {
             err = new Error("cannot find specified request")
         }

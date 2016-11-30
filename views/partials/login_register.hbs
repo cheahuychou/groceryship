@@ -23,17 +23,9 @@
             <input id='mit-id-register-box' type='text' name='requestedMitId' placeholder='MIT ID' required></input><br>
             <input id='phone-number-register-box' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input><br>
             <select name='dorm'>
-              <option>Baker</option>
-              <option>Burton Conner</option>
-              <option>East Campus</option>
-              <option>MacGregor</option>
-              <option>Maseeh</option>
-              <option>McCormick</option>
-              <option>New House</option>
-              <option>Next House</option>
-              <option>Random</option>
-              <option>Senior</option>
-              <option>Simmons</option>
+              {{#each allDorms}}
+              <option>{{this}}</option>
+              {{/each}}
             </select><br>
             <input type="submit" id='register-button' class='btn btn-primary btn-sm' value="SIGN UP & CONNECT WITH STRIPE">
           </form>

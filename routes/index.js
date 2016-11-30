@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
     if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
         res.redirect('/deliveries/username/'+ req.session.passport.user.username);
     } else {
-        res.render('home', { title: 'GroceryShip' });
+        res.render('home', { title: 'GroceryShip' , allDorms: utils.allDorms()});
     }
 });
 

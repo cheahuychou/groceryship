@@ -12,10 +12,9 @@
   <td>
     {{!-- TODO: Fix size --}}
     <select multiple id='item-stores-{{n}}' name='item-stores' class="form-control">
-      <option>Star Market</option>
-      <option>HMart</option>
-      <option>Trader Joe's</option>
-      <option>Whole Foods</option>
+      {{#each allStores}}
+      <option>{{this}}</option>
+      {{/each}}
     </select>
   </td>
   {{!-- TODO: set default item due to today's date. also set it as min --}}
@@ -23,20 +22,9 @@
   <td>
     {{!-- TODO: Fix size --}}
     <select id='item-pickup-location-{{n}}' name='item-pickup' class="form-control">
-      <option>Baker</option>
-      <option>Burton Conner</option>
-      <option>East Campus</option>
-      <option>MacGregor</option>
-      <option>Maseeh</option>
-      <option>McCormick</option>
-      <option>New House</option>
-      <option>Next House</option>
-      <option>Random</option>
-      <option>Senior</option>
-      <option>Simmons</option>
-      <option>Lobby 7</option>
-      <option>Lobby 10</option>
-      <option>Stata</option>
+      {{#each allPickupLocations}}
+      <option>{{this}}</option>
+      {{/each}}
     </select>
   </td>
   <td>
@@ -50,6 +38,4 @@
   {{!-- TODO: decide how to handle n when an item is deleted --}}
   <td><button id='item-remove-{{n}}' type="button" class="close item-remove" hidden>&times;</button></td>
 </tr>
-    {{!-- submit button for testing --}}
-    {{!-- <input type='submit' id='make-request' class='btn btn-primary' style='float: right'> --}}
 </form>
