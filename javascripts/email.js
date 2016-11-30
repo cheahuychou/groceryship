@@ -22,6 +22,12 @@ var Email = function() {
 	};
 	that.transporter = nodemailer.createTransport(smtpConfig);
 
+	String.prototype.format = function () {
+  		var i = 0, args = arguments;
+  		return this.replace(/{}/g, function () {
+	  		return typeof args[i] != 'undefined' ? args[i++] : '';
+  		});
+	};
 
 	/**
    	* Send an email from GroceryShip email to the given kerberos
@@ -72,37 +78,36 @@ var Email = function() {
    	*/
 	that.sendVerficationEmail = function (user, developmentMode) {
 		that.createVerificationToken(user, function (err, user) {
-			var subject = 'Confirm your GroceryShip Account, ' + user.username +'!';
+			var subject = 'Confirm your GroceryShip Account, {}!'.format(user.username);
 			var link;
 			if (developmentMode) {
-				link = 'http://localhost:3000/verify/' + user.username + '/' + user.verificationToken;
+				link = 'http://localhost:3000/verify/{}/{}'.format(user.username, user.verificationToken);
 			} else {
-				link = config.productionUrl() + '/verify/' + user.username + '/' + user.verificationToken;
+				link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
 			}
-			var content = that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="' + link + '"><input type="submit" value="Confirm" /></form></center>';
+			var content = '{}<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="{}"><input type="submit" value="Confirm" /></form></center>'.format(that.welcomeMessage, link);
 			return that.sendEmail(user.username, subject, content);
 		});
 	}
 
 	/**
-   	* Makes the body of the email that a requester receives when a shopper press "Deliver Now"
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* Makes the body of the email that a requester receives when a shopper claims his/her delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {String} the body of the email to the requester
    	*/
-	that.deliveryEmailContent = function (shopper, requester) {
-		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + shopper.username + ' has bought a few of the items you requsted and is ready to deliver it to you. Please contact him/her at ' + shopper.phoneNumber + ' to setup a pickup time.</p>'; //TODO: insert html notification from the dashboard here
+	that.deliveryEmailContent = function (delivery) {
+		return  '{}<center><p> Hi {}! {} has bought {} of {} you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.</p>'.format(that.welcomeMessage, delivery.requester.username, delivery.shopper.username, delivery.itemQuantity, delivery.itemName, delivery.shopper.phoneNumber)		
 	}
 
 	/**
-   	* Sends an email to the specified requester when the specified shopper press "Deliver Now"
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* Sends an email to the requester of a delivery when a shopper claims his/her delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendDeliveryEmail = function (shopper, requester) {
-		return that.sendEmail(requester.username, 'New Delivery', that.deliveryEmailContent(shopper, requester));
+	that.sendDeliveryEmail = function (delivery) {
+		var subject = 'Updates on your pending request for {}'.format(delivery.itemName)
+		return that.sendEmail(delivery.requester.username, subject, that.deliveryEmailContent(delivery));
 	}
 
 	/**

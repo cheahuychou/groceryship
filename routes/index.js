@@ -36,7 +36,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
         } else {
             bcrypt.compare(password, user.password, function (err, response) {
         if (response == true) {
-            done(null, {username: username, _id: user._id, verified: user.verified});
+            done(null, {username: username, _id: user._id, verified: user.verified, fullName: user.firstName + ' ' + user.lastName});
         } else {
             done({message:'Please enter a correct password'});
         }
@@ -70,6 +70,7 @@ router.post('/login', function(req, res, next) {
 
     req.logIn(user, function(err) {
       if (err) { return res.render('home', { title: 'GroceryShip', message: err.message, allDorms: utils.allDorms()}); }
+      req.fullName = user.fullName;
       res.redirect('/deliveries/username/'+ user.username);
     });
   })(req, res, next);

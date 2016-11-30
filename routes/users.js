@@ -11,20 +11,17 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:username', utils.isAuthenticated, function (req, res, next) { 
-	res.render('dashboard', { title: 'Dashboard', username: req.params.username});
+	res.render('dashboard', { title: 'Dashboard', username: req.params.username, fullName: user.fullName});
 });
 
 router.get('/:username/request', utils.isAuthenticated, function (req, res, next) { 
+	var user = req.session.passport.user;
 	res.render('request', { title: 'Request for a Delivery',
 		                    username: req.params.username,
+		                    fullName: user.fullName,
       	                    allPickupLocations: utils.allPickupLocations(),
     	                    allStores: utils.allStores()
 		                });
-});
-
-//TODO: remove this as I think it's no longer used?
-router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next) { 
-	res.render('deliver', { title: 'Request Feed', username: req.params.username});
 });
 
 router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
@@ -32,6 +29,7 @@ router.get('/:username/profile', utils.isAuthenticated, function (req, res, next
 		res.render('profile', {title: 'Profile Page',
 			                   user: user,
 			                   username: req.params.username,
+			                   fullName: user.firstName + ' ' + user.lastName,
 			                   allDorms: utils.allDorms()
 			               });
 	});

@@ -28,6 +28,7 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
             res.send({'success': false, 'message': err});
         } else {
             res.render('deliver', {username: user.username,
+                                   fullName: user.fullName,
             	                   title: 'Request Feed',
             	                   requestItems: utils.formatDate(requestItems),
             	                   allPickupLocations: utils.allPickupLocations(),
@@ -54,6 +55,7 @@ router.get("/username/:username", utils.isAuthenticated, function(req, res){
             res.send({'success': false, 'message': err})
         } else {
             res.render('dashboard', {username: user.username,
+                                     fullName: user.fullName,
             	                     title: 'Dashboard',
             	                     now: now,
             	                     requestItems: utils.formatDate(requestItems),
@@ -148,9 +150,7 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id})
-        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
-        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+    Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
         console.log(currentDelivery);
     	if (currentDelivery === null) {
     		err = new Error("cannot find specified request")
@@ -164,7 +164,12 @@ router.put("/:id/claim", utils.isAuthenticated, function(req, res){
 	                console.log(err);
 	                res.json({success: false, message: err});
 	            } else {
-	                res.json({success: true});
+                    Delivery.findOne({_id: req.params.id})
+                        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+                        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+                            email.sendDeliveryEmail(currentDelivery)
+	                       res.json({success: true});
+                       });
 	            }
 	        });
     	}
@@ -193,7 +198,6 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
                         console.log(err);
                         res.json({success: false, message: err});
                     } else {
-                        email.sendDeliveryEmail(currentDelivery.shopper, currentDelivery.requester)
                         res.json({success: true, item: utils.formatDate([currentDelivery])[0]});
                     }
                 });
