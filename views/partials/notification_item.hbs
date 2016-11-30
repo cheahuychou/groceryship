@@ -28,9 +28,9 @@
           <tbody>
             {{> item_row}}
             {{#if isRequest}}
-            <td class='shopper'>{{shopper.username}}</td>
+            <td class='shopper'>{{concat shopper.firstName shopper.lastName}}</td>
             {{else}}
-            <td class='requester'>{{requester.username}}</td>
+            <td class='requester'>{{concat requester.firstName requester.lastName}}</td>
             {{/if}}
             <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
             <td class='actual-price'>{{#if actualPrice}}{{actualPrice}}{{else}}N/A{{/if}}</td>
