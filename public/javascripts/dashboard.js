@@ -156,7 +156,7 @@ $(document).ready(function () {
                     url: '/deliveries/'+id+'/deliver',
                     type: 'PUT',
                     data: {
-                        pickupTime: pickupTime,
+                        pickupTime: new Date(pickupTime+getFormattedTimezoneOffset()),
                         actualPrice: price
                     },
                     success: function(data) {
