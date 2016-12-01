@@ -25,7 +25,6 @@ $(document).ready(function () {
             error: function(err) {
                 console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
-                $('#reject-modal-' + id).modal('toggle');
             }
         });
     });
@@ -51,7 +50,6 @@ $(document).ready(function () {
             error: function(err) {
                 console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
-                $('#close-modal-' + id).modal('toggle');
             }
         });
     });
