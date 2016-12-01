@@ -1,0 +1,16 @@
+{{!-- Author: Joseph Kuan --}}
+
+<div id="contact-modal-{{user._id}}" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Contact information for {{user.firstName}} {{user.lastName}}</h3>
+      </div>
+      <div class="modal-body information">
+        <p>MIT Email: {{user.username}}@mit.edu</p>
+        <p>Phone Number: {{user.phoneNumber}}</p>
+      </div>     
+    </div>
+  </div>
+</div>

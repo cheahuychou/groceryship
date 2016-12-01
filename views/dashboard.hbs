@@ -21,6 +21,13 @@
 </div>
 <div id='deliver'>
 	<h3>To Deliver</h3>
+  <p>Remember to contact the requester to set a pickup time!</p>
   {{!-- TODO: what if table is empty, i.e. no items --}}
   {{> deliveries_table}}
 </div>
+{{#each requestItems}}
+{{> contact_information user=shopper}}
+{{/each}}
+{{#each deliveryItems}}
+{{> contact_information user=requester}}
+{{/each}}

@@ -14,25 +14,28 @@
     </thead>
     <tbody>
       {{#each requestItems}}
-      <tr class='request-item-row' data-id='{{_id}}'>
-        {{> item_row this}}
-        {{#if ../own}}
-        <td class='shopper'>{{#if shopper}}{{shopper.username}}{{else}}N/A{{/if}}</td>
-        <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
-        {{/if}}
-
-        {{!-- cancel button should only appear for own requests --}}
-        {{#unless shopper}}
-        {{#if ../own}}
-        <td><button class='cancel-request btn btn-primary btn-sm'>Cancel</button></td>
+        {{#ifIsPast rawDeadline ../now}}
         {{else}}
-        {{!-- claim button should only appear for others' requests --}}
-        {{!-- TODO: should show 'Unclaim' if has been claimed by current user --}}
-        <td class='requester'>{{requester.username}}</td>
-        <td><button class='claim-request btn btn-primary btn-sm'>Claim</button></td>
-        {{/if}}
-        {{/unless}}
-      </tr>
+        <tr class='request-item-row' data-id='{{_id}}'>
+          {{> item_row this}}
+          {{#if ../own}}
+          <td class='shopper'>{{#if shopper}}<a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a>{{else}}N/A{{/if}}</td>
+          <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
+          {{/if}}
+
+          {{!-- cancel button should only appear for own requests --}}
+          {{#unless shopper}}
+          {{#if ../own}}
+          <td><button class='cancel-request btn btn-primary btn-sm'>Cancel</button></td>
+          {{else}}
+          {{!-- claim button should only appear for others' requests --}}
+          {{!-- TODO: should show 'Unclaim' if has been claimed by current user --}}
+          <td class='requester'>{{requester.username}}</td>
+          <td><button class='claim-request btn btn-primary btn-sm'>Claim</button></td>
+          {{/if}}
+          {{/unless}}
+        </tr>
+        {{/ifIsPast}}
       {{/each}}
     </tbody>
   </table>

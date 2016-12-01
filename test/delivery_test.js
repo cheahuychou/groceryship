@@ -29,7 +29,8 @@ describe("Models", function() {
           "phoneNumber": 1234567890,
           "dorm": "Baker",
           "stripeId":"testuserStripeId",
-          "stripeEmail": "testuserStripeEmail"
+          "stripeEmail": "testuserStripeEmail",
+          "avgRequestRating": 4
         });
 
         var testUser2 = new User({
@@ -41,7 +42,8 @@ describe("Models", function() {
           "phoneNumber": 2345678901,
           "dorm": "MacGregor",
           "stripeId":"testuserStripeId",
-          "stripeEmail": "testuserStripeEmail"
+          "stripeEmail": "testuserStripeEmail",
+          "avgRequestRating": 3.5
         });
 
         var testUser3 = new User({
@@ -75,7 +77,8 @@ describe("Models", function() {
               estimatedPrice: 3.5,
               tips: 0.5,
               pickupLocation: "Baker",
-              requester: id1};
+              requester: id1,
+              seenExpired: false};
 
           rejected_delivery1 = {stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
               status: "rejected",
@@ -89,7 +92,11 @@ describe("Models", function() {
               requester: id2,
               shopper: id1, 
               actualPrice: 20,
-              pickupTime: new Date('2016-11-21T23:00:59')};
+              pickupTime: new Date('2016-11-21T23:00:59'),
+              requesterRating: 2,
+              shopperRating: 3,
+              rejectedReason: "items not fresh",
+              seenExpired: false};
 
           accepted_delivery1 = {stores: ["Whole Foods", "Trader Joe's"],
               status: "accepted",
@@ -234,6 +241,63 @@ describe("Models", function() {
           });
       });
 
+      it("should not let estimatedPrice be negative", function(done) {
+        Delivery.create({stores: ["HMart", "Star Market"],
+          status: "accepted",
+          deadline: new Date('2016-11-22T23:59:59'),
+          itemName: "cheese",
+          itemDescription: "cheddar",
+          itemQuantity: "100g",
+          estimatedPrice: -15,
+          tips: 2,
+          pickupLocation: "Student Center",
+          requester: id1}, function(err, doc) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+      });
+
+      it("should not let tips be negative", function(done) {
+        Delivery.create({stores: ["HMart", "Star Market"],
+          status: "accepted",
+          deadline: new Date('2016-11-22T23:59:59'),
+          itemName: "cheese",
+          itemDescription: "cheddar",
+          itemQuantity: "100g",
+          estimatedPrice: 15,
+          tips: -2,
+          pickupLocation: "Student Center",
+          requester: id1}, function(err, doc) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+      });
+
+      it("should not let actualPrice be negative", function(done) {
+        Delivery.create({stores: ["Whole Foods"],
+          status: "accepted",
+          deadline: new Date('2016-11-22T12:00:00'),
+          itemName: "test-item",
+          itemDescription: "test-description",
+          itemQuantity: "test-quantity",
+          estimatedPrice: 10,
+          tips: 0.75,
+          pickupLocation: "Baker",
+          requester: id1,
+          shopper: id2, 
+          actualPrice: -11.5,
+          pickupTime: new Date('2016-11-21T11:00:00')}, function(err, doc) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+      });
+
       it("should reject pickup locations not covered under our project", function(done) {
         Delivery.create({stores: ["HMart", "Star Market"],
           status: "accepted",
@@ -252,7 +316,62 @@ describe("Models", function() {
           });
       });
 
+      it("should have an integer requesterRating ranged from 1-5 (or null)", function(done) {
+        Delivery.create({stores: ["Whole Foods"],
+          status: "accepted",
+          deadline: new Date('2016-11-22T12:00:00'),
+          itemName: "test-item",
+          itemDescription: "test-description",
+          itemQuantity: "test-quantity",
+          estimatedPrice: 10,
+          tips: 0.75,
+          pickupLocation: "Baker",
+          requester: id1,
+          shopper: id2, 
+          actualPrice: -11.5,
+          pickupTime: new Date('2016-11-21T11:00:00'),
+          requesterRating: 6}, function(err, doc) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+      });
+
+      it("should have an integer shopperRating ranged from 1-5 (or null)", function(done) {
+        Delivery.create({stores: ["Whole Foods"],
+          status: "accepted",
+          deadline: new Date('2016-11-22T12:00:00'),
+          itemName: "test-item",
+          itemDescription: "test-description",
+          itemQuantity: "test-quantity",
+          estimatedPrice: 10,
+          tips: 0.75,
+          pickupLocation: "Baker",
+          requester: id1,
+          shopper: id2, 
+          actualPrice: -11.5,
+          pickupTime: new Date('2016-11-21T11:00:00'),
+          requesterRating: 4.5}, function(err, doc) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+      });
+
     }); //End Describe Basic Model and Validation
+
+    describe("SeenExpired", function() {
+      it("should allow users to mark expired pending requests as seen", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            doc.seeExpired(function(err) {
+              assert.strictEqual(doc.seenExpired, true);
+              done();
+            });
+          });
+      });
+    }); //End Describe Deliver function
 
     describe("Claim", function() {
       it("should allow shoppers to claim requests", function(done) {
@@ -345,15 +464,36 @@ describe("Models", function() {
     }); //End Describe Accept and Reject functions
 
     describe("getRequestsAndDeliveries", function() {
-      it("should get requests and deliveries of a user", function(done) {
-        Delivery.create([pending_delivery1, claimed_delivery1], function(err, doc) {
-            Delivery.getRequestsAndDeliveries(id1, new Date('2016-11-21T18:00:00'), function(err, requestItems, deliveryItems) {
+      it("should get pending requests of a user, where seenExpired is false", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            Delivery.getRequestsAndDeliveries(id1, function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 1);
-              assert.strictEqual(deliveryItems.length, 1);
+              assert.strictEqual(deliveryItems.length, 0);
               assert.strictEqual(requestItems[0].itemName, "test-item-beer");
+              done();
+            });
+          });
+      });
+
+      it("should get claimed requests of a user", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            Delivery.getRequestsAndDeliveries(id2, function(err, requestItems, deliveryItems) {
+              assert.strictEqual(requestItems.length, 1);
+              assert.strictEqual(deliveryItems.length, 0);
+              assert.strictEqual(requestItems[0].itemName, "test-item-sausages");
+              assert.strictEqual(requestItems[0].shopper.username, "username1");
+              done();
+            });
+          });
+      });
+
+      it("should get deliveries that a user has claimed but not gave a requesterRating", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            Delivery.getRequestsAndDeliveries(id1, function(err, requestItems, deliveryItems) {
+              assert.strictEqual(requestItems.length, 0);
+              assert.strictEqual(deliveryItems.length, 1);
               assert.strictEqual(deliveryItems[0].itemName, "test-item-sausages");
               assert.strictEqual(deliveryItems[0].requester.username, "username2");
-              assert.strictEqual(deliveryItems[0].requester.mitId, 234567890);
               done();
             });
           });
@@ -361,7 +501,7 @@ describe("Models", function() {
 
       it("should not get requests and deliveries of other users", function(done) {
         Delivery.create([pending_delivery1, claimed_delivery1], function(err, doc) {
-            Delivery.getRequestsAndDeliveries(id3, new Date('2016-11-21T18:00:00'), function(err, requestItems, deliveryItems) {
+            Delivery.getRequestsAndDeliveries(id3, function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 0);
               assert.strictEqual(deliveryItems.length, 0);
               done();
@@ -369,9 +509,19 @@ describe("Models", function() {
           });
       });
 
-      it("should not get requests and deliveries whose deadlines have passed", function(done) {
-        Delivery.create([pending_delivery1, claimed_delivery1], function(err, doc) {
-            Delivery.getRequestsAndDeliveries(id1, new Date('2016-11-22T12:00:00'), function(err, requestItems, deliveryItems) {
+      it("should not get pending requests where seenExpired is true", function(done) {
+        Delivery.create({stores: ["HMart", "Star Market"],
+              status: "pending",
+              deadline: new Date('2016-11-21T23:59:59'),
+              itemName: "test-item-beer",
+              itemDescription: "test-description-bluegirl",
+              itemQuantity: "test-quantity-6",
+              estimatedPrice: 3.5,
+              tips: 0.5,
+              pickupLocation: "Baker",
+              requester: id1,
+              seenExpired: true}, function(err, doc) {
+            Delivery.getRequestsAndDeliveries(id1, function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 0);
               assert.strictEqual(deliveryItems.length, 0);
               done();
@@ -379,9 +529,32 @@ describe("Models", function() {
           });
       });
 
-      it("should not get requests and deliveries that are not pending or claimed", function(done) {
-        Delivery.create([accepted_delivery1, rejected_delivery1], function(err, doc) {
-            Delivery.getRequestsAndDeliveries(id2, new Date('2016-11-21T15:00:00'), function(err, requestItems, deliveryItems) {
+      it("should not get requests that a user has accepted or rejected", function(done) {
+        Delivery.create([rejected_delivery1,
+                           {stores: ["Whole Foods", "Trader Joe's"],
+              status: "accepted",
+              deadline: new Date('2016-11-23T11:00:30'),
+              itemName: "test-item-icecream",
+              itemDescription: "test-description-talenti",
+              itemQuantity: "test-quantity-1",
+              estimatedPrice: 15.50,
+              tips: 2,
+              pickupLocation: "McCormick",
+              requester: id2,
+              shopper: id3, 
+              actualPrice: 14,
+              pickupTime: new Date('2016-11-22T23:00:59')}], function(err, doc) {
+            Delivery.getRequestsAndDeliveries(id2, function(err, requestItems, deliveryItems) {
+              assert.strictEqual(requestItems.length, 0);
+              assert.strictEqual(deliveryItems.length, 0);
+              done();
+            });
+          });
+      });
+
+      it("should not get deliveries where the user has already given a requesterRating", function(done) {
+        Delivery.create(rejected_delivery1, function(err, doc) {
+            Delivery.getRequestsAndDeliveries(id1, function(err, requestItems, deliveryItems) {
               assert.strictEqual(requestItems.length, 0);
               assert.strictEqual(deliveryItems.length, 0);
               done();
@@ -403,7 +576,7 @@ describe("Models", function() {
           tips: 0.2,
           pickupLocation: "Baker",
           requester: id2}], function(err, doc) {
-            Delivery.getRequests(id1, new Date('2016-11-23T15:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], null, null, function(err, requestItems) {
+            Delivery.getRequests(id1, new Date('2016-11-23T15:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], null, null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 1);
               assert.strictEqual(requestItems[0].itemName, "test-item-yoghurt");
               assert.strictEqual(requestItems[0].requester.phoneNumber, 2345678901);
@@ -414,7 +587,7 @@ describe("Models", function() {
 
       it("should not populate requests that are not pending", function(done) {
         Delivery.create([claimed_delivery1, accepted_delivery1], function(err, doc) {
-            Delivery.getRequests(id1, new Date('2016-11-22T08:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], ["McCormick", "New House"], null, function(err, requestItems) {
+            Delivery.getRequests(id1, new Date('2016-11-22T08:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], ["McCormick", "New House"], null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
               done();
             });
@@ -423,7 +596,7 @@ describe("Models", function() {
 
       it("should not populate requests whose deadlines have passed", function(done) {
         Delivery.create(pending_delivery1, function(err, doc) {
-            Delivery.getRequests(id2, new Date('2016-11-22T10:00:00'), null, ["Lobby 7", "Baker"], null, function(err, requestItems) {
+            Delivery.getRequests(id2, new Date('2016-11-22T10:00:00'), null, ["Lobby 7", "Baker"], null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
               done();
             });
@@ -432,7 +605,7 @@ describe("Models", function() {
 
       it("should not populate requests from stores outside of the filter list of stores", function(done) {
         Delivery.create(pending_delivery1, function(err, doc) {
-            Delivery.getRequests(id2, new Date('2016-11-21T12:00:00'), ["Trader Joe's", "Whole Foods"], ["Lobby 7", "Baker"], null, function(err, requestItems) {
+            Delivery.getRequests(id2, new Date('2016-11-21T12:00:00'), ["Trader Joe's", "Whole Foods"], ["Lobby 7", "Baker"], null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
               done();
             });
@@ -440,18 +613,29 @@ describe("Models", function() {
       });
 
       it("should not populate requests with pickup locations outside of the filter list of locations", function(done) {
-        Delivery.create({stores: ["Whole Foods", "HMart"],
-          status: "pending",
-          deadline: new Date('2016-11-23T18:59:59'),
-          itemName: "test-item-icecream",
-          itemDescription: "test-description-tasty",
-          itemQuantity: "test-quantity-1",
-          estimatedPrice: 5,
-          tips: 0.5,
-          pickupLocation: "Senior",
-          requester: id2}, function(err, doc) {
-            Delivery.getRequests(id1, new Date('2016-11-23T12:00:00'), ["Trader Joe's", "HMart"], ["Lobby 7", "Burton Conner"], null, function(err, requestItems) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            Delivery.getRequests(id2, new Date('2016-11-21T12:00:00'), ["Trader Joe's", "HMart"], ["Lobby 7", "Burton Conner"], null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 0);
+              done();
+            });
+          });
+      });
+
+      it("should not populate requests where requester's avgRequestRating is below the minRating", function(done) {
+        Delivery.create([pending_delivery1,
+                          {stores: ["Star Market", "Whole Foods"],
+          status: "pending",
+          deadline: new Date('2016-11-23T23:59:59'),
+          itemName: "test-item-yoghurt",
+          itemDescription: "test-description-yummy",
+          itemQuantity: "test-quantity-many",
+          estimatedPrice: 6,
+          tips: 0.2,
+          pickupLocation: "Baker",
+          requester: id2}], function(err, doc) {
+            Delivery.getRequests(id3, new Date('2016-11-21T12:00:00'), null, null, 4, null, function(err, requestItems) {
+              assert.strictEqual(requestItems.length, 1);
+              assert.strictEqual(requestItems[0].itemName, "test-item-beer");
               done();
             });
           });
@@ -479,12 +663,12 @@ describe("Models", function() {
           tips: 1,
           pickupLocation: "Baker",
           requester: id2}], function(err, doc) {
-            Delivery.getRequests(id3, new Date('2016-11-21T15:00:00'), null, null, ["tips", -1], function(err, requestItems) {
+            Delivery.getRequests(id3, new Date('2016-11-21T15:00:00'), null, null, null, ["tips", -1], function(err, requestItems) {
               assert.strictEqual(requestItems.length, 3);
               assert.strictEqual(requestItems[0].itemName, "test-item-pie");
               assert.strictEqual(requestItems[1].itemName, "test-item-beer");
               assert.strictEqual(requestItems[2].itemName, "test-item-yoghurt");
-              Delivery.getRequests(id3, new Date('2016-11-21T15:00:00'), null, null, ["tips", 1], function(err, requestItems) {
+              Delivery.getRequests(id3, new Date('2016-11-21T15:00:00'), null, null, null, ["tips", 1], function(err, requestItems) {
                 assert.strictEqual(requestItems.length, 3);
                 assert.strictEqual(requestItems[0].itemName, "test-item-yoghurt");
                 assert.strictEqual(requestItems[1].itemName, "test-item-beer");
