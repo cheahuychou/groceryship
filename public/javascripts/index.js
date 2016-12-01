@@ -4,7 +4,7 @@
  * Adds the message message to the area with id messages or class modal-messages.
  * @param {String}  message  The message
  * @param {String}  type     The type of message: success, warning, info, or danger
- * @param {Boolean} isModal  if true, add the message to modal-messages instead of messages
+ * @param {Boolean} isModal  if true, adds the message to modal-messages instead of messages
  * @param {Boolean} clearOld if true, clears old messages
  */
 var addMessage = function(message, type, isModal, clearOld) {
@@ -59,7 +59,7 @@ var setMinMaxDateTime = function (deadline) {
     // TODO: currently the time is set to 0:00:00, however we might want it to be the exactly the current time and exact
     // due time
     var currentTime = new Date();
-    var minDateTime = currentTime.getFullYear()  + "-" + (currentTime.getMonth()+1) + "-" + currentTime.getDate() + "T00:00:00"; 
+    var minDateTime = currentTime.getFullYear()  + "-" + numberToJsTimeFormat(currentTime.getMonth()+1) + "-" + numberToJsTimeFormat(currentTime.getDate()) + "T00:00:00"; 
     $('.datetimepicker').each(function () {
         $(this).attr('min', minDateTime);
     });
@@ -67,7 +67,7 @@ var setMinMaxDateTime = function (deadline) {
         var deadlineString = deadline.split(',')[0];
         deadlineString = deadlineString.substring(0, deadlineString.length - 2);
         var dueTime = new Date(Date.parse(deadlineString));
-        var maxDateTime = currentTime.getFullYear()  + "-" + (dueTime.getMonth()+1) + "-" + dueTime.getDate() + "T00:00:00";
+        var maxDateTime = currentTime.getFullYear()  + "-" + numberToJsTimeFormat(dueTime.getMonth()+1) + "-" + numberToJsTimeFormat(dueTime.getDate()) + "T00:00:00";
         $('.datetimepicker').attr('max', maxDateTime);
     }
 }
@@ -81,7 +81,7 @@ var setMinMaxDateTime = function (deadline) {
  * @param  {Float} number  a number for a part of the timezone offset
  * @return {String}        formatted number as defined above
  */
-var numberToTimezoneOffsetFormat = function(number) {
+var numberToJsTimeFormat = function(number) {
     var norm = Math.abs(Math.floor(number));
     return (norm < 10 ? '0' : '') + norm;
 };
@@ -99,6 +99,6 @@ var getFormattedTimezoneOffset = function() {
     var hoursOffset = timezoneOffsetMinutes / 60;
     var modMinutesOffset = timezoneOffsetMinutes % 60;
 
-    return sign + numberToTimezoneOffsetFormat(hoursOffset) + ':' + numberToTimezoneOffsetFormat(modMinutesOffset);
+    return sign + numberToJsTimeFormat(hoursOffset) + ':' + numberToJsTimeFormat(modMinutesOffset);
 };
 
