@@ -31,6 +31,7 @@
         <h4 class="modal-title">Edit Profile</h4>
       </div>
       <div class="modal-body">
+        <div class="modal-messages"></div>
         <form id='register-form' onsubmit='return checkEditForm()'>
           <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
           <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>

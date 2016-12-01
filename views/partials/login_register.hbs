@@ -17,6 +17,7 @@
           <h4 class="modal-title">Sign Up</h4>
         </div>
         <div class="modal-body">
+          <div class="modal-messages"></div>
           <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input id='kerberos-register-box' type='text' name='requestedKerberos' placeholder='kerberos' required></input><br>

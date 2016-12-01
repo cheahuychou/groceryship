@@ -1,6 +1,7 @@
 // Author: Cheahuychou Mao
 $(document).ready(function () {
     var csrf = $('#csrf').val();
+    // TODO: clear messages in .modal-messages when modal is closed
     
     $('.reject-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
@@ -13,16 +14,17 @@ $(document).ready(function () {
             success: function(data) {
                 console.log(data);
                 if (data.success) {
-                    addMessage('Rejection succeeded. The shopper has been notified.', 'success', true);
+                    // TODO (or not?): change isModal argument to false and close the modal here
+                    addMessage('Rejection succeeded. The shopper has been notified.', 'success', true, true);
                 } else {
                     console.log(data.message);
-                    addMessage('Rejection failed. Please try again.', 'danger', true);
+                    addMessage('Rejection failed. Please try again.', 'danger', true, true);
                 }
                 $('#reject-modal-' + id).modal('toggle');
             },
             error: function(err) {
                 console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
                 $('#reject-modal-' + id).modal('toggle');
             }
         });
@@ -38,16 +40,17 @@ $(document).ready(function () {
             success: function(data) {
                 console.log(data);
                 if (data.success) {
-                    addMessage('Rating succeeded.', 'success', true);
+                    // TODO (or not?): change isModal argument to false and close the modal here
+                    addMessage('Rating succeeded.', 'success', true, true);
                 } else {
                     console.log(data.message);
-                    addMessage('Rating failed. Please try again.', 'danger', true);
+                    addMessage('Rating failed. Please try again.', 'danger', true, true);
                 }
                 $('#close-modal-' + id).modal('toggle');
             },
             error: function(err) {
                 console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
                 $('#close-modal-' + id).modal('toggle');
             }
         });

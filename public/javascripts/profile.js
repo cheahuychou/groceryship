@@ -10,15 +10,15 @@ var checkEditForm = function () {
 	var confirmPassword = $('#confirm-password-register-box').val().trim();
 	var phoneNumber = $('#phone-number-register-box').val().trim();
 	if (password.length === 0 || /<[a-z][\s\S]*>/i.test(password)) {
-		alert('Please enter a non-empty and valid password');
+        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
 		return false; 
 	}
 	if (confirmPassword !== password || /<[a-z][\s\S]*>/i.test(password)) {
-		alert('The password and confirm password you entered did not match, please try again.');
+        addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
 		return false;
 	}
 	if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10) {
-		alert('please enter a valid US phone numbers with 10 digits');
+        addMessage('Please enter a valid US phone number with 10 digits.', 'danger', true, true);
 		return false;
 	}
 }
@@ -47,15 +47,15 @@ $(document).ready(function () {
             success: function(data) {
                 console.log(data);
                 if (data.success) {
-                    addMessage('Profile updated!', 'success', true);
+                    addMessage('Profile updated!', 'success', true, true);
                 } else {
                     console.log(data.message);
-                    addMessage('Profile update failed', 'danger', true);
+                    addMessage('Profile update failed', 'danger', true, true);
                 }
             },
             error: function(err) {
                 console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
             }
         });
    	});
