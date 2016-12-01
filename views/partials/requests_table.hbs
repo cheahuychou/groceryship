@@ -36,4 +36,13 @@
       {{/each}}
     </tbody>
   </table>
+  {{!-- show this message when there are no requestItems --}}
+  {{#unless requestItems}}
+    <div class="well well-lg">
+      {{#if ../own}} You have no requests to display yet. Make one by going to the Request tab!
+      {{else}}
+      No requests from other users to claim yet.
+      {{/if}}
+    </div>
+  {{/unless}}
 </div>

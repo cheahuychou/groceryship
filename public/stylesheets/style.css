@@ -13,13 +13,26 @@ a {
   margin: auto;
 }
 
+.feature {
+    float: left;
+    width: 100%;
+}
+
 .feature img {
 	width: 80px;
 	height: 80px;
+    margin-bottom: 10px;
+    float: left;
 }
 
 .right-space {
   margin-right:15px;
+}
+
+.feature-img-text {
+    margin-top: 20px;
+    margin-left: 90px;
+    display: block;
 }
 
 #about {
@@ -28,6 +41,10 @@ a {
 
 #login-content {
 	float: right;
+}
+
+.login-column {
+    margin-top: 20px;
 }
 
 .fa-star-o, .fa-star {
@@ -59,7 +76,7 @@ h3 {
       width: 820px; /* New width for default modal */
     }
     .modal-sm {
-      width: 600px; /* New width for small modal */
+      width: 600px;  /*New width for small modal */
     }
 }
 @media screen and (min-width: 992px) {

@@ -64,4 +64,9 @@
   {{#each deliveryItems}}
     {{> notification_item isRequest=false}}
   {{/each}}
+  {{#unless requestItems}}
+    {{#unless deliveryItems}}
+      <div class="well well-lg">Deliveries scheduled for you and by you will appear here where you can take further action.</div>
+    {{/unless}}
+  {{/unless}}
 </div>

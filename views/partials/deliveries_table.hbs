@@ -23,6 +23,10 @@
       {{/each}}
     </tbody>
   </table>
+  {{!-- show this message when there are no deliveryItems --}}
+  {{#unless deliveryItems}}
+    <div class="well well-lg">Claim a request by going to the Deliver tab then it will appear here.</div>
+  {{/unless}}
   {{!-- TODO: button should be disabled if there are no items / no items selected --}}
   <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#deliver-now-modal' style='float: right' disabled>Deliver Now</button>
   {{> deliver_now}}

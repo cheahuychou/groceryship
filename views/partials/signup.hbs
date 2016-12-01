@@ -1,0 +1,30 @@
+<div id="register-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Sign Up</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-messages"></div>
+        <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
+          <input id='kerberos-register-box' class='form-control' type='text' name='requestedKerberos' placeholder='kerberos' required></input><br>
+          <input id='password-register-box' class='form-control' type='password' name='requestedPassword' placeholder='password' required></input><br>
+          <input id='confirm-password-register-box' class='form-control' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
+          <input id='mit-id-register-box' class='form-control' type='text' name='requestedMitId' placeholder='MIT ID' required></input><br>
+          <input id='phone-number-register-box' class='form-control' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input><br>
+          <select name='dorm' class='form-control'>
+            {{#each allDorms}}
+            <option>{{this}}</option>
+            {{/each}}
+          </select><br>
+          <input type="submit" id='register-button' class='btn btn-primary btn-sm' value="SIGN UP & CONNECT WITH STRIPE">
+        </form>
+        </div>
+        </div>
+      </div>     
+    </div>
+  </div>
+</div>
