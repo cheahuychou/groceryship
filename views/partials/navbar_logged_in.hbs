@@ -8,6 +8,7 @@
         <ul class="dropdown-menu">
             <li><a name href="/users/{{username}}/profile">Your Profile</a></li>
             <li class="divider"></li>
+            <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
             <li><a class="logout-button">Logout</a></li>
         </ul>
     </li>

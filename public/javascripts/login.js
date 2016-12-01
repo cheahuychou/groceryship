@@ -35,7 +35,6 @@ var checkSignUpForm = function () {
     var mitId = $('#mit-id-register-box').val().trim();
     var phoneNumber = $('#phone-number-register-box').val().trim();
     var dorm = $('.dorm :selected').text().trim();
-    console.log(kerberos, password, confirmPassword, mitId, phoneNumber, dorm);
     if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || /<[a-z][\s\S]*>/i.test(kerberos)) {
         alert('Please enter a non-empty and valid kerberos');
         return false; 

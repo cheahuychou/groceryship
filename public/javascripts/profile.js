@@ -24,6 +24,40 @@ var checkEditForm = function () {
 }
 
 $(document).ready(function () {
-   $("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
-   document.getElementById('edit-dormlist').setAttribute("name", "dorm");
+   	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
+   	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
+   	
+   	$('#edit-confirm-button').click(function () {
+   		var username = $('#kerberos').html();
+   		var password = $(this).parent().find('#password-register-box').val();
+   		var phoneNumber = $(this).parent().find('#phone-number-register-box').val();
+	   	var dorm = $(this).parent().find('#edit-dormlist :selected').val();
+		var csrf = $(this).parent().find('#csrf').val();
+		console.log('yoi');
+		console.log(username, password,phoneNumber, dorm, csrf);
+		$.ajax({
+            url: '/users/'+ username +'/profile/edit',
+            type: 'PUT',
+            data: {
+            		newPassword: password,
+		    		newPhoneNumber: phoneNumber,
+		    		dorm: dorm,
+		   			_csrf: csrf
+		   		},
+            success: function(data) {
+                console.log(data);
+                if (data.success) {
+                    addMessage('Profile updated!', 'success', true);
+                } else {
+                    console.log(data.message);
+                    addMessage('Profile update failed', 'danger', true);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+            }
+        });
+   	});
+   	
 });

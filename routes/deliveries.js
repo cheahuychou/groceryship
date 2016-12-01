@@ -1,10 +1,16 @@
 //Author: Joseph Kuan
 var express = require('express');
+var bodyParser = require('body-parser');
+var csrf = require('csurf');
 var router = express.Router();
 var Delivery = require('../models/delivery');
 var User = require('../models/user');
 var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
+
+// setup route middlewares 
+var csrfProtection = csrf({ cookie: true });
+var parseForm = bodyParser.urlencoded({ extended: false });
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
@@ -37,7 +43,8 @@ router.get("/requests", utils.isAuthenticated, function(req, res) {
             	                   previousPickupLocations: pickupLocations,
             	                   previousMinRating: minRating,
             	                   previousSortBy: sortBy,
-            	                   previousSortIncreasing: sortIncreasing
+            	                   previousSortIncreasing: sortIncreasing,
+                                   csrfToken: req.csrfToken()
             	               });
         }
     });
@@ -60,6 +67,7 @@ router.get("/username/:username", utils.isAuthenticated, function(req, res){
             	                     now: now,
             	                     requestItems: utils.formatDate(requestItems),
             	                     deliveryItems: utils.formatDate(deliveryItems),
+                                     csrfToken: req.csrfToken()
             	                 });
         }
     });
@@ -89,7 +97,7 @@ router.get("/id/:id", utils.isAuthenticated, function(req, res){
 Posts a new request from a user
 request body fields: stores, itemDue, itemName, itemDescription, itemQty, itemPriceEstimate, itemTips, itemPickupLocation
 **/
-router.post("/", utils.isAuthenticated, function(req, res){
+router.post("/", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     console.log(req.body);
     var stores = req.body['stores[]'];
     if (!stores) {
@@ -124,7 +132,7 @@ router.post("/", utils.isAuthenticated, function(req, res){
 });
 
 /** Removes a Delivery when the user cancels the request **/
-router.delete("/:id", utils.isAuthenticated, function(req, res){
+router.delete("/:id", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var userId = req.session.passport.user._id;
     Delivery.findOne({_id: req.params.id, requester: userId, status: "pending"}, function(err, current_delivery) { //verify that the current user is the one who requested it. Also,
     	                                                                                                           //verify that the request has not been claimed
@@ -148,7 +156,7 @@ router.delete("/:id", utils.isAuthenticated, function(req, res){
 });
 
 /** Updates a Delivery when a user claims that delivery **/
-router.put("/:id/claim", utils.isAuthenticated, function(req, res){
+router.put("/:id/claim", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
         console.log(currentDelivery);
@@ -180,7 +188,7 @@ router.put("/:id/claim", utils.isAuthenticated, function(req, res){
 Updates a Delivery when a user clicks on "Deliver Now"
 request body fields: pickupTime, actualPrice
 **/
-router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
+router.put("/:id/deliver", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, shopper: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
@@ -208,7 +216,7 @@ router.put("/:id/deliver", utils.isAuthenticated, function(req, res){
 });
 
 /** Updates a Delivery when a user accepts the delivery **/
-router.put("/:id/accept", utils.isAuthenticated, function(req, res){
+router.put("/:id/accept", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
@@ -234,7 +242,7 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 });
 
 /** Updates a Delivery when a user rejects the delivery **/
-router.put("/:id/reject", utils.isAuthenticated, function(req, res){
+router.put("/:id/reject", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
@@ -260,7 +268,7 @@ router.put("/:id/reject", utils.isAuthenticated, function(req, res){
 });
 
 /** Sets requester rating of the delivery **/
-router.put("/:id/rateRequester", utils.isAuthenticated, function(req, res){
+router.put("/:id/rateRequester", utils.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, currentDelivery) {
         if (currentDelivery === null) {
