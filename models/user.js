@@ -13,6 +13,7 @@ var UserSchema = mongoose.Schema({
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
     stripeId: {type: String, required: true},
+    stripePublishableKey: {type: String, required: true},
     stripeEmail: {type: String, required: true},
     completedRequests: {type: [{type: ObjectId, ref: "delivery"}], default: []},
     avgRequestRating: {type: Number, default: 5},

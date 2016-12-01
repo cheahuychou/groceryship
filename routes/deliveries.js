@@ -6,8 +6,6 @@ var User = require('../models/user');
 var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
 var config = require('../javascripts/config.js');
-var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
-var stripe = require('stripe')(API_KEY);
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
@@ -232,7 +230,9 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 
 router.put("/:id/pay", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
-    console.log(req.body);
+    var card = req.body;
+    //var card = JSON.parse(req.body).card;
+    var stripe = require('stripe')(user.stripePublishableKey);
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
@@ -244,17 +244,29 @@ router.put("/:id/pay", utils.isAuthenticated, function(req, res){
             res.json({success: false, message: err});
         } else {
             User.findById(currentDelivery.shopper, function(err, shopper){
-                //console.log(user.stripeId);
-
                 stripe.tokens.create({
-                    card: req.body
+                    card: card
                 }, function(err, token){
-                    stripe.charges.create({
-                        amount: currentDelivery.actualPrice * 100,
-                        currency: 'usd',
-                        source: token,
-                        destination: user.stripeId
-                    });
+                    if (err){
+                        console.log(err);
+                        res.json({success: false, message: "Tokenization fails."});
+                    } else {
+                        var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
+                        var stripe = require('stripe')(API_KEY);
+                        stripe.charges.create({
+                            amount: currentDelivery.actualPrice * 100,
+                            currency: 'usd',
+                            source: token.id,
+                            destination: shopper.stripeId
+                        }, function(err, data){
+                            if (err){
+                                console.log(err)
+                                res.json({success: false, message: "Charge fails."});
+                            } else {
+                                res.json({success: true});
+                            }
+                        });
+                    }
                 });
             });
         }

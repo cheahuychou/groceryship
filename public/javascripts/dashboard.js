@@ -203,21 +203,26 @@ $(document).ready(function () {
     $('#pay-rate-button').click(function(){
         var id = $(this).attr('data-id');
         var cardNumber = $('#card-number').val();
-        var expMonth = $('#expiration-month').val();
-        var expYear = $('#expiration-year').val();
+        var expMonth = $('#expiry-month').val();
+        var expYear = $('#expiry-year').val();
         var cvc = $('#cvc').val();
         return $.ajax({
                     url: '/deliveries/'+id+'/pay',
                     type: 'PUT',
-                    data: {
+                    data: { 
                         'number': cardNumber,
-                        'exp_month': expMonth,
-                        'exp_year': expYear,
+                        'exp_month': Number(expMonth),
+                        'exp_year': Number(expYear),
                         'cvc': cvc            
                     }, success: function(data){
-                        //console.log(data.obj);
+                        if (data.success){
+                            addMessage('Successful payment.', 'success', true);
+                        } else {
+                            alert(data.message);
+                        }
                     }, error: function(err){
-
+                        console.log(err);
+                        alert(err);
                     }
                 });
     });

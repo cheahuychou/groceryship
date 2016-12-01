@@ -36,7 +36,12 @@ passport.use(new LocalStrategy(function (username, password, done) {
         } else {
             bcrypt.compare(password, user.password, function (err, response) {
         if (response == true) {
-            done(null, {username: username, _id: user._id, verified: user.verified});
+            done(null, {
+            	username: username, 
+            	_id: user._id, 
+            	verified: user.verified,
+            	stripePublishableKey: user.stripePublishableKey
+            });
         } else {
             done({message:'Please enter a correct password'});
         }
@@ -176,8 +181,10 @@ router.get('/oauth/callback', function(req, res) {
             });
         } else {
             var user = JSON.parse(req.query.state);
-            var stripeId = JSON.parse(body).stripe_user_id;
+            var authResponse = JSON.parse(body);
+            var stripeId = authResponse.stripe_user_id;
             user['stripeId'] = stripeId;
+            user['stripePublishableKey'] = authResponse.stripe_publishable_key;
             stripe.accounts.retrieve(stripeId,
                 function(err, account){
                     if (err) {
