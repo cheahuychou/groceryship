@@ -5,7 +5,7 @@ $(document).ready(function() {
     });
 
     $('input[name=item-due]').change(function() {
-        if (new Date($(this).val()) < Date.now()) {
+        if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
             if (!$(this).parent().hasClass('has-error')) {
                 $(this).parent().addClass('has-error');
             }
@@ -27,7 +27,11 @@ $(document).ready(function() {
                 hasError = true;
                 addMessage('All fields must be filled out.', 'danger', false, true);
                 return false;
-            } else if ($(this).attr('name') == 'item-due') {
+            } else {
+                $(this).parent().removeClass('has-error');
+            }
+
+            if ($(this).attr('name') == 'item-due') {
                 // check if deadline is in the future
                 // TODO: the datetimepicker should have datetimes < now disabled
                 if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
@@ -46,8 +50,6 @@ $(document).ready(function() {
                 hasError = true;
                 addMessage('Please enter a valid price.', 'danger', false, true);
                 return false;
-            } else if ($(this).parent().hasClass('has-error')) {
-                $(this).parent().removeClass('has-error');
             }
         });
 
@@ -90,8 +92,10 @@ $(document).ready(function() {
   	});
 
     $('#add-item').click(function() {
-        // TODO
         var lastNum = parseInt($('tbody tr:last-child').attr('data-num'));
+        // copy the HTML from the last item
+        // TODO: (or not) even the attributes of the last item are copied
+        // even the .has-error classes which may be fine or not
         $('tbody').append($('.item').last().prop('outerHTML'));
         var newRow = $('tbody tr:last-child');
         // update ids of new row
@@ -109,11 +113,12 @@ $(document).ready(function() {
                 $('.item-remove').prop('hidden', true);
             }
         });
+        // attach listeners to new row
         newRow.find('.price').change(function() {
             showPriceFormatErrors(this);
         });
         newRow.find('input[name=item-due]').change(function() {
-            if (new Date($(this).val()) < Date.now()) {
+            if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
                 if (!$(this).parent().hasClass('has-error')) {
                     $(this).parent().addClass('has-error');
                 }

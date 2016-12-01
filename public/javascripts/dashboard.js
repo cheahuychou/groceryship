@@ -121,7 +121,11 @@ $(document).ready(function () {
                 hasError = true;
                 addMessage('All fields must be filled out.', 'danger', true, true);
                 return false;
-            } else if ($(this).attr('name') == 'pickup-time') {                
+            } else {
+                $(this).parent().removeClass('has-error');
+            }
+
+            if ($(this).attr('name') == 'pickup-time') {                
                 // check if pickup time is in the future
                 // TODO: the datetimepicker should have datetimes < now disabled
                 if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
@@ -140,8 +144,6 @@ $(document).ready(function () {
                 hasError = true;
                 addMessage('Please enter a valid price.', 'danger', true, true);
                 return false;
-            } else if ($(this).parent().hasClass('has-error')) {
-                $(this).parent().removeClass('has-error');
             }
         });
 
