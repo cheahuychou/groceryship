@@ -23,15 +23,15 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
-                    addMessage('Request claimed! It has been added to your dashboard.', 'success', true);
+                    addMessage('Request claimed! It has been added to your dashboard.', 'success', false, true);
                 } else {
                     console.log(data.message);
-                    addMessage('The request could not be claimed. It might have already been claimed by another user or canceled by the requester.', 'danger', true);
+                    addMessage('The request could not be claimed. It might have already been claimed by another user or canceled by the requester.', 'danger', false, true);
                 }
             },
             error: function(err) {
                 console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
     });
