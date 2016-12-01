@@ -16,11 +16,11 @@ $(document).ready(function () {
                 if (data.success) {
                     // TODO (or not?): change isModal argument to false and close the modal here
                     addMessage('Rejection succeeded. The shopper has been notified.', 'success', true, true);
+                    $('#reject-modal-' + id).modal('toggle');
                 } else {
                     console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
                 }
-                $('#reject-modal-' + id).modal('toggle');
             },
             error: function(err) {
                 console.log(err);

@@ -46,10 +46,6 @@ var checkSignUpForm = function () {
         addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
         return false;
     }
-    if (!mitId.match(/^\d+$/) || mitId.length != 9) {
-        addMessage('MIT ID must be a nine-digit number.', 'danger', true, true);
-        return false;
-    }
     if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10) {
         addMessage('Please enter a valid US phone number with 10 digits.', 'danger', true, true);
         return false;
