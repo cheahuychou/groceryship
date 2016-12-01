@@ -202,12 +202,18 @@ $(document).ready(function () {
     
     $('#pay-rate-button').click(function(){
         var id = $(this).attr('data-id');
-        var requesterId = $(this).find('input[name=requester]').val();
-        var shopperId = $(this).find('input[name=shopper]').val();
+        var cardNumber = $('#card-number').val();
+        var expMonth = $('#expiration-month').val();
+        var expYear = $('#expiration-year').val();
+        var cvc = $('#cvc').val();
         return $.ajax({
                     url: '/deliveries/'+id+'/pay',
                     type: 'PUT',
                     data: {
+                        'number': cardNumber,
+                        'exp_month': expMonth,
+                        'exp_year': expYear,
+                        'cvc': cvc            
                     }, success: function(data){
                         //console.log(data.obj);
                     }, error: function(err){

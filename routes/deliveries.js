@@ -232,6 +232,7 @@ router.put("/:id/accept", utils.isAuthenticated, function(req, res){
 
 router.put("/:id/pay", utils.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
+    console.log(req.body);
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
@@ -243,12 +244,17 @@ router.put("/:id/pay", utils.isAuthenticated, function(req, res){
             res.json({success: false, message: err});
         } else {
             User.findById(currentDelivery.shopper, function(err, shopper){
-                console.log(user.stripeId);
-                stripe.transfers.create({
-                    amount: currentDelivery.actualPrice,
-                    currency: 'usd',
-                    destination: shopper.stripeId,
-                    source_transaction: user.stripeId
+                //console.log(user.stripeId);
+
+                stripe.tokens.create({
+                    card: req.body
+                }, function(err, token){
+                    stripe.charges.create({
+                        amount: currentDelivery.actualPrice * 100,
+                        currency: 'usd',
+                        source: token,
+                        destination: user.stripeId
+                    });
                 });
             });
         }

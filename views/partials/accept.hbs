@@ -18,6 +18,10 @@
         </div>
         <br>
         {{> rating isRequest=true}}
+        <input id='card-number' type='text' size=20 placeholder='Card Number' required></input><br>
+        <input id='expiration-month' type='text' size=2 placeholder='Expiration Month(MM)' required></input><br>
+        <input id='expiration-year' type='text' size=4 placeholder='Expiration Year(YYYY)' required></input><br>
+        <input id='cvc' type='text' size=4 placeholder='CVC' required></input><br>
         <button id='pay-rate-button' class='btn btn-primary' data-id='{{_id}}'>Pay &amp; Rate</button>
       </div>     
     </div>
