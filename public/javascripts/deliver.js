@@ -15,10 +15,11 @@ $(document).ready(function () {
 
     $('.claim-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
+        var csrf = $('#csrf').val();
         $.ajax({
             url: '/deliveries/'+id+'/claim',
             type: 'PUT',
-            data: {id: id},
+            data: {id: id, _csrf: csrf},
             success: function(data) {
                 console.log(data);
                 if (data.success) {

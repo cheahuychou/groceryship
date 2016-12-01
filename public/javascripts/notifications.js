@@ -1,5 +1,7 @@
 // Author: Cheahuychou Mao
 $(document).ready(function () {
+    var csrf = $('#csrf').val();
+    
     $('.reject-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
         var reason = $('#reason :selected').val();
@@ -7,7 +9,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/deliveries/'+id+'/reject',
             type: 'PUT',
-            data: {id: id, reason: reason, shopperRating: rating},
+            data: {id: id, reason: reason, shopperRating: rating, _csrf: csrf},
             success: function(data) {
                 console.log(data);
                 if (data.success) {
@@ -28,13 +30,11 @@ $(document).ready(function () {
 
 	$('.deliver-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
-        console.log('id', id);
         var rating = $(this).parent().find('.fa-star').length;
-        console.log('hiiii', rating);
         $.ajax({
             url: '/deliveries/'+id+'/rateRequester',
             type: 'PUT',
-            data: {id: id, requesterRating: rating},
+            data: {id: id, requesterRating: rating, _csrf: csrf},
             success: function(data) {
                 console.log(data);
                 if (data.success) {

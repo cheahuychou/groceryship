@@ -1,11 +1,13 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+    var csrf = $('#csrf').val();
 
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         $.ajax({
             url: '/deliveries/'+id,
             type: 'DELETE',
+            data: {_csrf: csrf},
             success: function(data) {
                 console.log(data);
                 if (data.success) {
@@ -157,7 +159,8 @@ $(document).ready(function () {
                     type: 'PUT',
                     data: {
                         pickupTime: pickupTime,
-                        actualPrice: price
+                        actualPrice: price,
+                        _csrf: csrf
                     },
                     success: function(data) {
                         // TODO

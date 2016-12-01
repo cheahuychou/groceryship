@@ -176,7 +176,7 @@ var Email = function() {
    	* @return {String} the body of the email to the shopper
    	*/
 	that.shopperRejectionEmailContent = function (delivery) {
-		return '{}<center><p> Hi {} {}! {} {} rejected your delivery for {} on {}. The reason was "{}". Please check your policy regarding returning items.</p>'.format(that.welcomeMessage, delivery.shopper.firstName, delivery.shopper.lastName, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.pickupTime, delivery.rejectedReason);
+		return "{}<center><p> Hi {} {}! {} {} rejected your delivery for {} on {}. The reason was "{}". Please check the grocery store's policy regarding returning items.</p>".format(that.welcomeMessage, delivery.shopper.firstName, delivery.shopper.lastName, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.pickupTime, delivery.rejectedReason);
 	}
 
 	/**
