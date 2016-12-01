@@ -35,9 +35,6 @@ app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index', helpers: {if
     add: function(a, b) {
         return a+b;
     },
-    concat: function(a, b) {
-        return a+' '+b;
-    },
     ifContains: function(a, b, options) {
         if (a instanceof Array) {
             if (a.indexOf(b) > -1) {
