@@ -25,20 +25,26 @@ $(document).ready(function() {
                     $(this).parent().addClass('has-error');
                 }
                 hasError = true;
-                alert('All fields must be filled out.');
+                addMessage('All fields must be filled out.', 'danger', false, true);
                 return false;
-            } else if ($(this).attr('name') == 'item-due'
-                && $(this).parent().hasClass('has-error')) {
+            } else if ($(this).attr('name') == 'item-due') {
                 // check if deadline is in the future
                 // TODO: the datetimepicker should have datetimes < now disabled
+                if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
+                    if (!$(this).parent().hasClass('has-error')) {
+                        $(this).parent().addClass('has-error');
+                    }
                     hasError = true;
-                    alert('Please enter a date and time after the current date and time.');
+                    addMessage('Please enter a date and time after the current date and time.', 'danger', false, true);
                     return false;
+                } else {
+                    $(this).parent().removeClass('has-error');
+                }
             } else if ($(this).hasClass('price')
                 && $(this).parent().hasClass('has-error')) {
                 // check if valid prices are entered
                 hasError = true;
-                alert('Please enter a valid price.');
+                addMessage('Please enter a valid price.', 'danger', false, true);
                 return false;
             } else if ($(this).parent().hasClass('has-error')) {
                 $(this).parent().removeClass('has-error');

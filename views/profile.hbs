@@ -31,6 +31,7 @@
         <h4 class="modal-title">Edit Profile</h4>
       </div>
       <div class="modal-body">
+        <div class="modal-messages"></div>
         <form id='register-form' action='/users/{{user.username}}/profile/edit' method='post' onsubmit='return checkEditForm()'>
           <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>
           <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
