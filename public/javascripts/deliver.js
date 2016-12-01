@@ -1,5 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+    $('#navbar-deliver').addClass('active');
     $('#filter-sort').click(function() {
         var stores = $('#filter-stores').val();
         var pickupLocations = $('#filter-pickup-location').val();

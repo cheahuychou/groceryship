@@ -24,6 +24,7 @@ var checkEditForm = function () {
 }
 
 $(document).ready(function () {
-   $("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
-   document.getElementById('edit-dormlist').setAttribute("name", "dorm");
+	$('#navbar-user').addClass('active');
+    $("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
+    document.getElementById('edit-dormlist').setAttribute("name", "dorm");
 });

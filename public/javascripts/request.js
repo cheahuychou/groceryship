@@ -1,5 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function() {
+    $('#navbar-request').addClass('active');
     $('.price').change(function() {
         showPriceFormatErrors(this);
     });
