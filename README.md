@@ -18,7 +18,21 @@ MIT students are generally busy and do not have time to get groceries in grocery
 
 Existing solutions include the delivery services of each grocery store (if it exists) and 3rd party delivery services such as Instacart. The main difference is that GroceryShip is a peer to peer delivery service where your peers help you buy your groceries. Users can also specify how much they’re willing to pay as delivery fee whereas other services have a fixed delivery fee. Other services also have a minimum price or number of items you need to buy in order to avail of delivery, whereas with GroceryShip, you can request for any items.
 
-## Files and Authorship
+## Authorship
+### Design Document
+- Project Overview (Czarina)
+- Motivation (Czarina)
+- Definitions (Czarina)
+- Concepts (Czarina)
+- Anticipated Misfits (Czarina)
+- Data Model (Joseph)
+- Security Concerns (Czarina)
+- APIs (Czarina)
+- User Interface (Chou)
+- Design Risks (Vincent)
+- Design Choices (Chou)
+
+### Code
 - models
     - delivery.js
     - user.js
