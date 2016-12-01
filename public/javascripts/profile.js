@@ -28,36 +28,50 @@ $(document).ready(function () {
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	
    	$('#edit-confirm-button').click(function () {
-   		var username = $('#kerberos').html();
+   		var username = $('#kerberos').text();
    		var password = $(this).parent().find('#password-register-box').val();
    		var phoneNumber = $(this).parent().find('#phone-number-register-box').val();
 	   	var dorm = $(this).parent().find('#edit-dormlist :selected').val();
 		var csrf = $(this).parent().find('#csrf').val();
-		console.log('yoi');
-		console.log(username, password,phoneNumber, dorm, csrf);
-		$.ajax({
-            url: '/users/'+ username +'/profile/edit',
-            type: 'PUT',
-            data: {
-            		newPassword: password,
-		    		newPhoneNumber: phoneNumber,
-		    		dorm: dorm,
-		   			_csrf: csrf
-		   		},
-            success: function(data) {
-                console.log(data);
-                if (data.success) {
-                    addMessage('Profile updated!', 'success', true, true);
-                } else {
-                    console.log(data.message);
-                    addMessage('Profile update failed', 'danger', true, true);
+
+		// validate inputs first
+        $('input').each(function() {
+            // check that all inputs are nonempty
+            // if empty, alert the user of the error and show where it is
+            if ($(this).attr('required') && (!$(this).val() || $(this).val().trim()=='')) {
+                if (!$(this).parent().hasClass('has-error')) {
+                    $(this).parent().addClass('has-error');
                 }
-            },
-            error: function(err) {
-                console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
-            }
+                hasError = true;
+                addMessage('All fields must be filled out.', 'danger', false, true);
+                return false;
         });
+
+        if (!hasError) {
+			$.ajax({
+	            url: '/users/'+ username +'/profile/edit',
+	            type: 'PUT',
+	            data: {
+	            		newPassword: password,
+			    		newPhoneNumber: phoneNumber,
+			    		dorm: dorm,
+			   			_csrf: csrf
+			   		},
+	            success: function(data) {
+	                console.log(data);
+	                if (data.success) {
+	                    addMessage('Profile updated!', 'success', true, true);
+	                } else {
+	                    console.log(data.message);
+	                    addMessage('Profile update failed', 'danger', true, true);
+	                }
+	            },
+	            error: function(err) {
+	                console.log(err);
+	                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
+	            }
+	        });
+		}
    	});
    	
 });

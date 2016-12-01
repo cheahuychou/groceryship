@@ -206,7 +206,7 @@ router.put("/:id/deliver", utils.isAuthenticated, parseForm, csrfProtection, fun
                         console.log(err);
                         res.json({success: false, message: err});
                     } else {
-                        var formattedDelivery = utils.formatDate([currentDelivery])[0]
+                        var formattedDelivery = utils.formatDate([currentDelivery])[0];
                         email.sendDeliveryEmail(formattedDelivery);
                         res.json({success: true, item: formattedDelivery});
                     }

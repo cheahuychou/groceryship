@@ -1,6 +1,5 @@
 {{!-- Author: Czarina Lao --}}
 <tr class='item' id='item-{{n}}' data-num='{{n}}'>
-  <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
   <td><input id='item-name-{{n}}' type='text' name='item-name' class="form-control" required autofocus/></td>
   {{!-- TODO: fix sizing for input boxes that for numbers because they don't need to be that long --}}
   <td><input id='item-qty-{{n}}' type='string' name='item-qty' value='1' class="form-control" required/></td>

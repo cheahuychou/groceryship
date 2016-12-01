@@ -57,7 +57,8 @@ $(document).ready(function() {
                 var pickupLocation = $(this).find('#item-pickup-location-'+num).val();
                 var tips = $(this).find('#item-tip-'+num).val();
                 var description = $(this).find('#item-description-'+num).val();
-                var csrf = $(this).find('#csrf').val();
+                var csrf = $('#csrf').val();
+                console.log(csrf);
 
                 console.log(name, quantity, priceEstimate, stores, deadline, pickupLocation, tips, description);
 

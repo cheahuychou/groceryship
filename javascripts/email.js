@@ -22,6 +22,11 @@ var Email = function() {
 	};
 	that.transporter = nodemailer.createTransport(smtpConfig);
 
+
+	/**
+	* Source: http://stackoverflow.com/a/4974690
+	* Replaces the '{}' in the string by the arguments in order
+	*/
 	String.prototype.format = function () {
   		var i = 0, args = arguments;
   		return this.replace(/{}/g, function () {
@@ -37,7 +42,7 @@ var Email = function() {
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendEmail = function (kerberos, subject, htmlContent) {
+	var sendEmail = function (kerberos, subject, htmlContent) {
 		var mailOptions = {
 		    from: 'GroceryShip 6170 <' + config.emailAddress() + '>', // sender address
 		    to: kerberos + '@mit.edu',
@@ -86,7 +91,7 @@ var Email = function() {
 				link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
 			}
 			var content = '{}<center><p>Hi {}! Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="{}"><input type="submit" value="Confirm" /></form></center>'.format(that.welcomeMessage, user.firstName, link);
-			return that.sendEmail(user.username, subject, content);
+			return sendEmail(user.username, subject, content);
 		});
 	}
 
@@ -95,7 +100,7 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {String} the body of the email to the requester
    	*/
-	that.claimEmailContent = function (delivery) {
+	var claimEmailContent = function (delivery) {
 		return  '{}<center><p> Hi {} {}! {} {} has bought {} of {} you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.shopper.phoneNumber)		
 	}
 
@@ -107,7 +112,7 @@ var Email = function() {
    	*/
 	that.sendClaimEmail = function (delivery) {
 		var subject = 'Updates on your pending request for {}'.format(delivery.itemName)
-		return that.sendEmail(delivery.requester.username, subject, that.claimEmailContent(delivery));
+		return sendEmail(delivery.requester.username, subject, claimEmailContent(delivery));
 	}
 
 	/**
@@ -115,7 +120,7 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {String} the body of the email to the requester
    	*/
-	that.deliveryEmailContent = function (delivery) {
+	var deliveryEmailContent = function (delivery) {
 		return  '{}<center><p> Hi {} {}! {} {} is deliverying {} of {} to {} on {}. Please be sure to be there in time!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.pickupLocation, delivery.pickupTime);		
 	}
 
@@ -127,7 +132,7 @@ var Email = function() {
    	*/
 	that.sendDeliveryEmail = function (delivery) {
 		var subject = 'Upcoming Delivery for {}'.format(delivery.itemName)
-		return that.sendEmail(delivery.requester.username, subject, that.deliveryEmailContent(delivery));
+		return sendEmail(delivery.requester.username, subject, deliveryEmailContent(delivery));
 	}
 
 	/**
@@ -135,8 +140,8 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the requester
    	*/
-	that.requesterAcceptanceEmailContent = function (delivery) {
-		return '{}<center><p> Hi {} {}! This is to confirm that you accepted the delivery for {} from {} {} on {}. The total cost was {}, and the tips was {}. The payment has been completed successfully. Have a nice day!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.actualPrice, delivery.tips);
+	var requesterAcceptanceEmailContent = function (delivery) {
+		return '{}<center><p> Hi {} {}! This is to confirm that you accepted the delivery for {} from {} {} on {}. The total cost was {}, and the tip was {}. The payment has been completed successfully. Have a nice day!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.actualPrice, delivery.tips);
 	}
 
 	/**
@@ -144,8 +149,8 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the shopper
    	*/
-	that.shopperAcceptanceEmailContent = function (delivery) {
-		return '{}<center><p> Hi {} {}! This is to confirm that you rejected the delivery for {} from {} {} on {}. You received {} of tips from this delivery. The payment has been completed successfully. Have a nice day!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.tips);
+	var shopperAcceptanceEmailContent = function (delivery) {
+		return '{}<center><p> Hi {} {}! This is to confirm that you rejected the delivery for {} from {} {} on {}. You received {} of tip from this delivery. The payment has been completed successfully. Have a nice day!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.tips);
 	}
 
 	/**
@@ -157,8 +162,8 @@ var Email = function() {
 	that.sendAcceptanceEmails = function (delivery) {
 		var requesterSubject = "Summary of Today's Delivery from {}".format(delivery.shopper.username);
 		var shopperSubject = "Delivery for {} accepted".format(delivery.requester.username);
-		that.sendEmail(delivery.requester.username, requesterSubject, that.requesterAcceptanceEmailContent(delivery));
-		that.sendEmail(delivery.shopper.username, shopperSubject, that.shopperAcceptanceEmailContent(delivery));
+		sendEmail(delivery.requester.username, requesterSubject, requesterAcceptanceEmailContent(delivery));
+		sendEmail(delivery.shopper.username, shopperSubject, shopperAcceptanceEmailContent(delivery));
 	}
 
 	/**
@@ -166,7 +171,7 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the requester
    	*/
-	that.requesterRejectionEmailContent = function (delivery) {
+	var requesterRejectionEmailContent = function (delivery) {
 		return '{}<center><p> Hi {} {}! This is to confirm that you rejected the delivery for {} from {} {} on {}.</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime);
 	}
 
@@ -175,7 +180,7 @@ var Email = function() {
    	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the shopper
    	*/
-	that.shopperRejectionEmailContent = function (delivery) {
+	var shopperRejectionEmailContent = function (delivery) {
 		return "{}<center><p> Hi {} {}! {} {} rejected your delivery for {} on {}. The reason was \"{}\". Please check the grocery store's policy regarding returning items.</p>".format(that.welcomeMessage, delivery.shopper.firstName, delivery.shopper.lastName, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.pickupTime, delivery.rejectedReason);
 	}
 
@@ -188,8 +193,8 @@ var Email = function() {
 	that.sendRejectionEmails = function (delivery) {
 		var requesterSubject = "Summary of Today's Delivery from {}".format(delivery.shopper.username);
 		var shopperSubject = "Delivery for {} rejected".format(delivery.requester.username);
-		that.sendEmail(delivery.requester.username, requesterSubject, that.requesterRejectionEmailContent(delivery));
-		that.sendEmail(delivery.shopper.username, shopperSubject, that.shopperRejectionEmailContent(delivery));
+		sendEmail(delivery.requester.username, requesterSubject, requesterRejectionEmailContent(delivery));
+		sendEmail(delivery.shopper.username, shopperSubject, shopperRejectionEmailContent(delivery));
 	}
 
 	Object.freeze(that);
