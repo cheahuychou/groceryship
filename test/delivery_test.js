@@ -299,11 +299,12 @@ describe("Models", function() {
       });
     }); //End Describe Deliver function
 
-    describe("Accept and Reject", function() {
+    describe("Accept, Reject, and RateRequester", function() {
       it("should allow requester to accept requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
             doc.accept(5, function(err) {
               assert.strictEqual(doc.status, "accepted");
+              assert.strictEqual(doc.shopperRating, 5);
               done();
             });
           });
@@ -313,6 +314,7 @@ describe("Models", function() {
         Delivery.create(claimed_delivery1, function(err, doc) {
             doc.reject('Unsatsified with the quality', 2, function(err) {
               assert.strictEqual(doc.status, "rejected");
+              assert.strictEqual(doc.shopperRating, 2);
               done();
             });
           });
@@ -364,6 +366,55 @@ describe("Models", function() {
               assert.isNotNull(err);
               done();
             });
+          });
+      });
+
+      it("should allow shopper to rate requester after the delivery is accepted", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.accept(4, function(err) {
+              assert.isNull(err);
+              doc.rateRequester(4, function (err) {
+                assert.isNull(err);
+                assert.strictEqual(doc.requesterRating, 4);
+                done();
+              })
+            });
+          });
+      });
+
+      it("should allow shopper to rate requester after the delivery is rejected", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            console.log('yo')
+            doc.reject('Wrong item', 3, function(err) {
+                assert.isNull(err);
+                doc.rateRequester(2, function (err) {
+                    assert.isNull(err);
+                    assert.strictEqual(doc.requesterRating, 2);
+                    done();
+                })
+            });
+          });
+      });
+
+      it("should allow shopper to rate requester after the delivery is claimed", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.reject('Wrong item', 3, function(err) {
+              assert.isNull(err);
+              doc.rateRequester(2, function (err) {
+                assert.isNull(err);
+                assert.strictEqual(doc.requesterRating, 2);
+                done();
+              })
+            });
+          });
+      });
+
+      it("should not allow shopper to rate requester without claiming the delivery", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            doc.rateRequester(2, function (err) {
+                assert.isNotNull(err);
+                done();
+            })
           });
       });
 

@@ -259,5 +259,28 @@ router.put("/:id/reject", utils.isAuthenticated, function(req, res){
     });
 });
 
+/** Sets requester rating of the delivery **/
+router.put("/:id/rateRequester", utils.isAuthenticated, function(req, res){
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, currentDelivery) {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.rateRequester(req.body.requesterRating, function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    res.json({success: true});
+                }
+            });
+        }
+    });
+});
+
 module.exports = router;
 
