@@ -42,7 +42,7 @@ router.get('/:username/profile', utils.isAuthenticated, function (req, res, next
 	});
 });
 
-router.put('/:username/profile/edit', utils.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
+router.put('/:username/profile', utils.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
 	var newPassword = req.body.newPassword.trim();
 	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
 	var dorm = req.body.dorm.trim();
