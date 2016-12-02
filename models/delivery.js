@@ -112,6 +112,8 @@ DeliverySchema.methods.deliver = function(pickupTime, actualPrice, callback) {
 DeliverySchema.methods.accept = function(shopperRating, callback) {
     if (this.status !== "claimed") {
         callback(new Error("request is either pending or is already accepted/rejected"));
+    } else if (this.actualPrice === null) {
+        callback(new Error ("price of good has not been set yet"))
     } else {
         this.status = "accepted";
         this.shopperRating = shopperRating;

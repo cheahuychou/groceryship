@@ -119,7 +119,9 @@ describe("Models", function() {
               tips: 1,
               pickupLocation: "New House",
               requester: id2,
-              shopper: id1};
+              shopper: id1,
+              actualPrice: 12,
+              pickupTime: new Date('2016-11-21T23:00:59')};
 
           done();
         });
@@ -418,7 +420,7 @@ describe("Models", function() {
       });
     }); //End Describe Deliver function
 
-    describe("Accept, Reject, and RateRequester", function() {
+    describe("Accept and Reject", function() {
       it("should allow requester to accept requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
             doc.accept(5, function(err) {
@@ -436,6 +438,27 @@ describe("Models", function() {
               assert.strictEqual(doc.shopperRating, 2);
               done();
             });
+          });
+      });
+
+      it("should not allow requester to accept requests where actualPrice has not been set", function(done) {
+        Delivery.create({stores: ["Trader Joe's"],
+              status: "claimed",
+              deadline: new Date('2016-11-22T10:30:00'),
+              itemName: "test-item-sausages",
+              itemDescription: "test-description-yuge",
+              itemQuantity: "test-quantity-many",
+              estimatedPrice: 8,
+              tips: 1,
+              pickupLocation: "New House",
+              requester: id2,
+              shopper: id1}, function(err, doc) {
+                doc.accept(5, function(err) {
+                  assert.throws(function() {
+                    assert.ifError(err);
+                  });
+                  done();
+              });
           });
       });
 
@@ -470,6 +493,9 @@ describe("Models", function() {
           });
       });
 
+    }); //End Describe Accept and Reject functions
+
+    describe("RateRequester", function() {
       it("should not allow invalid shopper rating", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
             doc.reject('Wrong item', -1, function(err) {
@@ -503,7 +529,6 @@ describe("Models", function() {
 
       it("should allow shopper to rate requester after the delivery is rejected", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            console.log('yo')
             doc.reject('Wrong item', 3, function(err) {
                 assert.isNull(err);
                 doc.rateRequester(2, function (err) {
@@ -537,7 +562,7 @@ describe("Models", function() {
           });
       });
 
-    }); //End Describe Accept and Reject functions
+    }); //End Describe RateRequester functions
 
     describe("getRequestsAndDeliveries", function() {
       it("should get pending requests of a user, where seenExpired is false", function(done) {

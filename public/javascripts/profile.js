@@ -33,8 +33,7 @@ $(document).ready(function () {
    		var phoneNumber = $(this).parent().find('#phone-number-register-box').val();
 	   	var dorm = $(this).parent().find('#edit-dormlist :selected').val();
 		var csrf = $(this).parent().find('#csrf').val();
-
-		var hasError;
+		var hasError = false;
 
 		// validate inputs first
         $('input').each(function() {
@@ -51,9 +50,8 @@ $(document).ready(function () {
         });
 
         if (!hasError) {
-        	console.log('updating');
 			$.ajax({
-	            url: '/users/'+ username +'/profile/edit',
+	            url: '/users/'+ username +'/profile',
 	            type: 'PUT',
 	            data: {
 	            		newPassword: password,
@@ -62,7 +60,6 @@ $(document).ready(function () {
 			   			_csrf: csrf
 			   		},
 	            success: function(data) {
-	                console.log(data);
 	                if (data.success) {
 	                    addMessage('Profile updated!', 'success', true, true);
 	                } else {

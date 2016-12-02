@@ -71,23 +71,33 @@
         {{/if}}
       {{/each}}
       {{#each deliveryItems}}
-        {{#if actualPrice}}
+        {{#ifContains status "claimed"}}
+          {{#if actualPrice}}
             <tr class='notification-row'>
             <td>
               <div class='notification-icon'><img src="/images/cart.png"></img></div>
             </td>
             <td class='notification-text'>
-            {{#ifContains status "claimed"}}
               You need to deliver {{itemName}} ({{itemQuantity}}) to <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a>! Deliver to {{pickupLocation}} at {{pickupTime}}
-            {{else}}
-              <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a> has {{status}} your delivery of {{itemName}} ({{itemQuantity}})!
-            {{/ifContains}}
             </td>
             <td><button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button></td>
             <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
             <td></td>
             </tr>
-        {{/if}}
+          {{/if}}
+        {{else}}
+            <tr class='notification-row'>
+            <td>
+              <div class='notification-icon'><img src="/images/cart.png"></img></div>
+            </td>
+            <td class='notification-text'>
+              <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a> has {{status}} your delivery of {{itemName}} ({{itemQuantity}})!
+            </td>
+            <td><button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button></td>
+            <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
+            <td></td>
+            </tr>
+        {{/ifContains}}
       {{/each}}
     </tbody>
   </table>
