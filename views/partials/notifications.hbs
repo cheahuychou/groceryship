@@ -1,4 +1,5 @@
 {{!-- Author: Joseph Kuan --}}
+<script src='/javascripts/notifications.js'></script>
 <div id="notifications-table">
   <table class="table table-hover">
     <tbody>
@@ -13,8 +14,8 @@
             <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a> now!</td>
             <td>
               <div class="accept-reject-container">
-                <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-                <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
+                <button class='accept-notification-items btn btn-primary btn-xs pull-left' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
+                <button class='reject-notification-items btn btn-danger btn-xs pull-right' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
               </div>
             </td>
             <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
@@ -28,8 +29,8 @@
             <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) is now being delivered by <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a>! Arriving {{pickupTime}}</td>
             <td>
               <div class="accept-reject-container">
-                <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-                <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
+                <button class='accept-notification-items btn btn-primary btn-xs pull-left' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
+                <button class='reject-notification-items btn btn-danger btn-xs pull-right' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
               </div>
             </td>
             <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>

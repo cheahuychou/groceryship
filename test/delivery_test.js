@@ -1,5 +1,5 @@
 //Author: Joseph Kuan
-var assert = require("assert");
+var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require('../models/user');
 var Delivery = require('../models/delivery');
@@ -25,7 +25,6 @@ describe("Models", function() {
           "password": "something1",
           "firstName": "firstName1",
           "lastName": "lastName1",
-          "mitId": 123456789,
           "phoneNumber": 1234567890,
           "dorm": "Baker",
           "stripeId":"testuserStripeId",
@@ -38,7 +37,6 @@ describe("Models", function() {
           "password": "something2",
           "firstName": "firstName2",
           "lastName": "lastName2",
-          "mitId": 234567890,
           "phoneNumber": 2345678901,
           "dorm": "MacGregor",
           "stripeId":"testuserStripeId",
@@ -51,7 +49,6 @@ describe("Models", function() {
           "password": "something3",
           "firstName": "firstName3",
           "lastName": "lastName3",
-          "mitId": 345678901,
           "phoneNumber": 3456789012,
           "dorm": "New House",
           "stripeId":"testuserStripeId",
@@ -421,11 +418,12 @@ describe("Models", function() {
       });
     }); //End Describe Deliver function
 
-    describe("Accept and Reject", function() {
+    describe("Accept, Reject, and RateRequester", function() {
       it("should allow requester to accept requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept(function(err) {
+            doc.accept(5, function(err) {
               assert.strictEqual(doc.status, "accepted");
+              assert.strictEqual(doc.shopperRating, 5);
               done();
             });
           });
@@ -433,8 +431,9 @@ describe("Models", function() {
 
       it("should allow requester to reject requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.reject(function(err) {
+            doc.reject('Unsatsified with the quality', 2, function(err) {
               assert.strictEqual(doc.status, "rejected");
+              assert.strictEqual(doc.shopperRating, 2);
               done();
             });
           });
@@ -442,7 +441,7 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be accepted", function(done) {
         Delivery.create(pending_delivery1, function(err, doc) {
-            doc.accept(function(err) {
+            doc.accept(4, function(err) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -453,7 +452,7 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be rejected", function(done) {
         Delivery.create(accepted_delivery1, function(err, doc) {
-            doc.reject(function(err) {
+            doc.reject('Wrong item', 1, function(err) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -461,6 +460,83 @@ describe("Models", function() {
             });
           });
       });
+
+      it("should not allow empty reject reason", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.reject('', 1, function(err) {
+              assert.isNotNull(err);
+              done();
+            });
+          });
+      });
+
+      it("should not allow invalid shopper rating", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.reject('Wrong item', -1, function(err) {
+              assert.isNotNull(err);
+              done();
+            });
+          });
+      });
+
+      it("should not allow invalid requester rating", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.accept(10, function(err) {
+              assert.isNotNull(err);
+              done();
+            });
+          });
+      });
+
+      it("should allow shopper to rate requester after the delivery is accepted", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.accept(4, function(err) {
+              assert.isNull(err);
+              doc.rateRequester(4, function (err) {
+                assert.isNull(err);
+                assert.strictEqual(doc.requesterRating, 4);
+                done();
+              })
+            });
+          });
+      });
+
+      it("should allow shopper to rate requester after the delivery is rejected", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            console.log('yo')
+            doc.reject('Wrong item', 3, function(err) {
+                assert.isNull(err);
+                doc.rateRequester(2, function (err) {
+                    assert.isNull(err);
+                    assert.strictEqual(doc.requesterRating, 2);
+                    done();
+                })
+            });
+          });
+      });
+
+      it("should allow shopper to rate requester after the delivery is claimed", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.reject('Wrong item', 3, function(err) {
+              assert.isNull(err);
+              doc.rateRequester(2, function (err) {
+                assert.isNull(err);
+                assert.strictEqual(doc.requesterRating, 2);
+                done();
+              })
+            });
+          });
+      });
+
+      it("should not allow shopper to rate requester without claiming the delivery", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            doc.rateRequester(2, function (err) {
+                assert.isNotNull(err);
+                done();
+            })
+          });
+      });
+
     }); //End Describe Accept and Reject functions
 
     describe("getRequestsAndDeliveries", function() {

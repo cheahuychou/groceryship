@@ -1,5 +1,8 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+
+    var csrf = $('#csrf').val();
+
     $('.close-expired-notif').click(function() {
         var id = $(this).attr('data-id');
         console.log($(this).parent().parent());
@@ -7,6 +10,7 @@ $(document).ready(function () {
         $.ajax({
             url: '/deliveries/'+id+'/seeExpired',
             type: 'PUT',
+            data: {_csrf: csrf},
             success: function(data) {}, //do nothing
             error: function(err) {console.log(err);}
         });
@@ -17,20 +21,21 @@ $(document).ready(function () {
         $.ajax({
             url: '/deliveries/'+id,
             type: 'DELETE',
+            data: {_csrf: csrf},
             success: function(data) {
                 console.log(data);
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
                     // TODO: ask for the reason of cancellation
-                    addMessage('Request canceled.', 'success', true);
+                    addMessage('Request canceled.', 'success', false, true);
                 } else {
                     console.log(data.message);
-                    addMessage('The request could not be canceled. Note that you can\'t cancel claimed requests.', 'danger', true);
+                    addMessage('The request could not be canceled. Note that you can\'t cancel claimed requests.', 'danger', false, true);
                 }
             },
             error: function(err) {
                 console.log(err);
-                addMessage('A network error might have occurred. Please try again.', 'danger', true);
+                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
     });
@@ -94,7 +99,7 @@ $(document).ready(function () {
                 });
 
                 var inputPrice = $('<input>', {
-                    class: 'form-control',
+                    class: 'price form-control',
                     type: 'String',
                     name: 'price'
                 }).change(function() {
@@ -130,29 +135,30 @@ $(document).ready(function () {
                     $(this).parent().addClass('has-error');
                 }
                 hasError = true;
-                alert('All fields must be filled out.');
+                addMessage('All fields must be filled out.', 'danger', true, true);
                 return false;
-            } else if ($(this).parent().hasClass('has-error')) {
+            } else if ($(this).hasClass('price')
+                && $(this).parent().hasClass('has-error')) {
+                // check if valid prices are entered
+                hasError = true;
+                addMessage('Please enter a valid price.', 'danger', true, true);
+                return false;
+            } else {
                 $(this).parent().removeClass('has-error');
             }
 
-            // check if pickup time is in the future
-            // TODO: the datetimepicker should have datetimes < now disabled
-            if ($(this).attr('name') == 'pickup-time') {
-                if (new Date($(this).val()) < Date.now()) {
+            if ($(this).attr('name') == 'pickup-time') {                
+                // check if pickup time is in the future
+                // TODO: attach this validator to .change of datetime pickers instead
+                if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
                     if (!$(this).parent().hasClass('has-error')) {
                         $(this).parent().addClass('has-error');
                     }
                     hasError = true;
-                    alert('Please enter a date and time after the current date and time.');
+                    addMessage('Please enter a date and time after the current date and time.', 'danger', true, true);
                     return false;
-                }
-            } else if ($(this).attr('name') == 'price') {
-                // check if valid prices are entered
-                if ($(this).parent().hasClass('has-error')) {
-                    hasError = true;
-                    alert('Please enter a valid price.');
-                    return false;
+                } else {
+                    $(this).parent().removeClass('has-error');
                 }
             }
         });
@@ -167,8 +173,9 @@ $(document).ready(function () {
                     url: '/deliveries/'+id+'/deliver',
                     type: 'PUT',
                     data: {
-                        pickupTime: pickupTime,
-                        actualPrice: price
+                        pickupTime: new Date(pickupTime+getFormattedTimezoneOffset()),
+                        actualPrice: price,
+                        _csrf: csrf
                     },
                     success: function(data) {
                         // TODO
@@ -201,9 +208,9 @@ $(document).ready(function () {
                     $('#deliver-items').prop('disabled', true);
                 }
                 if (hasError) {
-                    alert('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!');
+                    addMessage('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!', 'danger', true, true);
                 } else {
-                    alert('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!');
+                    addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
                     // only close the modal if all items were successfully updated
                     $('#deliver-now-modal').modal('toggle');
                 }

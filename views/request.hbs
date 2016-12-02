@@ -2,6 +2,7 @@
 <h1>{{title}}</h1>
 <div class='instructions'>
   <p>Fill out the request form to get goods delivered to somewhere nearby! Please be as specific as possible by specifying the unit for quantity (pounds, kg, litre etc.) and providing detailed descriptions, so that the deliverer will not deliver the wrong good.</p>
+  <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
 </div>
 <div id='request-form'>
   {{> request_form}}

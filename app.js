@@ -8,7 +8,7 @@ var exphbs = require('express-handlebars');
 var session = require('express-session');
 var passport = require('passport');
 var passportLocal = require('passport-local');
-
+var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var deliveries = require('./routes/deliveries');
@@ -71,6 +71,15 @@ app.use(function (req, res, next) {
     req.env = app.get('env');
     next();
 });
+
+// setup route middlewares 
+var csrfProtection = csrf({ cookie: true });
+var parseForm = bodyParser.urlencoded({ extended: false });
+
+// parse cookies 
+// we need this because "cookie" is true in csrfProtection 
+app.use(cookieParser())
+app.use(csrfProtection);
 
 app.use('/', routes);
 app.use('/users', users);

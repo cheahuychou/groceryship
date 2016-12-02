@@ -10,6 +10,7 @@
         <h3 class="modal-title">Close Delivery</h3>
       </div>
       <div class="modal-body">
+        <div class="modal-messages"></div>
         <div id="reimbursement">
             <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
             <p>Total Cost: {{actualPrice}}</p>
@@ -33,7 +34,7 @@
         </div>
         <br>
         {{> rating isRequest=false}}
-        <button id='deliver-rate-button' class='btn btn-primary'>Close &amp; Rate</button>
+        <button class='deliver-rate-button btn btn-primary'>Close &amp; Rate</button>
       </div>     
     </div>
   </div>

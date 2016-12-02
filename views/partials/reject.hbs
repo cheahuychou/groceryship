@@ -10,6 +10,7 @@
         <h3 class="modal-title">Reject Delivery</h3>
       </div>
       <div class="modal-body">
+        <div class="modal-messages"></div>
         <div id="rejection">
             <p>Reason for rejection:</p>
             <select id='reason' class="form-control">
@@ -23,7 +24,7 @@
         </div>
         <br>
         {{> rating isRequest=true}}
-        <button id='reject-rate-button' class='btn btn-primary'>Rate</button>
+        <button class='reject-rate-button btn btn-primary'>Rate</button>
       </div>     
     </div>
   </div>
