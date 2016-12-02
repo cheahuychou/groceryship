@@ -1,62 +1,61 @@
 {{!-- Author: Czarina Lao --}}
-{{!-- <div id="request-form-container">
-  <table class="table table-hover">
-    <thead>
+<div id="request-form-container">
+  <table class="table" style="table-layout: fixed">
       <tr>
-        {{> item_headings}}
+        <th>Item Name</td>
+        <td><input type='text' name='item-name' class="form-control" required autofocus/></td>
       </tr>
-    </thead>
-    <tbody>
-      {{> request_item_form n='1'}}
-    </tbody>
+      <tr>
+        <th>Quantity</td>
+        <td><input type='string' name='item-qty' placeholder="6 17oz. cans, 20 gallons, 18 of the largest boxes" class="form-control" required/></td>
+      </tr>
+      <tr>
+        <th>Estimated Price</td>
+        <td>
+          <div class="input-group">
+            <span class="input-group-addon">$</span>
+            <input type="text" name='item-price-estimate' class="price form-control" required>
+          </div>
+        </td>
+      <tr>
+        <th>Stores</td>
+        <td>
+          <select multiple name='item-stores' class="selectpicker" data-none-selected-text="Select store(s)" data-width="100%">
+            {{#each allStores}}
+            <option>{{this}}</option>
+            {{/each}}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Deadline</td>
+        {{!-- TODO: set default item due to today's date. also set it as min --}}
+        <td><input type='datetime-local' name='item-due' class="form-control datetimepicker" onfocus="setMinMaxDateTime()" required/></td>
+      </tr>
+      <tr>
+        <th>Pickup Location</td>
+        <td>
+          <select name='item-pickup' class="form-control">
+            {{#each allPickupLocations}}
+            <option>{{this}}</option>
+            {{/each}}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Tip</td>
+        <td>
+          <div class="input-group">
+            <span class="input-group-addon">$</span>
+            <input type="text" name='item-tip' class="price form-control" required>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Additional Description</td>
+        <td><input type='text' name='item-description' class="form-control" placeholder="(optional)" /></td>
+      </tr>
   </table>
-  <button id='add-item' class='btn btn-default btn-sm'>Add More</button><br>
-  <button type='submit' id='make-request' class='btn btn-primary' style='float: right'>Make Request</button>
-</div> --}}
-<table class="table">
-    <tr>
-      <th>Item Name</td>
-      <td>{{itemName}}</td>
-    </tr>
-    <tr>
-      <th>Quantity</td>
-      <td>{{itemQuantity}}</td>
-    </tr>
-      <th>Estimated Price</td>
-      <td>{{estimatedPrice}}</td>
-    <tr>
-      <th>Stores</td>
-      <td>{{stores}}</td>
-    </tr>
-    <tr>
-      <th>Deadline</td>
-      <td>{{deadline}}</td>
-    </tr>
-    <tr>
-      <th>Pickup Location</td>
-      <td>{{pickupLocation}}</td>
-    </tr>
-    <tr>
-      <th>Tip</td>
-      <td>{{tips}}</td>
-    </tr>
-    <tr>
-      <th>Item Description</td>
-      <td>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
-    </tr>
-    {{#if own}}
-    <tr>
-      <th>Shopper</th>
-      <td>{{shopper.username}}</td>
-    </tr>
-    <tr>
-      <th>Pickup Time</th>
-      <td>{{pickupTime}}</td>
-    </tr>
-    {{else}}
-    <tr>
-      <th>Requester</th>
-      <td>{{requester.username}}</td>
-    </tr>
-    {{/if}}
-</table>
+
+  <button type='submit' id='make-request' class='btn btn-primary btn-lg' style='float: right'>Make Request</button>
+</div>

@@ -124,3 +124,7 @@ h3 {
 .title-toggle .glyphicon {
     font-size: 80%;
 }
+
+#make-request {
+    margin-bottom: 40px;
+}
