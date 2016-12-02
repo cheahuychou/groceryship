@@ -17,9 +17,10 @@ var DeliverySchema = mongoose.Schema({
     shopper: {type: ObjectId, ref: "User", default: null},
     actualPrice: {type: Number, default: null},
     pickupTime: {type: Date, default: null},
-    requesterRating: {type: Number, default: null},
-    shopperRating: {type: Number, default: null},
-    rejectedReason: {type: String, required: false}
+    requesterRating: {type: Number, default: null}, // The rating that the shopper gives the requester
+    shopperRating: {type: Number, default: null}, // The rating that the requester gives the shopper
+    rejectedReason: {type: String, required: false},
+    seenExpired: {type: Boolean, default: false}, // Denotes whether the requester has seen that an unclaimed request is past the deadline. Used in populating notifications.
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -40,6 +41,18 @@ DeliverySchema.path("deadline").validate(function(deadline) {
     return deadline >= this.pickupTime;
 }, "The dealine has passed.");
 
+DeliverySchema.path("estimatedPrice").validate(function(value) {
+    return value > 0;
+}, "Estimated Price cannot be negative");
+
+DeliverySchema.path("tips").validate(function(value) {
+    return value >= 0;
+}, "Tips cannot be negative");
+
+DeliverySchema.path("actualPrice").validate(function(value) {
+    return value === null || value > 0;
+}, "Actual Price cannot be negative");
+
 DeliverySchema.path("pickupLocation").validate(function(value) {
     return value.trim().length > 0 && utils.allPickupLocations().indexOf(value) > -1;
 }, "Not a valid pickup location name");
@@ -52,9 +65,20 @@ DeliverySchema.path("shopperRating").validate(function(rating) {
     return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5 || rating === null;
 }, "A shopper rating should be ranged from 1 to 5.");
 
-DeliverySchema.path("rejectedReason").validate(function(reason) {
-    return reason === null || reason.trim().length > 0;
-}, "A rejection reason cannot be an empty string.");
+/**
+ * Marks an expired pending request as seen that it is expired.
+ * @param {Function} callback - The function to execute after request is marked as seenExpired = true. Callback
+ * function takes 1 parameter: an error when the operation is not properly executed
+ */
+DeliverySchema.methods.seeExpired = function(callback) {
+    var now = Date.now();
+    if (this.deadline > now) {
+        callback(new Error("request has not expired yet"));
+    } else {
+        this.seenExpired = true;
+        this.save(callback);
+    }
+};
 
 /**
  * Claims a pending request. Feeds an error into the callback if the request has already been claimed.
@@ -93,6 +117,8 @@ DeliverySchema.methods.deliver = function(pickupTime, actualPrice, callback) {
 DeliverySchema.methods.accept = function(shopperRating, callback) {
     if (this.status !== "claimed") {
         callback(new Error("request is either pending or is already accepted/rejected"));
+    } else if (this.actualPrice === null) {
+        callback(new Error ("price of good has not been set yet"))
     } else {
         this.status = "accepted";
         this.shopperRating = shopperRating;
@@ -136,18 +162,23 @@ DeliverySchema.methods.rateRequester = function(requesterRating, callback) {
 };
 
 /**
- * Searches for a user's pending/claimed requests and deliveries and returns it
+ * Searches for a user's relevant requests and deliveries to be displayed on dashboard, and returns it.
+ * Returned requests of user include:
+ *    - requests that are pending, except those where seenExpired = true (where user already knows they are expired)
+ *    - all claimed requests
+ * Returned deliveries of user include:
+ *    - all deliveries except those where the user has already rated the requester
  * @param {ObjectId} userID - The id of the relevant user
- * @param {Date} dueAfter - only return requests/deliveries due after this time
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems, deliveryItems)
  */
-DeliverySchema.statics.getRequestsAndDeliveries = function(userID, dueAfter, callback) {
-    this.find({requester: userID, status: {$in: ["pending", "claimed"]}, deadline: {$gt: dueAfter}})
+DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
+    this.find({requester: userID, $or: [{status: "pending", seenExpired: false}, {status: "claimed"}]})
         .populate('shopper').lean().exec(function(err, requestItems) {
             if (err) {
                 callback(err, requestItems, null);
             } else {
-                mongoose.model('Delivery', DeliverySchema).find({shopper: userID, status: {$in: ["pending", "claimed"]}, deadline: {$gt: dueAfter}})
+                mongoose.model('Delivery', DeliverySchema)
+                    .find({shopper: userID, requesterRating: null})
                     .populate('requester').lean().exec(function(err, deliveryItems) {
                         callback(err, requestItems, deliveryItems);
                     });
@@ -177,7 +208,7 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
     if (!minRating) {
         minRating = 1;
     }
-    if (sortBy[0] && sortBy[1]) {
+    if (sortBy instanceof Array && sortBy[0] && sortBy[1]) {
         this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
             .sort({[sortBy[0]]: sortBy[1]})
             .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})

@@ -91,13 +91,14 @@ var Utils = function() {
     that.formatDate = function (deliveries) {
         var deliveries = JSON.parse(JSON.stringify(deliveries)); // deep copy
         return deliveries.map(function (delivery) {
-                    delivery.deadline = dateFormat(delivery.deadline, "mmmm dS, h:MM TT");
-                    if (delivery.pickupTime) {
-                        delivery.rawPickupTime = new Date(delivery.pickupTime);
-                        delivery.pickupTime = dateFormat(delivery.pickupTime, "mmmm dS, h:MM TT");
-                    }
-                    return delivery;
-               });
+	        delivery.rawDeadline = new Date(delivery.deadline);
+            delivery.deadline = dateFormat(delivery.deadline, "mmmm dS, h:MM TT");
+            if (delivery.pickupTime) {
+                delivery.rawPickupTime = new Date(delivery.pickupTime);
+                delivery.pickupTime = dateFormat(delivery.pickupTime, "mmmm dS, h:MM TT");
+            }
+            return delivery;
+        });
     }
 
     /**

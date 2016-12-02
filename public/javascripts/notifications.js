@@ -2,6 +2,19 @@
 $(document).ready(function () {
     var csrf = $('#csrf').val();
     // TODO: clear messages in .modal-messages when modal is closed
+
+    $('.close-expired-notif').click(function() {
+        var id = $(this).attr('data-id');
+        console.log($(this).parent().parent());
+        $(this).parent().parent().remove();
+        $.ajax({
+            url: '/deliveries/'+id+'/seeExpired',
+            type: 'PUT',
+            data: {_csrf: csrf},
+            success: function(data) {}, //do nothing
+            error: function(err) {console.log(err);}
+        });
+    });
     
     $('.reject-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
@@ -14,9 +27,9 @@ $(document).ready(function () {
             success: function(data) {
                 console.log(data);
                 if (data.success) {
-                    // TODO (or not?): change isModal argument to false and close the modal here
-                    addMessage('Rejection succeeded. The shopper has been notified.', 'success', true, true);
+                    addMessage('Rejection succeeded. The shopper has been notified.', 'success', false, true);
                     $('#reject-modal-' + id).modal('toggle');
+                    $('#notif-row-' + id).remove();
                 } else {
                     console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
@@ -39,13 +52,13 @@ $(document).ready(function () {
             success: function(data) {
                 console.log(data);
                 if (data.success) {
-                    // TODO (or not?): change isModal argument to false and close the modal here
-                    addMessage('Rating succeeded.', 'success', true, true);
+                    addMessage('Rating succeeded.', 'success', false, true);
+                    $('#close-modal-' + id).modal('toggle');
+                    $('#notif-row-' + id).remove();
                 } else {
                     console.log(data.message);
                     addMessage('Rating failed. Please try again.', 'danger', true, true);
                 }
-                $('#close-modal-' + id).modal('toggle');
             },
             error: function(err) {
                 console.log(err);

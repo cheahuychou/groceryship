@@ -29,6 +29,14 @@
 <div id='deliver'>
 	<span class='title-toggle' id='deliver-toggle' data-toggle="collapse" data-target="#dashboard-deliver"><h3>To Deliver  <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
   <div id='dashboard-deliver' class='collapse'>
+    <p>Remember to contact the requester to set a pickup time!</p>
     {{> deliveries_table}}
   </div>
 </div>
+
+{{#each requestItems}}
+{{> contact_information user=shopper}}
+{{/each}}
+{{#each deliveryItems}}
+{{> contact_information user=requester}}
+{{/each}}

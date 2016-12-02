@@ -13,9 +13,15 @@ a {
   margin: auto;
 }
 
+
 .feature {
     float: left;
     width: 100%;
+}
+
+.accept-reject-container {
+  width: 100px;
+  display: inline-block;
 }
 
 .feature img {
