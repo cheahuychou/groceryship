@@ -11,7 +11,7 @@
       </div>
       <div class="modal-body">
         <div id="reimbursement">
-            <p>Below is a summary of your delivery for {{requester.username}}:</p>
+            <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
             <p>Total Cost: {{actualPrice}}</p>
             <p>Tips received: {{tips}}</p>
             <p>Total received: {{add actualPrice tips}}</p>
@@ -19,11 +19,11 @@
               <p class="text-warning">WARNING: The requester has not paid for the delivery yet! Make sure the requester pays before handing the good to him/her and closing this delivery.</p>
             {{/ifContains}}
             {{#ifContains status "accepted"}}
-              <p class="text-success">{{requester.username}} has accepted and paid for your delivery.</p>
+              <p class="text-success">{{requester.firstName}} {{requester.lastName}} has accepted and paid for your delivery.</p>
             {{/ifContains}}
             {{#ifContains status "rejected"}}
               <p class="text-danger">
-              {{requester.username}} has rejected your delivery for the following reason:<br>
+              {{requester.firstName}} {{requester.lastName}} has rejected your delivery for the following reason:<br>
               {{rejectedReason}}
               </p>
               <p>

@@ -10,7 +10,7 @@
             <td>
               <div class='notification-icon'><img src="/images/exclamation.jpg"></img></div>
             </td>
-            <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a> now!</td>
+            <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a> now!</td>
             <td>
               <div class="accept-reject-container">
                 <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
@@ -25,7 +25,7 @@
             <td>
               <div class='notification-icon'><img src="/images/checklist.png"></img></div>
             </td>
-            <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) is now being delivered by <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a>! Arriving {{pickupTime}}</td>
+            <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) is now being delivered by <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a>! Arriving {{pickupTime}}</td>
             <td>
               <div class="accept-reject-container">
                 <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
@@ -41,7 +41,7 @@
           <td>
             <div class='notification-icon'><img src="/images/checklist.png"></img></div>
           </td>
-          <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) has been claimed by {{shopper.username}}! Contact <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a> to set a pickup time.</td>
+          <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) has been claimed by <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a>! Contact him/her to set a pickup time.</td>
           <td>
             <div class="accept-reject-container">
               <button class='reject-notification-items btn btn-danger btn-xs pull-right' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
@@ -71,27 +71,21 @@
       {{/each}}
       {{#each deliveryItems}}
         {{#if actualPrice}}
-          {{#ifContains status "claimed"}}
             <tr class='notification-row'>
             <td>
               <div class='notification-icon'><img src="/images/cart.png"></img></div>
             </td>
-            <td class='notification-text'>You need to deliver {{itemName}} ({{itemQuantity}}) to <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.username}}</a>! Deliver to {{pickupLocation}} at {{pickupTime}}</td>
-            <td><button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button></td>
-            <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
-            <td></td>
-            </tr>
-          {{else}}
-            <tr class='notification-row'>
-            <td>
-              <div class='notification-icon'><img src="/images/cart.png"></img></div>
+            <td class='notification-text'>
+            {{#ifContains status "claimed"}}
+              You need to deliver {{itemName}} ({{itemQuantity}}) to <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a>! Deliver to {{pickupLocation}} at {{pickupTime}}
+            {{else}}
+              <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a> has {{status}} your delivery of {{itemName}} ({{itemQuantity}})!
+            {{/ifContains}}
             </td>
-            <td class='notification-text'><a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.username}}</a> has {{status}} your delivery of {{itemName}} ({{itemQuantity}})!</td>
             <td><button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button></td>
             <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
             <td></td>
             </tr>
-          {{/ifContains}}
         {{/if}}
       {{/each}}
     </tbody>
