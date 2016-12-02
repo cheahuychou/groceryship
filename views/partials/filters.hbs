@@ -1,42 +1,49 @@
 <!-- Author: Joseph Kuan-->
 <div class="row">
-  <strong class="col-sm-1">Filter by:</strong>
-  <div class="col-sm-2">Store&nbsp;
-    <select multiple id='filter-stores' name='filter-stores' class="selectpicker" data-none-selected-text="Any store" data-width="100%" data-style="btn-inverse">
+  <strong class="col-xs-12 col-sm-6">Filter by:</strong>
+  <strong class="hidden-xs col-sm-5 col-lg-offset-1">Sort by:</strong>
+</div>
+<div class="row">
+  <div class="col-sm-2">
+    <select multiple id='filter-stores' name='filter-stores' class="selectpicker" data-none-selected-text="Any store" data-width="100%">
       {{#each allStores}}
       <option {{#ifContains ../previousStores this}}selected{{/ifContains}}>{{this}}</option>
       {{/each}}
     </select>
   </div>
-  <div class="col-sm-2">Pickup Location&nbsp;
-    <select multiple id='filter-pickup-location' name='filter-pickup' class="selectpicker" data-none-selected-text="Any location" data-width="100%" data-style="btn-inverse">
+  <div class="col-sm-2">
+    <select multiple id='filter-pickup-location' name='filter-pickup' class="selectpicker" data-none-selected-text="Any location" data-width="100%">
       {{#each allPickupLocations}}
       <option {{#ifContains ../previousPickupLocations this}}selected{{/ifContains}}>{{this}}</option>
       {{/each}}
     </select>
   </div>
-  <div class="col-sm-1">Minimum Requester Rating&nbsp;
-    <select id='filter-rating' name='filter-rating' class="selectpicker" data-width="auto" data-style="btn-inverse">
-      <option {{#ifContains previousMinRating 1}}selected{{/ifContains}}>Any</option>
+  <div class="col-sm-2 col-md-2 col-lg-3">
+    <select id='filter-rating' name='filter-rating' class="selectpicker" data-width="100%">
+      <option {{#ifContains previousMinRating 1}}selected{{/ifContains}}>No minimum requester rating</option>
+      <option {{#ifContains previousMinRating 5}}selected{{/ifContains}}>5</option>
       <option {{#ifContains previousMinRating 4}}selected{{/ifContains}}>4</option>
       <option {{#ifContains previousMinRating 3}}selected{{/ifContains}}>3</option>
       <option {{#ifContains previousMinRating 2}}selected{{/ifContains}}>2</option>
     </select>
   </div>
-  <strong class="col-sm-1 col-sm-offset-1">Sort by:</strong>
+  {{!-- end of filter. start of sort --}}
+  <strong id="xs-sort-by" class="visible-xs-inline col-xs-12">Sort by:</strong>
   <div class="col-sm-2">
     <select id='sort-by' class="form-control">
       <option value='tips' {{#ifContains previousSortBy "tips"}}selected{{/ifContains}}>Tip</option>
       <option value='deadline'{{#ifContains previousSortBy "deadline"}}selected{{/ifContains}}>Due date</option>
     </select>
-    <form id="sort-direction">
+  </div>
+  <div class="col-sm-2 col-md-2 col-lg-1">
+    <div id="sort-direction">
       <div class="radio">
         <label class="radio"><input type="radio" name="sort" value="1" {{#ifContains previousSortIncreasing 1}}checked{{/ifContains}}>Sort increasing</label>
       </div>
       <div class="radio">
         <label class="radio"><input type="radio" name="sort" value="-1"{{#ifContains previousSortIncreasing -1}}checked{{/ifContains}}>Sort decreasing</label>
       </div>
-    </form>
+    </div>
   </div>
   <div class="col-sm-2">
     <button id='filter-sort' class='filter-sort btn btn-primary'>Refine search</button>

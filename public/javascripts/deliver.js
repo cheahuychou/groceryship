@@ -5,7 +5,7 @@ $(document).ready(function () {
         var stores = $('#filter-stores').val();
         var pickupLocations = $('#filter-pickup-location').val();
         var minRating = $('#filter-rating').val();
-        if (minRating === "Any") {
+        if (minRating === "No minimum requester rating") {
             minRating = 1;
         }
         var sortBy = $('#sort-by').val();
