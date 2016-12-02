@@ -3,6 +3,7 @@
     {{message}}
   </div>
   <form id='login-form' action='/login' method='post' onsubmit="return checkLogInForm()">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <input id='kerberos-box' type='text' name='username' placeholder='kerberos' required autofocus></input><br>
     <input id='password-box' type='password' name='password' placeholder='password' required></input><br>
     <input type="submit" id='login-button' class='btn btn-primary btn-sm' value="LOG IN">
@@ -18,10 +19,10 @@
         <div class="modal-body">
           <div class="modal-messages"></div>
           <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input id='kerberos-register-box' type='text' name='requestedKerberos' placeholder='kerberos' required></input><br>
             <input id='password-register-box' type='password' name='requestedPassword' placeholder='password' required></input><br>
             <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
-            <input id='mit-id-register-box' type='text' name='requestedMitId' placeholder='MIT ID' required></input><br>
             <input id='phone-number-register-box' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input><br>
             <select name='dorm'>
               {{#each allDorms}}

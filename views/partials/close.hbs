@@ -12,14 +12,14 @@
       <div class="modal-body">
         <div class="modal-messages"></div>
         <div id="reimbursement">
-            <p>Below is a summary of your delivery for {{requester.username}}:</p>
+            <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
             <p>Total Cost: {{actualPrice}}</p>
             <p>Tips received: {{tips}}</p>
             <p>Total received: {{add actualPrice tips}}</p>
         </div>
         <br>
         {{> rating isRequest=false}}
-        <button id='deliver-rate-button' class='btn btn-primary'>Rate &amp; Collect Money</button>
+        <button class='deliver-rate-button btn btn-primary'>Rate &amp; Collect Money</button>
       </div>     
     </div>
   </div>
