@@ -7,7 +7,7 @@
         {{#if shopper}}
           {{#if pickupTime}}
             {{#ifIsPast rawPickupTime ../now}}
-            <tr class='notification-row'>
+            <tr id='notif-row-{{_id}}' class='notification-row'>
             <td>
               <div class='notification-icon'><img src="/images/exclamation.jpg"></img></div>
             </td>
@@ -22,7 +22,7 @@
             <td></td>
             </tr>
             {{else}}
-            <tr class='notification-row'>
+            <tr id='notif-row-{{_id}}' class='notification-row'>
             <td>
               <div class='notification-icon'><img src="/images/checklist.png"></img></div>
             </td>
@@ -38,7 +38,7 @@
             </tr>
             {{/ifIsPast}}
           {{else}}
-          <tr class='notification-row'>
+          <tr id='notif-row-{{_id}}' class='notification-row'>
           <td>
             <div class='notification-icon'><img src="/images/checklist.png"></img></div>
           </td>
@@ -54,7 +54,7 @@
           {{/if}}
         {{else}}
           {{#ifIsPast rawDeadline ../now}}
-          <tr class='notification-row'>
+          <tr id='notif-row-{{_id}}' class='notification-row'>
           <td>
             <div class='notification-icon'><img src="/images/expired.jpg"></img></div>
           </td>
@@ -73,7 +73,7 @@
       {{#each deliveryItems}}
         {{#ifContains status "claimed"}}
           {{#if actualPrice}}
-            <tr class='notification-row'>
+            <tr id='notif-row-{{_id}}' class='notification-row'>
             <td>
               <div class='notification-icon'><img src="/images/cart.png"></img></div>
             </td>
@@ -86,7 +86,7 @@
             </tr>
           {{/if}}
         {{else}}
-            <tr class='notification-row'>
+            <tr id='notif-row-{{_id}}' class='notification-row'>
             <td>
               <div class='notification-icon'><img src="/images/cart.png"></img></div>
             </td>

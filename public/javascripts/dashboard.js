@@ -3,19 +3,6 @@ $(document).ready(function () {
 
     var csrf = $('#csrf').val();
 
-    $('.close-expired-notif').click(function() {
-        var id = $(this).attr('data-id');
-        console.log($(this).parent().parent());
-        $(this).parent().parent().remove();
-        $.ajax({
-            url: '/deliveries/'+id+'/seeExpired',
-            type: 'PUT',
-            data: {_csrf: csrf},
-            success: function(data) {}, //do nothing
-            error: function(err) {console.log(err);}
-        });
-    });
-
     $('.cancel-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         $.ajax({
