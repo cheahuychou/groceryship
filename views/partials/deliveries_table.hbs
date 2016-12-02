@@ -17,7 +17,7 @@
         <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
         {{> item_row this}}
         
-        <td class='requester'><a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.username}}</a></td>
+        <td class='requester'><a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a></td>
         <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
       </tr>
       {{/each}}
