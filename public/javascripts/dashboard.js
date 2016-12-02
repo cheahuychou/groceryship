@@ -1,15 +1,30 @@
 // Author: Czarina Lao
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
-    $('.cancel-request').click(function() {
-        var id = $(this).parent().parent().attr('data-id');
+
+    // toggle the glyphicon chevron icon depending on whether toggle is open or not
+    // if open, icon should point down
+    // if closed, icon should point right
+    $('.title-toggle').click(function() {
+        var icon = $(this).find('.glyphicon');
+        if (icon.hasClass('glyphicon-chevron-right')) {
+            icon.removeClass('glyphicon-chevron-right');
+            icon.addClass('glyphicon-chevron-down');
+        } else {
+            icon.removeClass('glyphicon-chevron-down');
+            icon.addClass('glyphicon-chevron-right');
+        }
+    });
+
+    $('.cancel-request').click(function(e) {
+        var id = $(this).parent().attr('data-id');
         $.ajax({
             url: '/deliveries/'+id,
             type: 'DELETE',
             success: function(data) {
                 console.log(data);
                 if (data.success) {
-                    $('.request-item-row[data-id='+id+']').remove();
+                    $('.request-tile[data-id='+id+']').parent().remove();
                     // TODO: ask for the reason of cancellation
                     addMessage('Request canceled.', 'success', false, true);
                 } else {
@@ -22,6 +37,14 @@ $(document).ready(function () {
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
+
+        // stop propagation so that the modal with item details won't open
+        e.stopPropagation();
+    });
+
+    $('.add-request-tile').click(function() {
+        var requestUrl = $('#navbar-request > a').attr('href');
+        window.location.replace(requestUrl);
     });
 
     // make it more usable by allowing checking/unchecking of checkbox by clicking the row

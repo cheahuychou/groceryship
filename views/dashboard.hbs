@@ -10,19 +10,24 @@
   Under 'To Deliver' you can view all the grocery requests you have claimed, and click on 'Deliver Now' to enter the price information and pickup time. Once a delivery has been scheduled, they will appear under your notifications, where you can proceed to take further action.</p>
 </div>
 <div id='notifications'>
-	<h3>Notifications</h3>
+  <span class='title-toggle' id='notifications-toggle' data-toggle="collapse" data-target="#dashboard-notifications"><h3>Notifications  <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
+  <div id='dashboard-notifications' class='collapse'>
   {{> notifications}}
 	{{> accept}}
 	{{> reject}}
 	{{> close}}
+  </div>
 </div>
 <div id='request'>
-	<h3>Your Requests</h3>
+	<span class='title-toggle' id='requests-toggle' data-toggle="collapse" data-target="#dashboard-requests"><h3>Your Requests  <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
   {{!-- TODO: what if table is empty, i.e. no items --}}
-  {{> requests_table own=true}}
+  <div id='dashboard-requests' class='collapse'>
+    {{> requests own=true}}
+  </div>
 </div>
 <div id='deliver'>
-	<h3>To Deliver</h3>
-  {{!-- TODO: what if table is empty, i.e. no items --}}
-  {{> deliveries_table}}
+	<span class='title-toggle' id='deliver-toggle' data-toggle="collapse" data-target="#dashboard-deliver"><h3>To Deliver  <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
+  <div id='dashboard-deliver' class='collapse'>
+    {{> deliveries_table}}
+  </div>
 </div>

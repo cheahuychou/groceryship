@@ -1,0 +1,60 @@
+{{!-- <div id="request-table"> --}}
+<div class='row'>
+{{#each requestItems}}
+<div class='col-xs-12 col-sm-4 col-md-3 col-lg-3'>
+{{!-- TODO: make all heights equal or shorten text/item name --}}
+  <div class='tile request-tile' data-id='{{_id}}' data-toggle="modal" data-target='#request-modal-{{_id}}'>
+    <h4 class='tile-title'>{{itemName}}</h4>
+    <p>{{#if shopper}}Shopper: {{shopper.username}}{{else}}<i>unclaimed</i>{{/if}}</p>
+    <p>{{#if pickupTime}}Arriving: {{pickupTime}}{{else}}pickup time not yet set{{/if}}</p>
+
+    {{!-- cancel button should only appear for own requests --}}
+    {{!-- {{#unless shopper}} --}}
+{{!--     <button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#request-modal-{{_id}}'>Details</button> --}}
+{{!--  TODO: make these buttons work and stop the modal from popping up --}}
+    {{#if ../own}}
+    <button class='cancel-request btn btn-primary btn-sm' {{#if shopper}}disabled{{/if}}>Cancel</button>
+    {{else}}
+    {{!-- claim button should only appear for others' requests --}}
+    {{!-- TODO: should show 'Unclaim' if has been claimed by current user --}}
+    {{!-- <td class='requester'>{{requester.username}}</td> --}}
+    <button class='claim-request btn btn-primary btn-sm' {{#if shopper}}disabled{{/if}}>Claim</button>
+    {{/if}}
+  {{!-- {{/unless}} --}}
+  </div>
+  <div class="clearfix visibile-md-inline visible-lg-inline"></div>
+    {{!-- <div class="clearfix visibile-md-block visible-lg-inline-block"></div> --}}
+</div>
+{{/each}}
+<div class='col-xs-12 col-sm-4 col-md-3 col-lg-3'>
+  <div class='tile add-request-tile'>
+    <div class='glyphicon tile-image' id='add-request-icon'>+</div>
+  </div>
+</div>
+{{#each requestItems}}
+<div id="request-modal-{{_id}}" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3 class="modal-title">Your Request</h3>
+      </div>
+      <div class="modal-body">
+        {{> request_item own='{{own}}' }}
+      </div>     
+    </div>
+  </div>
+</div>
+{{/each}}
+
+{{!-- Author: Czarina Lao --}}
+{{!-- {{#this}}
+<td class='item-name'>{{itemName}}</td>
+<td class='item-quantity'>{{itemQuantity}}</td>
+<td class='estimated-price'>{{estimatedPrice}}</td>
+<td class='stores'>{{stores}}</td>
+<td class='deadline'>{{deadline}}</td>
+<td class='pickup-location'>{{pickupLocation}}</td>
+<td class='tip'>{{tips}}</td>
+<td class='item-description'>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
+{{/this}} --}}
