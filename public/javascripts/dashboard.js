@@ -99,9 +99,11 @@ $(document).ready(function () {
                 var pickupPoint = originalRow.children('.pickup-location').text();
                 var deadline = originalRow.children('.deadline').text();
 
+                // var inputPickupTime = $(".selector").flatpickr({});
+                // input type='text' name='item-due' class='form-control flatpickr' placeholder='Select a deadline'></td>
                 var inputPickupTime = $('<input>', {
-                    class: 'form-control datetimepicker',
-                    type: 'datetime-local',
+                    class: 'form-control flatpickr',
+                    type: 'text',
                     name: 'pickup-time',
                     // TODO: set min as current datetime
                     // TODO: set max as deadline
@@ -124,7 +126,21 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#deliver-now-modal tbody').append(row);
-                setMinMaxDateTime(deadline);
+                    var currentTime = new Date();
+
+                        var deadlineString = deadline.split(',')[0];
+        deadlineString = deadlineString.substring(0, deadlineString.length - 2);
+        var dueTime = new Date(Date.parse(deadlineString));
+        var maxDateTime = currentTime.getFullYear()  + "-" + numberToJsTimeFormat(dueTime.getMonth()+1) + "-" + numberToJsTimeFormat(dueTime.getDate()) + "T00:00:00";
+                flatpickr('.flatpickr', {
+                            enableTime: true,
+                            // minDate: 'today',
+                            enable: [{from: 'today', to: maxDateTime}],
+                            // create an extra input solely for display purposes
+                altInput: true,
+                altFormat: "F j, Y h:i K"
+                        });
+                // setMinMaxDateTime(deadline);
             }
         });
     });

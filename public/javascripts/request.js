@@ -1,5 +1,15 @@
 // Author: Czarina Lao
 $(document).ready(function() {
+    flatpickr(".flatpickr", {
+        enableTime: true,
+        // minDate seems to have a bug so not using it for now
+        // minDate: 'today',
+        enable: [{from:'today', to: new Date().fp_incr(1000)}],
+        // create an extra input solely for display purposes
+        altInput: true,
+        altFormat: "F j, Y h:i K"
+    });
+
     $('#navbar-request').addClass('active');
     $('.price').change(function() {
         showPriceFormatErrors(this);

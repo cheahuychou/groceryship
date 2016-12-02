@@ -30,7 +30,8 @@
       <tr>
         <th>Deadline</td>
         {{!-- TODO: set default item due to today's date. also set it as min --}}
-        <td><input type='datetime-local' name='item-due' class="form-control datetimepicker" onfocus="setMinMaxDateTime()" required/></td>
+        {{!--         <td><input type='datetime-local' name='item-due' class="form-control datetimepicker" onfocus="setMinMaxDateTime()" required/></td> --}}
+        <td><input type='text' name='item-due' class='form-control flatpickr' placeholder='Select a deadline'></td>
       </tr>
       <tr>
         <th>Pickup Location</td>
