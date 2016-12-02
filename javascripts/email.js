@@ -24,6 +24,17 @@ var Email = function() {
 
 
 	/**
+	* Source: http://stackoverflow.com/a/4974690
+	* Replaces the '{}' in the string by the arguments in order
+	*/
+	String.prototype.format = function () {
+  		var i = 0, args = arguments;
+  		return this.replace(/{}/g, function () {
+	  		return typeof args[i] != 'undefined' ? args[i++] : '';
+  		});
+	};
+
+	/**
    	* Send an email from GroceryShip email to the given kerberos
    	* @param {String} kerberos - the kerberos of the receiver of the email
 	* @param {String} subject - the subject of the email
@@ -31,7 +42,7 @@ var Email = function() {
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendEmail = function (kerberos, subject, htmlContent) {
+	var sendEmail = function (kerberos, subject, htmlContent) {
 		var mailOptions = {
 		    from: 'GroceryShip 6170 <' + config.emailAddress() + '>', // sender address
 		    to: kerberos + '@mit.edu',
@@ -72,101 +83,118 @@ var Email = function() {
    	*/
 	that.sendVerficationEmail = function (user, developmentMode) {
 		that.createVerificationToken(user, function (err, user) {
-			var subject = 'Confirm your GroceryShip Account, ' + user.username +'!';
+			var subject = 'Confirm your GroceryShip Account, {}!'.format(user.username);
 			var link;
 			if (developmentMode) {
-				link = 'http://localhost:3000/verify/' + user.username + '/' + user.verificationToken;
+				link = 'http://localhost:3000/verify/{}/{}'.format(user.username, user.verificationToken);
 			} else {
-				link = config.productionUrl() + '/verify/' + user.username + '/' + user.verificationToken;
+				link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
 			}
-			var content = that.welcomeMessage + '<center><p>Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="' + link + '"><input type="submit" value="Confirm" /></form></center>';
-			return that.sendEmail(user.username, subject, content);
+			var content = '{}<center><p>Hi {}! Confirm your GroceryShip account by clicking on the confirm button below.</p></center><center><form action="{}"><input type="submit" value="Confirm" /></form></center>'.format(that.welcomeMessage, user.firstName, link);
+			return sendEmail(user.username, subject, content);
 		});
 	}
 
 	/**
-   	* Makes the body of the email that a requester receives when a shopper press "Deliver Now"
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* Makes the body of the email that a requester receives when a shopper claims his/her delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {String} the body of the email to the requester
    	*/
-	that.deliveryEmailContent = function (shopper, requester) {
-		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + shopper.username + ' has bought a few of the items you requsted and is ready to deliver it to you. Please contact him/her at ' + shopper.phoneNumber + ' to setup a pickup time.</p>'; //TODO: insert html notification from the dashboard here
+	var claimEmailContent = function (delivery) {
+		return  '{}<center><p> Hi {} {}! {} {} has bought {} of {} you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.shopper.phoneNumber)		
 	}
 
 	/**
-   	* Sends an email to the specified requester when the specified shopper press "Deliver Now"
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* Sends an email to the requester of a delivery when a shopper claims his/her delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendDeliveryEmail = function (shopper, requester) {
-		return that.sendEmail(requester.username, 'New Delivery', that.deliveryEmailContent(shopper, requester));
+	that.sendClaimEmail = function (delivery) {
+		var subject = 'Updates on your pending request for {}'.format(delivery.itemName)
+		return sendEmail(delivery.requester.username, subject, claimEmailContent(delivery));
+	}
+
+	/**
+   	* Makes the body of the email that a requester receives when the shopper presses "Deliver Now"
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
+   	* @return {String} the body of the email to the requester
+   	*/
+	var deliveryEmailContent = function (delivery) {
+		return  '{}<center><p> Hi {} {}! {} {} is deliverying {} of {} to {} on {}. Please be sure to be there in time!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.pickupLocation, delivery.pickupTime);		
+	}
+
+	/**
+   	* Sends an email to the requester of a delivery when the shopper presses "Deliver Now"
+   	* @param {Object} delivery - the delivery object of the delivery that just got claimed
+   	* @return {Object} object - object.success is true if the email was sent
+   								successfully, false otherwise
+   	*/
+	that.sendDeliveryEmail = function (delivery) {
+		var subject = 'Upcoming Delivery for {}'.format(delivery.itemName)
+		return sendEmail(delivery.requester.username, subject, deliveryEmailContent(delivery));
 	}
 
 	/**
    	* Makes the body of the email that a requester receives when he/she accepts a delivery
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the requester
    	*/
-	that.requesterAcceptanceEmailContent = function (shopper, requester) {
-		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + "Below is a summary of today's delivery from " +  shopper.username + ':</p>'; //TODO: insert html for the detail of the delivered items and payment
+	var requesterAcceptanceEmailContent = function (delivery) {
+		return '{}<center><p> Hi {} {}! This is to confirm that you accepted the delivery for {} from {} {} on {}. The total cost was {}, and the tip was {}. The payment has been completed successfully. Have a nice day!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.actualPrice, delivery.tips);
 	}
 
 	/**
    	* Makes the body of the email that a shopper receives when a requester accepts his/her delivery
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the shopper
    	*/
-	that.shopperAcceptanceEmailContent = function (shopper, requester) {
-		return that.welcomeMessage + '<center><p> Hi ' + shopper.username + '! ' + requester.username + 'accepted your delivery, below is a summary of the tip you recieved.</p>'; //TODO: insert html for the tips 
+	var shopperAcceptanceEmailContent = function (delivery) {
+		return '{}<center><p> Hi {} {}! This is to confirm that you rejected the delivery for {} from {} {} on {}. You received {} of tip from this delivery. The payment has been completed successfully. Have a nice day!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.tips);
 	}
 
 	/**
    	* Sends emails to the specified requester and shopper when a delivery is accepted
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got accepted
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendAcceptanceEmails = function (shopper, requester) {
-		that.sendEmail(requester.username, "Summary of Today's Delivery from " + shopper.username, that.requesterAcceptanceEmailContent(shopper, requester));
-		that.sendEmail(shopper.username, "Delivery for " + requester.username + "accepted", that.shopperAcceptanceEmailContent(shopper, requester));
+	that.sendAcceptanceEmails = function (delivery) {
+		var requesterSubject = "Summary of Today's Delivery from {}".format(delivery.shopper.username);
+		var shopperSubject = "Delivery for {} accepted".format(delivery.requester.username);
+		sendEmail(delivery.requester.username, requesterSubject, requesterAcceptanceEmailContent(delivery));
+		sendEmail(delivery.shopper.username, shopperSubject, shopperAcceptanceEmailContent(delivery));
 	}
 
 	/**
    	* Makes the body of the email that a requester receives when he/she rejects a delivery
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the requester
    	*/
-	that.requesterRejectionEmailContent = function (shopper, requester) {
-		return that.welcomeMessage + '<center><p> Hi ' + requester.username + '! ' + "This is to confirm that you rejected the delivery from" +  shopper.username + '</p>'; //TODO: insert html for the detail of the delivered items and payment
+	var requesterRejectionEmailContent = function (delivery) {
+		return '{}<center><p> Hi {} {}! This is to confirm that you rejected the delivery for {} from {} {} on {}.</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime);
 	}
 
 	/**
    	* Makes the body of the email that a shopper receives when a requester rejects his/her delivery
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {String} the body of the email to the shopper
    	*/
-	that.shopperRejectionEmailContent = function (shopper, requester) {
-		return that.welcomeMessage + '<center><p> Hi ' + shopper.username + '! ' + requester.username + 'rejected your delivery. Please check your policy regarding returning items.</p>'; //TODO: insert html for the tips 
+	var shopperRejectionEmailContent = function (delivery) {
+		return "{}<center><p> Hi {} {}! {} {} rejected your delivery for {} on {}. The reason was \"{}\". Please check the grocery store's policy regarding returning items.</p>".format(that.welcomeMessage, delivery.shopper.firstName, delivery.shopper.lastName, delivery.requester.firstName, delivery.requester.lastName, delivery.itemName, delivery.pickupTime, delivery.rejectedReason);
 	}
 
 	/**
    	* Sends emails to the specified requester and shopper when a delivery is rejected
-   	* @param {Object} shopper - the user object for the shopper of the delivery
-   	* @param {Object} requester - the user object for the requester of the delivery
+   	* @param {Object} delivery - the delivery object of the delivery that just got rejected
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendRejectionEmails = function (shopper, requester) {
-		that.sendEmail(requester.username, "Summary of Today's Delivery from " + shopper.username, that.requesterRejectionEmailContent(shopper, requester));
-		that.sendEmail(shopper.username, "Delivery for " + requester.username + "rejected", that.shopperRejectionEmailContent(shopper, requester));
+	that.sendRejectionEmails = function (delivery) {
+		var requesterSubject = "Summary of Today's Delivery from {}".format(delivery.shopper.username);
+		var shopperSubject = "Delivery for {} rejected".format(delivery.requester.username);
+		sendEmail(delivery.requester.username, requesterSubject, requesterRejectionEmailContent(delivery));
+		sendEmail(delivery.shopper.username, shopperSubject, shopperRejectionEmailContent(delivery));
 	}
 
 	Object.freeze(that);

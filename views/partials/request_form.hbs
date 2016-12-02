@@ -1,5 +1,5 @@
 {{!-- Author: Czarina Lao --}}
-<div id="request-form-container">
+{{!-- <div id="request-form-container">
   <table class="table table-hover">
     <thead>
       <tr>
@@ -12,4 +12,51 @@
   </table>
   <button id='add-item' class='btn btn-default btn-sm'>Add More</button><br>
   <button type='submit' id='make-request' class='btn btn-primary' style='float: right'>Make Request</button>
-</div>
+</div> --}}
+<table class="table">
+    <tr>
+      <th>Item Name</td>
+      <td>{{itemName}}</td>
+    </tr>
+    <tr>
+      <th>Quantity</td>
+      <td>{{itemQuantity}}</td>
+    </tr>
+      <th>Estimated Price</td>
+      <td>{{estimatedPrice}}</td>
+    <tr>
+      <th>Stores</td>
+      <td>{{stores}}</td>
+    </tr>
+    <tr>
+      <th>Deadline</td>
+      <td>{{deadline}}</td>
+    </tr>
+    <tr>
+      <th>Pickup Location</td>
+      <td>{{pickupLocation}}</td>
+    </tr>
+    <tr>
+      <th>Tip</td>
+      <td>{{tips}}</td>
+    </tr>
+    <tr>
+      <th>Item Description</td>
+      <td>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
+    </tr>
+    {{#if own}}
+    <tr>
+      <th>Shopper</th>
+      <td>{{shopper.username}}</td>
+    </tr>
+    <tr>
+      <th>Pickup Time</th>
+      <td>{{pickupTime}}</td>
+    </tr>
+    {{else}}
+    <tr>
+      <th>Requester</th>
+      <td>{{requester.username}}</td>
+    </tr>
+    {{/if}}
+</table>

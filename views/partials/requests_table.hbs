@@ -17,7 +17,7 @@
       <tr class='request-item-row' data-id='{{_id}}'>
         {{> item_row this}}
         {{#if ../own}}
-        <td class='shopper'>{{#if shopper}}{{shopper.username}}{{else}}N/A{{/if}}</td>
+        <td class='shopper'>{{#if shopper}}{{shopper.firstName}} {{shopper.lastName}}{{else}}N/A{{/if}}</td>
         <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
         {{/if}}
 
@@ -28,7 +28,7 @@
         {{else}}
         {{!-- claim button should only appear for others' requests --}}
         {{!-- TODO: should show 'Unclaim' if has been claimed by current user --}}
-        <td class='requester'>{{requester.username}}</td>
+        <td class='requester'>{{requester.firstName}} {{requester.lastName}}</td>
         <td><button class='claim-request btn btn-primary btn-sm'>Claim</button></td>
         {{/if}}
         {{/unless}}

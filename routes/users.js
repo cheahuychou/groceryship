@@ -1,9 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcrypt');
+var bodyParser = require('body-parser');
+var csrf = require('csurf');
 var User = require('../models/user.js');
 var utils = require('../javascripts/utils.js');
 
+// setup route middlewares 
+var csrfProtection = csrf({ cookie: true });
+var parseForm = bodyParser.urlencoded({ extended: false });
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -11,20 +16,18 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:username', utils.isAuthenticated, function (req, res, next) { 
-	res.render('dashboard', { title: 'Dashboard', username: req.params.username});
+	res.render('dashboard', { title: 'Dashboard', username: req.params.username, fullName: user.fullName, csrfToken: req.csrfToken()});
 });
 
 router.get('/:username/request', utils.isAuthenticated, function (req, res, next) { 
+	var user = req.session.passport.user;
 	res.render('request', { title: 'Request for a Delivery',
 		                    username: req.params.username,
+		                    fullName: user.fullName,
       	                    allPickupLocations: utils.allPickupLocations(),
-    	                    allStores: utils.allStores()
+    	                    allStores: utils.allStores(),
+    	                    csrfToken: req.csrfToken()
 		                });
-});
-
-//TODO: remove this as I think it's no longer used?
-router.get('/:username/deliver', utils.isAuthenticated, function (req, res, next) { 
-	res.render('deliver', { title: 'Request Feed', username: req.params.username});
 });
 
 router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
@@ -32,15 +35,18 @@ router.get('/:username/profile', utils.isAuthenticated, function (req, res, next
 		res.render('profile', {title: 'Profile Page',
 			                   user: user,
 			                   username: req.params.username,
-			                   allDorms: utils.allDorms()
+			                   fullName: user.firstName + ' ' + user.lastName,
+			                   allDorms: utils.allDorms(),
+			                   csrfToken: req.csrfToken()
 			               });
 	});
 });
 
-router.post('/:username/profile/edit', utils.isAuthenticated, function(req, res, next){
+router.put('/:username/profile/edit', utils.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
 	var newPassword = req.body.newPassword.trim();
 	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
 	var dorm = req.body.dorm.trim();
+	console.log('yo updating');
 	bcrypt.genSalt(function(err, salt) {
 		if (err) {
 	  		return next(err);

@@ -16,11 +16,14 @@ $(document).ready(function () {
         }
     });
 
+    var csrf = $('#csrf').val();
+
     $('.cancel-request').click(function(e) {
         var id = $(this).parent().attr('data-id');
         $.ajax({
             url: '/deliveries/'+id,
             type: 'DELETE',
+            data: {_csrf: csrf},
             success: function(data) {
                 console.log(data);
                 if (data.success) {
@@ -181,7 +184,8 @@ $(document).ready(function () {
                     type: 'PUT',
                     data: {
                         pickupTime: new Date(pickupTime+getFormattedTimezoneOffset()),
-                        actualPrice: price
+                        actualPrice: price,
+                        _csrf: csrf
                     },
                     success: function(data) {
                         // TODO
