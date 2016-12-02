@@ -44,13 +44,12 @@ $(document).ready(function () {
                     $(this).parent().addClass('has-error');
                 }
                 hasError = true;
-                addMessage('All fields must be filled out.', 'danger', false, true);
+                addMessage('All fields must be filled out.', 'danger', true, true);
                 return false;
             }
         });
 
         if (!hasError) {
-        	console.log('no error', username, password, phoneNumber, dorm, csrf);
 			$.ajax({
 	            url: '/users/'+ username +'/profile',
 	            type: 'PUT',

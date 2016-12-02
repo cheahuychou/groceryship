@@ -29,7 +29,7 @@
           <tbody>
             {{> item_row}}
             {{#if isRequest}}
-            <td class='shopper'>{{shopper.firstName}} {{shopper.lastName}}</td>
+            <td class='shopper'>{{#if shopper}}{{shopper.firstName}} {{shopper.lastName}}{{else}}N/A{{/if}}</td>
             {{else}}
             <td class='requester'>{{requester.firstName}} {{requester.lastName}}</td>
             {{/if}}

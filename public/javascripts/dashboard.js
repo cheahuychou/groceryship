@@ -1,5 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+
     var csrf = $('#csrf').val();
 
     $('.cancel-request').click(function() {

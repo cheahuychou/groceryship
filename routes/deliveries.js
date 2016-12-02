@@ -57,7 +57,7 @@ fields rendered: title, requestItems, deliveryItems
 router.get("/username/:username", utils.isAuthenticated, function(req, res){
     var now = Date.now();
     var user = req.session.passport.user;
-    Delivery.getRequestsAndDeliveries(user._id, now, function(err, requestItems, deliveryItems) {
+    Delivery.getRequestsAndDeliveries(user._id, function(err, requestItems, deliveryItems) {
         if (err) {
             res.send({'success': false, 'message': err})
         } else {
@@ -153,6 +153,29 @@ router.delete("/:id", utils.isAuthenticated, parseForm, csrfProtection, function
         	});
         }
     });
+});
+
+/** Updates a request when the user closes an "expired" notification, indicated the user has seen that the request is expired **/
+router.put("/:id/seeExpired", utils.isAuthenticated, parseForm, csrfProtection, function(req, res) {
+	var user = req.session.passport.user;
+	Delivery.findOne({_id: req.params.id, requester: user._id}).exec(function(err, currentDelivery) { //verify that the current user is the one who requested it
+    	if (currentDelivery === null) {
+    		err = new Error("cannot find specified request")
+    	}
+		if (err) {
+			console.log(err);
+			res.json({success: false, message: err});
+		} else {
+			currentDelivery.seeExpired(function(err) {
+				if (err) {
+					console.log(err);
+					res.json({success: false, message: err});
+				} else {
+					res.json({success: true});
+				}
+			});
+		}
+	});
 });
 
 /** Updates a Delivery when a user claims that delivery **/

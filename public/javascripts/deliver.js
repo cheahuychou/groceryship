@@ -24,7 +24,7 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
-                    addMessage('Request claimed! It has been added to your dashboard.', 'success', false, true);
+                    addMessage('Request claimed! It has been added to your dashboard. Remember to contact the requester to set a pickup time.', 'success', false, true);
                 } else {
                     console.log(data.message);
                     addMessage('The request could not be claimed. It might have already been claimed by another user or canceled by the requester.', 'danger', false, true);
