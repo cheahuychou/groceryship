@@ -42,7 +42,7 @@ DeliverySchema.path("deadline").validate(function(deadline) {
 }, "The dealine has passed.");
 
 DeliverySchema.path("estimatedPrice").validate(function(value) {
-    return value >= 0;
+    return value > 0;
 }, "Estimated Price cannot be negative");
 
 DeliverySchema.path("tips").validate(function(value) {
@@ -50,7 +50,7 @@ DeliverySchema.path("tips").validate(function(value) {
 }, "Tips cannot be negative");
 
 DeliverySchema.path("actualPrice").validate(function(value) {
-    return value >= 0;
+    return value === null || value > 0;
 }, "Actual Price cannot be negative");
 
 DeliverySchema.path("pickupLocation").validate(function(value) {
@@ -71,8 +71,13 @@ DeliverySchema.path("shopperRating").validate(function(rating) {
  * function takes 1 parameter: an error when the operation is not properly executed
  */
 DeliverySchema.methods.seeExpired = function(callback) {
-    this.seenExpired = true;
-    this.save(callback);
+    var now = Date.now();
+    if (this.deadline > now) {
+        callback(new Error("request has not expired yet"));
+    } else {
+        this.seenExpired = true;
+        this.save(callback);
+    }
 };
 
 /**

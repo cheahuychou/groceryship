@@ -156,7 +156,7 @@ router.delete("/:id", utils.isAuthenticated, parseForm, csrfProtection, function
 });
 
 /** Updates a request when the user closes an "expired" notification, indicated the user has seen that the request is expired **/
-router.put("/:id/seeExpired", utils.isAuthenticated, function(req, res) {
+router.put("/:id/seeExpired", utils.isAuthenticated, parseForm, csrfProtection, function(req, res) {
 	var user = req.session.passport.user;
 	Delivery.findOne({_id: req.params.id, requester: user._id}).exec(function(err, currentDelivery) { //verify that the current user is the one who requested it
     	if (currentDelivery === null) {

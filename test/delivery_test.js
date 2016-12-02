@@ -327,7 +327,7 @@ describe("Models", function() {
           pickupLocation: "Baker",
           requester: id1,
           shopper: id2, 
-          actualPrice: -11.5,
+          actualPrice: 11.5,
           pickupTime: new Date('2016-11-21T11:00:00'),
           requesterRating: 6}, function(err, doc) {
             assert.throws(function() {
@@ -349,7 +349,7 @@ describe("Models", function() {
           pickupLocation: "Baker",
           requester: id1,
           shopper: id2, 
-          actualPrice: -11.5,
+          actualPrice: 11.5,
           pickupTime: new Date('2016-11-21T11:00:00'),
           requesterRating: 4.5}, function(err, doc) {
             assert.throws(function() {
@@ -363,9 +363,45 @@ describe("Models", function() {
 
     describe("SeenExpired", function() {
       it("should allow users to mark expired pending requests as seen", function(done) {
-        Delivery.create(pending_delivery1, function(err, doc) {
+        var now = Date.now();
+        var pastDeadline = new Date(now - 60*60*24*7*1000); //one week before now
+        Delivery.create({stores: ["HMart", "Star Market"],
+              status: "pending",
+              deadline: pastDeadline,
+              itemName: "test-item-beer",
+              itemDescription: "test-description-bluegirl",
+              itemQuantity: "test-quantity-6",
+              estimatedPrice: 3.5,
+              tips: 0.5,
+              pickupLocation: "Baker",
+              requester: id1,
+              seenExpired: false}, function(err, doc) {
             doc.seeExpired(function(err) {
               assert.strictEqual(doc.seenExpired, true);
+              done();
+            });
+          });
+      });
+
+      it("should not allow users to mark non-expired pending requests as seen", function(done) {
+        var now = Date.now();
+        var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
+        Delivery.create({stores: ["HMart", "Star Market"],
+              status: "pending",
+              deadline: futureDeadline,
+              itemName: "test-item-beer",
+              itemDescription: "test-description-bluegirl",
+              itemQuantity: "test-quantity-6",
+              estimatedPrice: 3.5,
+              tips: 0.5,
+              pickupLocation: "Baker",
+              requester: id1,
+              seenExpired: false}, function(err, doc) {
+            doc.seeExpired(function(err) {
+              assert.throws(function() {
+                assert.ifError(err);
+              });
+              assert.strictEqual(doc.seenExpired, false);
               done();
             });
           });
