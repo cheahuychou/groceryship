@@ -42,6 +42,11 @@ var checkSignUpForm = function () {
         addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
         return false; 
     }
+    if (password.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
+        // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
+        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
+        return false; 
+    }
     if (confirmPassword !== password || /<[a-z][\s\S]*>/i.test(password)) {
         addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
         return false;
@@ -52,3 +57,32 @@ var checkSignUpForm = function () {
     }
 
 }
+
+$(document).ready(function () {
+    $('#verify-button').click(function () {
+        var username = $('#username').val();
+        var verificationToken = $('#verificationToken').val();
+        var csrf = $('#csrf').val();
+        $.ajax({
+            url: '/verify/'+username+'/'+verificationToken,
+            type: 'PUT',
+            data: {username: username, verificationToken: verificationToken, _csrf: csrf},
+            success: function(data) {
+                if (data.success) {
+                    addMessage('Verification succeeded! Redirecting you to the homepage...', 'success', false, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect
+                        }, 1000);   
+                    }
+                } else {
+                    addMessage('Verification failed!', 'danger', false, true);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
+            }
+        });
+    });
+});
