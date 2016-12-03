@@ -1,5 +1,6 @@
 //Author: Joseph Kuan
 var mongoose = require("mongoose");
+var User = require("./user.js");
 var utils = require("../javascripts/utils.js");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -21,6 +22,7 @@ var DeliverySchema = mongoose.Schema({
     shopperRating: {type: Number, default: null}, // The rating that the requester gives the shopper
     rejectedReason: {type: String, required: false},
     seenExpired: {type: Boolean, default: false}, // Denotes whether the requester has seen that an unclaimed request is past the deadline. Used in populating notifications.
+    minShippingRating: {type: Number, default: null} // Only shoppers with a shipping rating above this value are allowed to deliver this item
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -81,19 +83,27 @@ DeliverySchema.methods.seeExpired = function(callback) {
 };
 
 /**
- * Claims a pending request. Feeds an error into the callback if the request has already been claimed.
+ * Claims a pending request. Feeds an error into the callback if the request has already been claimed, shopper shipping rating is too low, or shopper is suspended
  * @param {ObjectId} shopperID - The id of the shopper that is claiming the request
  * @param {Function} callback - The function to execute after request is claimed. Callback
  * function takes 1 parameter: an error when the request is not properly claimed
  */
 DeliverySchema.methods.claim = function(shopperID, callback) {
-    if (this.status !== "pending") {
-        callback(new Error("request has already been claimed"));
-    } else {
-        this.status = "claimed";
-        this.shopper = shopperID;
-        this.save(callback);
-    }
+    var now = Date.now();
+    var currentDelivery = this;
+    User.findOne({_id: shopperID}, function(err, currentUser) {
+        if (currentDelivery.status !== "pending") {
+            callback(new Error("request has already been claimed"));
+        } else if (currentUser.avgShippingRating < currentDelivery.minShippingRating) {
+            callback(new Error("shopper shipping rating is too low"));
+        } else if (currentUser.suspendedUntil > now) {
+            callback(new Error("shopper is suspended"));
+        } else {
+            currentDelivery.status = "claimed";
+            currentDelivery.shopper = shopperID;
+            currentDelivery.save(callback);
+        }
+    });
 };
 
 /**
@@ -122,7 +132,17 @@ DeliverySchema.methods.accept = function(shopperRating, callback) {
     } else {
         this.status = "accepted";
         this.shopperRating = shopperRating;
-        this.save(callback);
+        var shopperID = this.shopper;
+        var thisID = this._id;
+        this.save(function(err) {
+            if (err) {
+                callback(err);
+            } else {
+                User.findOne({_id: shopperID}, function(err, currentUser) {
+                    currentUser.addCompletedShipping(thisID, shopperRating, callback);
+                });
+            }
+        });
     }
 };
 
@@ -142,7 +162,17 @@ DeliverySchema.methods.reject = function(reason, shopperRating, callback) {
         this.status = "rejected";
         this.rejectedReason = reason;
         this.shopperRating = shopperRating;
-        this.save(callback);
+        var shopperID = this.shopper;
+        var thisID = this._id;
+        this.save(function(err) {
+            if (err) {
+                callback(err);
+            } else {
+                User.findOne({_id: shopperID}, function(err, currentUser) {
+                    currentUser.addCompletedShipping(thisID, shopperRating, callback);
+                });
+            }
+        });
     }
 };
 
@@ -157,7 +187,17 @@ DeliverySchema.methods.rateRequester = function(requesterRating, callback) {
         callback(new Error("cannot rate the shopper without claiming his/her delivery"));
     } else {
         this.requesterRating = requesterRating;
-        this.save(callback);
+        var requesterID = this.requester;
+        var thisID = this._id;
+        this.save(function(err) {
+            if (err) {
+                callback(err);
+            } else {
+                User.findOne({_id: requesterID}, function(err, currentUser) {
+                    currentUser.addCompletedRequest(thisID, requesterRating, callback);
+                });
+            }
+        });
     }
 };
 
@@ -172,16 +212,27 @@ DeliverySchema.methods.rateRequester = function(requesterRating, callback) {
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems, deliveryItems)
  */
 DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
-    this.find({requester: userID, $or: [{status: "pending", seenExpired: false}, {status: "claimed"}]})
-        .populate('shopper').lean().exec(function(err, requestItems) {
+    this.find({requester: userID, status: "claimed"})
+        .sort({pickupTime: 1})
+        .populate('shopper').lean().exec(function(err, requestItemsClaimed) {
             if (err) {
-                callback(err, requestItems, null);
+                callback(err, requestItemsClaimed, null);
             } else {
                 mongoose.model('Delivery', DeliverySchema)
-                    .find({shopper: userID, requesterRating: null})
-                    .populate('requester').lean().exec(function(err, deliveryItems) {
-                        callback(err, requestItems, deliveryItems);
-                    });
+                    .find({requester: userID, status: "pending", seenExpired: false})
+                    .sort({deadline: 1})
+                    .populate('shopper').lean().exec(function(err, requestItemsPending) {
+                        if (err) {
+                            callback(err, requestItemsClaimed, null);
+                        } else {
+                            var requestItems = requestItemsClaimed.concat(requestItemsPending);
+                            mongoose.model('Delivery', DeliverySchema)
+                                .find({shopper: userID, requesterRating: null})
+                                .populate('requester').lean().exec(function(err, deliveryItems) {
+                                    callback(err, requestItems, deliveryItems);
+                                });
+                        }
+                    })
             }
         });
 };
@@ -199,35 +250,60 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems)
  */
 DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, minRating, sortBy, callback) {
-    if (!storesList) {
-        storesList = utils.allStores();
-    }
-    if (!pickupLocationList) {
-        pickupLocationList = utils.allPickupLocations();
-    }
-    if (!minRating) {
-        minRating = 1;
-    }
-    if (sortBy instanceof Array && sortBy[0] && sortBy[1]) {
-        this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
-            .sort({[sortBy[0]]: sortBy[1]})
-            .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
-            .lean().exec(function(err, requestItems) {
-                requestItems = requestItems.filter(function(item) {
-                    return item.requester;
-                });
-                callback(err, requestItems);
-            });  
-        } else {
-        this.find({requester: {$ne: userID}, status: "pending", deadline: {$gt: dueAfter}, stores: {$in: storesList}, pickupLocation: {$in: pickupLocationList}})
-            .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
-            .lean().exec(function(err, requestItems) {
-                requestItems = requestItems.filter(function(item) {
-                    return item.requester;
-                });
-                callback(err, requestItems);
-            });
+    var now = Date.now();
+    var Model = this;
+    User.findOne({_id: userID}, function(err, currentUser) {
+        if (currentUser === null) {
+            err = new Error("User not found");
+        } else if (currentUser.suspendedUntil > now) {
+            err = new Error("User has been suspended from making deliveries");
+            err.suspendedUntil = currentUser.suspendedUntil;
         }
+        if (err) {
+            callback(err, null);
+        } else {
+            var userShippingRating = currentUser.avgShippingRating;
+            if (!storesList) {
+                storesList = utils.allStores();
+            }
+            if (!pickupLocationList) {
+                pickupLocationList = utils.allPickupLocations();
+            }
+            if (!minRating) {
+                minRating = 1;
+            }
+            if (sortBy instanceof Array && sortBy[0] && sortBy[1]) {
+                Model.find({requester: {$ne: userID},
+                           status: "pending",
+                           deadline: {$gt: dueAfter},
+                           stores: {$in: storesList},
+                           pickupLocation: {$in: pickupLocationList},
+                           $or: [{minShippingRating: {$lte: userShippingRating}}, {minShippingRating: null}]})
+                    .sort({[sortBy[0]]: sortBy[1]})
+                    .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
+                    .lean().exec(function(err, requestItems) {
+                        requestItems = requestItems.filter(function(item) {
+                            return item.requester;
+                        });
+                        callback(err, requestItems);
+                    });  
+                } else {
+                Model.find({requester: {$ne: userID},
+                           status: "pending",
+                           deadline: {$gt: dueAfter},
+                           stores: {$in: storesList},
+                           pickupLocation: {$in: pickupLocationList},
+                           $or: [{minShippingRating: {$lte: userShippingRating}}, {minShippingRating: null}]})
+                    .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
+                    .lean().exec(function(err, requestItems) {
+                        requestItems = requestItems.filter(function(item) {
+                            return item.requester;
+                        });
+                        callback(err, requestItems);
+                    });
+                }
+        }
+    });
 };
 
 var DeliveryModel = mongoose.model("Delivery", DeliverySchema);
