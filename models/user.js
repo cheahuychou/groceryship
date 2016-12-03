@@ -1,6 +1,7 @@
 // Author: Cheahuychou Mao
 
 var mongoose = require("mongoose");
+var bcrypt = require('bcrypt');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
 
@@ -46,8 +47,8 @@ UserSchema.methods.verify = function (callback) {
 * @param {String} token - the 32-digit verification token
 * @param {Function} callback - the function that gets called after the account is verified
 */
-UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
-    this.findOne({username: kerberos}, function (err, user) {
+UserSchema.statics.verifyAccount = function (username, token, callback) {
+    this.findOne({username: username}, function (err, user) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid kerberos'});
         } else if (user.verified) {
@@ -59,6 +60,26 @@ UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
         }
     });
 };
+
+
+UserSchema.statics.logIn = function (username, password, callback) {
+    this.findOne({ username: username }, function (err, user) {
+        if (err || user == null) {
+            callback({message:'Please enter a valid username'});
+        } else {
+            bcrypt.compare(password, user.password, function (err, response) {
+                if (response == true) {
+                    callback(null, {username: username,
+                                    _id: user._id,
+                                    verified: user.verified,
+                                    fullName: user.firstName + ' ' + user.lastName});
+                } else {
+                    callback({message:'Please enter a correct password'});
+                }
+            });
+        }
+    }); 
+}
 
 /**
  * Adds a delivery ID to the completed requests field. Updates the average request rating.  

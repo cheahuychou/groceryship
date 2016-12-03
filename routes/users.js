@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var User = require('../models/user.js');
 var utils = require('../javascripts/utils.js');
+var authentication = require('../javascripts/authentication.js');
 
 // setup route middlewares 
 var csrfProtection = csrf({ cookie: true });
@@ -15,11 +16,11 @@ router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-router.get('/:username', utils.isAuthenticated, function (req, res, next) { 
+router.get('/:username', authentication.isAuthenticated, function (req, res, next) { 
 	res.render('dashboard', { title: 'Dashboard', username: req.params.username, fullName: user.fullName, csrfToken: req.csrfToken()});
 });
 
-router.get('/:username/request', utils.isAuthenticated, function (req, res, next) { 
+router.get('/:username/request', authentication.isAuthenticated, function (req, res, next) { 
 	var user = req.session.passport.user;
 	res.render('request', { title: 'Request for a Delivery',
 		                    username: req.params.username,
@@ -30,7 +31,7 @@ router.get('/:username/request', utils.isAuthenticated, function (req, res, next
 		                });
 });
 
-router.get('/:username/profile', utils.isAuthenticated, function (req, res, next) {
+router.get('/:username/profile', authentication.isAuthenticated, function (req, res, next) {
 	User.findOne({'username': req.params.username}, function(err, user){
 		res.render('profile', {title: 'Profile Page',
 			                   user: user,
@@ -42,7 +43,7 @@ router.get('/:username/profile', utils.isAuthenticated, function (req, res, next
 	});
 });
 
-router.put('/:username/profile', utils.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
+router.put('/:username/profile', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
 	var newPassword = req.body.newPassword.trim();
 	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
 	var dorm = req.body.dorm.trim();
