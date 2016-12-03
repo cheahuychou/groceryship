@@ -1,6 +1,7 @@
 var request = require('request');
 var config = require('./config.js');
 var bcrypt = require('bcrypt');
+var utils = require('./utils.js');
 
 var Authentication = function() {
 
@@ -22,7 +23,7 @@ var Authentication = function() {
         } else if (req.isAuthenticated()) {
             res.redirect('/users/'+req.session.passport.user.username);
         } else {
-            res.render('home', { title: 'GroceryShip', message: 'Please log in below', allDorms: that.allDorms(), csrfToken: req.csrfToken()});
+            res.render('home', { title: 'GroceryShip', message: 'Please log in below', allDorms: utils.allDorms(), csrfToken: req.csrfToken()});
         }
     }
 

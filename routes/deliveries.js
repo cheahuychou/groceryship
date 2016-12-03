@@ -17,7 +17,7 @@ var parseForm = bodyParser.urlencoded({ extended: false });
 Returns the "deliver" page consisting of all requests that a user can claim
 fields rendered: title & requestItems
 **/
-router.get("/requests", authentication.isAuthenticated, function(req, res) {
+router.get("/", authentication.isAuthenticated, function(req, res) {
     var now = Date.now();
     var user = req.session.passport.user;
     var stores = req.query.stores;
@@ -31,8 +31,17 @@ router.get("/requests", authentication.isAuthenticated, function(req, res) {
     }
     Delivery.getRequests(user._id, now, stores, pickupLocations, minRating, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
-        	console.log(err);
-            res.send({'success': false, 'message': err});
+        	if (err.message = "User has been suspended from making deliveries") {
+        		res.render('suspended', {username: user.username,
+        			                     fullName: user.fullName,
+        		                         title: 'Suspended :(',
+        		                         suspendedUntil: err.suspendedUntil,
+        		                         csrfToken: req.csrfToken()
+        		                     });
+        	} else {
+	        	console.log(err);
+	            res.send({'success': false, 'message': err});
+        	}
         } else {
             res.render('deliver', {username: user.username,
                                    fullName: user.fullName,
@@ -111,6 +120,7 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
     var estimatedPrice = parseFloat(req.body.itemPriceEstimate);
     var tips = parseFloat(req.body.itemTips);
     var pickupLocation = req.body.itemPickupLocation;
+    //var minShippingRating = parseFloat(req.body.minShippingRating); //TODO: uncomment this code once minShippingRating is implemented in front end!
     Delivery.create({
         stores: stores,
         status: "pending",
@@ -121,7 +131,8 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
         estimatedPrice: estimatedPrice,
         tips: tips,
         pickupLocation: pickupLocation,
-        requester: req.session.passport.user._id
+        requester: req.session.passport.user._id,
+        //minShippingRating: minShippingRating
     }, function(err, newDelivery) {
         if (err) {
             console.log(err);
@@ -252,7 +263,7 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.accept(req.body.shopperRating, function(err) {
+            currentDelivery.accept(parseInt(req.body.shopperRating), function(err) {
                 if (err) {
                     console.log(err);
                     res.json({success: false, message: err});
@@ -278,7 +289,7 @@ router.put("/:id/reject", authentication.isAuthenticated, parseForm, csrfProtect
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.reject(req.body.reason, req.body.shopperRating, function(err) {
+            currentDelivery.reject(req.body.reason, parseInt(req.body.shopperRating), function(err) {
                 if (err) {
                     console.log(err);
                     res.json({success: false, message: err});
@@ -302,7 +313,7 @@ router.put("/:id/rateRequester", authentication.isAuthenticated, parseForm, csrf
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.rateRequester(req.body.requesterRating, function(err) {
+            currentDelivery.rateRequester(parseInt(req.body.requesterRating), function(err) {
                 if (err) {
                     console.log(err);
                     res.json({success: false, message: err});

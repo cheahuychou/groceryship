@@ -20,7 +20,8 @@ var UserSchema = mongoose.Schema({
     completedShippings: {type: [{type: ObjectId, ref: "delivery"}], default: []},
     avgShippingRating:  {type:Number, default: 5},
     verified: {type:Boolean, default: false},
-    verificationToken: {type:String, default: null}
+    verificationToken: {type:String, default: null},
+    suspendedUntil: {type: Date, required: false} // The date where a user is suspended until (if his average shipping rating is too low)
 });
 
 
@@ -160,7 +161,8 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
 UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
     this.completedRequests.push(deliveryId);
     var newLength = this.completedRequests.length;
-    this.avgRequestRating = parseFloat((this.avgRequestRating * (newLength - 1) + rating) / newLength).toFixed(1);
+    this.avgRequestRating = (this.avgRequestRating * (newLength - 1) + rating) / newLength;
+    this.save(callback);
 };
 
 /**
@@ -173,7 +175,20 @@ UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) 
 UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
     this.completedShippings.push(deliveryId);
     var newLength = this.completedShippings.length;
-    this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1);
+    var oldRating = this.avgShippingRating;
+    this.avgShippingRating = (this.avgShippingRating * (newLength - 1) + rating) / newLength;
+
+    //TODO: Tell me (Joseph) if this is too complicated xD
+    //Suspend users if they 1. previously had a good average rating but rating now fell below minimum allowed ship rating 2. currently have a bad average rating & receive another bad rating
+    if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
+        if ((oldRating >= utils.minAllowedShipRating() && this.avgShippingRating < utils.minAllowedShipRating())
+            || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
+            var now = Date.now();
+            this.suspendedUntil = new Date(now + utils.suspensionPeriod());
+        }
+    }
+
+    this.save(callback);
 };
 
 var UserModel = mongoose.model("User", UserSchema);
