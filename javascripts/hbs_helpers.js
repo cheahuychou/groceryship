@@ -48,7 +48,7 @@ var HbsHelpers = function() {
 
     /**
      * Rounds a number off to the desired number of decimal places
-     * @param {Number} number - The number to be rounded off
+     * @param {String|Number} number - The number to be rounded off
      * @param {Integer} precision - The number of decimal places to round the number to (precision 0 rounds to an integer, precision 1 rounds to e.g. 111.1). Must be non-negative.
      * @return {Number} The rounded off number
      */

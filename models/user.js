@@ -178,8 +178,9 @@ UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback)
     var oldRating = this.avgShippingRating;
     this.avgShippingRating = (this.avgShippingRating * (newLength - 1) + rating) / newLength;
 
-    //TODO: Tell me (Joseph) if this is too complicated xD
-    //Suspend users if they 1. previously had a good average rating but rating now fell below minimum allowed ship rating 2. currently have a bad average rating & receive another bad rating
+    //Suspend users for a period of time if they
+    //    1. previously had a good average rating but rating now fell below minimum allowed ship rating
+    //    2. currently have a bad average rating & receive another bad rating
     if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
         if ((oldRating >= utils.minAllowedShipRating() && this.avgShippingRating < utils.minAllowedShipRating())
             || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
