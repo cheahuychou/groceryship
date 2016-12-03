@@ -85,7 +85,7 @@ router.post('/logout', parseForm, csrfProtection, function(req, res, next) {
     res.redirect('/');
 });
 
-// Verifies the account
+// Directs user to verification page
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
     data = {title: 'GroceryShip',
             username: req.params.username,
@@ -96,6 +96,7 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
         
 });
 
+// Verifies the account
 router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, function(req, res, next) {
     User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
         data = {title: 'GroceryShip',

@@ -160,7 +160,7 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
 UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
     this.completedRequests.push(deliveryId);
     var newLength = this.completedRequests.length;
-    this.avgRequestRating = parseFloat((this.avgRequestRating * (newLength - 1) + rating) / newLength).toFixed(1)
+    this.avgRequestRating = parseFloat((this.avgRequestRating * (newLength - 1) + rating) / newLength).toFixed(1);
 };
 
 /**
@@ -173,7 +173,7 @@ UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) 
 UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
     this.completedShippings.push(deliveryId);
     var newLength = this.completedShippings.length;
-    this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1)
+    this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1);
 };
 
 var UserModel = mongoose.model("User", UserSchema);
