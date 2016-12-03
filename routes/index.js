@@ -12,7 +12,6 @@ var qs = require('querystring');
 var utils = require('../javascripts/utils.js');
 var authentication = require('../javascripts/authentication.js');
 var config = require('../javascripts/config.js');
-var email = require('../javascripts/email.js');
 var User = require('../models/user');
 
 // stripe keys
@@ -115,7 +114,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
         // validate kerberos both in production and development mode
         authentication.getMitInfo(username, function(mitData) {
             // still proceed regardless when in development
-            if (req.env === 'development' || mitData.isValidKerberos) {
+            if (req.devMode || mitData.isValidKerberos) {
                 User.count({ username: username },
                     function (err, count) {
                         if (count > 0) {
@@ -170,22 +169,18 @@ router.get('/oauth/callback', function(req, res) {
                     } else {
                         // test accounts have no email so use a test one
                         user['stripeEmail'] = account.email ? account.email : 'testStripeEmail';
-                        User.create(user, function(err, user){
+                        User.signUp(user, req.devMode, function (err, user) {
                             if (err) {
                                 res.json({'success': false, 'message': err.message});
                             } else {
-                                if (req.env === 'development') {
-                                    email.sendVerficationEmail(user, true);
-                                } else {
-                                    email.sendVerficationEmail(user, false);
-                                }
                                 res.render('home', {title: 'GroceryShip',
                                                     message: 'Sign up successful! We have sent you a verification email.'
                                                               + 'Please check your MIT email.',
                                                     allDorms: utils.allDorms(),
                                                     csrfToken: req.csrfToken()});
                             }
-                        });
+                        })
+                        
                     } 
                 }
             );

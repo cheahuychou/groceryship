@@ -51,7 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res, next) {
     // stores env so it is accessible in other routes
-    req.env = app.get('env');
+    req.devMode = app.get('env') === 'development';
     next();
 });
 

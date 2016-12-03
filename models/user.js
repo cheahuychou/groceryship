@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 var bcrypt = require('bcrypt');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
+var email = require('../javascripts/email.js');
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
@@ -79,6 +80,22 @@ UserSchema.statics.logIn = function (username, password, callback) {
             });
         }
     }); 
+}
+
+UserSchema.statics.signUp = function (userJSON, devMode, callback) {
+    that = this;
+    that.count({ username: userJSON.username }, function (err, count) {
+        if (count === 0) {
+            that.create(userJSON, function(err, user){
+                if (devMode) {
+                    email.sendVerficationEmail(user, true);
+                } else {
+                    email.sendVerficationEmail(user, false);
+                }
+                callback(err, user);
+            });
+        }
+    });
 }
 
 /**
