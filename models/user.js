@@ -29,8 +29,8 @@ UserSchema.path("username").validate(function(username) {
 }, "No empty kerberos.");
 
 UserSchema.path("password").validate(function(password) {
-    return password.trim().length > 0;
-}, "No empty passwords.");
+    return password.length >= 8 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password);
+}, "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.'");
 
 UserSchema.path("firstName").validate(function(firstName) {
     return firstName.trim().length > 0;

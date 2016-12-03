@@ -22,7 +22,7 @@ describe("Models", function() {
 
         var testUser1 = new User({
           "username": "username1",
-          "password": "something1",
+          "password": "Iwantpizza3@",
           "firstName": "firstName1",
           "lastName": "lastName1",
           "phoneNumber": 1234567890,
@@ -34,7 +34,7 @@ describe("Models", function() {
 
         var testUser2 = new User({
           "username": "username2",
-          "password": "something2",
+          "password": "Iwantpizza3@",
           "firstName": "firstName2",
           "lastName": "lastName2",
           "phoneNumber": 2345678901,
@@ -46,7 +46,7 @@ describe("Models", function() {
 
         var testUser3 = new User({
           "username": "username3",
-          "password": "something3",
+          "password": "Iwantpizza3@",
           "firstName": "firstName3",
           "lastName": "lastName3",
           "phoneNumber": 3456789012,

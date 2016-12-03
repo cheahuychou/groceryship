@@ -42,6 +42,11 @@ var checkSignUpForm = function () {
         addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
         return false; 
     }
+    if (password.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
+        // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
+        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
+        return false; 
+    }
     if (confirmPassword !== password || /<[a-z][\s\S]*>/i.test(password)) {
         addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
         return false;
