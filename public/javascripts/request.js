@@ -78,7 +78,6 @@ $(document).ready(function() {
                         addMessage('Request submission failed. Please try again.', 'danger', false, true);
                     } else {
                         // clear form after submitting successfully
-                        $('#request-form').find('input').val('');
                         addMessage('Request submitted. You can check the status of your requests on your dashboard.', 'success', false, true);
                     }
                 });

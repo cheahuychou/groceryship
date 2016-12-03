@@ -7,7 +7,7 @@ var User = require('../models/user.js');
 var utils = require('../javascripts/utils.js');
 var authentication = require('../javascripts/authentication.js');
 
-// setup route middlewares 
+// setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
 
@@ -46,6 +46,7 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
 	});
 });
 
+// TODO: please add an edit function in the model
 router.put('/:username/profile', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
 	var newPassword = req.body.newPassword.trim();
 	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());

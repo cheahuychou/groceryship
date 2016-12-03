@@ -87,20 +87,33 @@ router.post('/logout', parseForm, csrfProtection, function(req, res, next) {
 
 // Verifies the account
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
+    data = {title: 'GroceryShip',
+            username: req.params.username,
+            verificationToken: req.params.verificationToken,
+            allDorms: utils.allDorms(),
+            csrfToken: req.csrfToken()}
+    res.render('home', data);
+        
+});
+
+router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, function(req, res, next) {
     User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
         data = {title: 'GroceryShip',
                 allDorms: utils.allDorms(),
                 csrfToken: req.csrfToken()}
-        if (err) {
+        if (err && !err.isVerified) {
             data.message = err.message;
-            return res.render('home', data);
+            return res.json({'success': false, message: err.message});
         }
-        data.message = 'Your account has been verified. Now log in below:';
-        return res.render('home', data);
+        data.message = 'Your account has been verified. You can now log in';
+        data.success = true;
+        data.redirect = '/'
+        res.json(data);
+        // return res.render('home', data);
     })
 });
 
-// Sign up a new account
+// Signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var username = req.body.requestedKerberos.trim().toLowerCase();
     var password = req.body.requestedPassword.trim();

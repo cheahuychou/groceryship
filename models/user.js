@@ -87,7 +87,7 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid kerberos'});
         } else if (user.verified) {
-            callback({success:false, message: 'The account is already verified, please log in below:'});
+            callback({success:false, isVerified: true, message: 'The account is already verified, please log in below:'});
         } else if (user.verificationToken !== token) {
             callback({success:false, message: 'Invalid verification token'});
         } else {

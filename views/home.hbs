@@ -12,4 +12,11 @@
     <img src="/images/wallet.png"></img>Pay using TechCash
   </div>
 </div>
-{{>login_register}}
+{{#if verificationToken}}
+	<input id='username' type="hidden" value="{{username}}"></input>
+	<input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
+    <button id='verify-button' class='btn btn-primary'>Verify Account</button>
+{{else}}
+    {{>login_register}}
+{{/if}}
+

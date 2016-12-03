@@ -9,7 +9,7 @@ var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
 var authentication = require('../javascripts/authentication.js');
 
-// setup route middlewares 
+// setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
 
