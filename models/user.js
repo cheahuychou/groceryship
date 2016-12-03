@@ -1,15 +1,16 @@
 // Author: Cheahuychou Mao
 
 var mongoose = require("mongoose");
+var bcrypt = require('bcrypt');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
+var email = require('../javascripts/email.js');
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
     password: {type: String, required: true}, // should be just the hash
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
-    mitId: {type: Number, required: true},
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
     stripeId: {type: String, required: true},
@@ -23,8 +24,42 @@ var UserSchema = mongoose.Schema({
     verificationToken: {type:String, default: null}
 });
 
+
+UserSchema.path("username").validate(function(username) {
+    return username.trim().length > 0;
+}, "No empty kerberos.");
+
+UserSchema.path("password").validate(function(password) {
+    return password.length >= 8 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password);
+}, "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.'");
+
+UserSchema.path("firstName").validate(function(firstName) {
+    return firstName.trim().length > 0;
+}, "No empty first names.");
+
+UserSchema.path("lastName").validate(function(lastName) {
+    return lastName.trim().length > 0;
+}, "No empty last names.");
+
+UserSchema.path("phoneNumber").validate(function(phoneNumber) {
+    return phoneNumber.toString().length === 10;
+}, "US phone numbers must have exactly 10 digits");
+
+UserSchema.path("dorm").validate(function(dorm) {
+    var dorms = utils.allDorms();
+    return dorm.trim().length > 0 && dorms.indexOf(dorm) > -1;
+}, "Not a valid dorm name");
+
+UserSchema.path("verificationToken").validate(function(verificationToken) {
+    if (!this.verificationToken) {
+        return true
+    }
+    return this.verificationToken.length == utils.numTokenDigits();
+}, "Verification token must have the correct number of digits");
+
+
 /**
-* Set a verification token for the user
+* Sets a verification token for the user
 * @param {String} token - the 32-digit verification token
 * @param {Function} callback - the function that gets called after the token is set
 */
@@ -48,12 +83,12 @@ UserSchema.methods.verify = function (callback) {
 * @param {String} token - the 32-digit verification token
 * @param {Function} callback - the function that gets called after the account is verified
 */
-UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
-    this.findOne({username: kerberos}, function (err, user) {
+UserSchema.statics.verifyAccount = function (username, token, callback) {
+    this.findOne({username: username}, function (err, user) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid kerberos'});
         } else if (user.verified) {
-            callback({success:false, message: 'The account is already verified, please log in below:'});
+            callback({success:false, isVerified: true, message: 'The account is already verified, please log in below:'});
         } else if (user.verificationToken !== token) {
             callback({success:false, message: 'Invalid verification token'});
         } else {
@@ -61,6 +96,61 @@ UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
         }
     });
 };
+
+/*
+* Checks if the provided username and password correspond to any user
+* @param {String} username - username of the account to grant authentication
+* @param {String} password - password of the account to grant authentication 
+* @param {Function} callback - the function that gets called after the check is done, err argument
+*                              is null if the given username and password are valid, otherwise,
+*                              err.message contains the appropriate message to show to the user
+*/
+UserSchema.statics.authenticate = function (username, password, callback) {
+    this.findOne({ username: username }, function (err, user) {
+        if (err || user == null) {
+            callback({message:'Please enter a valid username'});
+        } else {
+            bcrypt.compare(password, user.password, function (err, response) {
+                if (response == true) {
+                    callback(null, {username: username,
+                                    _id: user._id,
+                                    verified: user.verified,
+                                    fullName: user.firstName + ' ' + user.lastName,
+                                    stripePublishableKey: user.stripePublishableKey});
+                } else {
+                    callback({message:'Please enter a correct password'});
+                }
+            });
+        }
+    }); 
+}
+
+/*
+* Registers a new user with the given userJSON (only if there is no user
+* with the given username)
+* @param {Object} userJSON - json object containing the appropriate fields
+* @param {Boolean} devMode - true if the app is in developer mode, false otherwise
+* @param {Function} callback - the function that gets called after the user is created, err argument
+*                              is null if the given the registration succeed, otherwise, err.message
+*                              contains the appropriate message to show to the user
+*/
+UserSchema.statics.signUp = function (userJSON, devMode, callback) {
+    that = this;
+    that.count({ username: userJSON.username }, function (err, count) {
+        if (count === 0) {
+            that.create(userJSON, function(err, user){
+                if (devMode) {
+                    email.sendVerficationEmail(user, true);
+                } else {
+                    email.sendVerficationEmail(user, false);
+                }
+                callback(err, user);
+            });
+        } else {
+            callback({message: 'There is already an account with this kerberos'});
+        }
+    });
+}
 
 /**
  * Adds a delivery ID to the completed requests field. Updates the average request rating.  
@@ -72,7 +162,7 @@ UserSchema.statics.verifyAccount = function(kerberos, token, callback) {
 UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
     this.completedRequests.push(deliveryId);
     var newLength = this.completedRequests.length;
-    this.avgRequestRating = parseFloat((this.avgRequestRating * (newLength - 1) + rating) / newLength).toFixed(1)
+    this.avgRequestRating = parseFloat((this.avgRequestRating * (newLength - 1) + rating) / newLength).toFixed(1);
 };
 
 /**
@@ -85,44 +175,8 @@ UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) 
 UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
     this.completedShippings.push(deliveryId);
     var newLength = this.completedShippings.length;
-    this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1)
+    this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1);
 };
-
-UserSchema.path("username").validate(function(username) {
-    return username.trim().length > 0;
-}, "No empty kerberos.");
-
-UserSchema.path("password").validate(function(password) {
-    return password.trim().length > 0;
-}, "No empty passwords.");
-
-UserSchema.path("firstName").validate(function(firstName) {
-    return firstName.trim().length > 0;
-}, "No empty first names.");
-
-UserSchema.path("lastName").validate(function(lastName) {
-    return lastName.trim().length > 0;
-}, "No empty last names.");
-
-UserSchema.path("mitId").validate(function(value) {
-    return value.toString().length <= 9; //An MIT ID with leading zeros would be represented by a number with less than 9 digits (leading 0s are omitted)
-}, "MIT ID must have exactly 9 digits");
-
-UserSchema.path("phoneNumber").validate(function(phoneNumber) {
-    return phoneNumber.toString().length === 10;
-}, "US phone numbers must have exactly 10 digits");
-
-UserSchema.path("dorm").validate(function(dorm) {
-    var dorms = utils.allDorms();
-    return dorm.trim().length > 0 && dorms.indexOf(dorm) > -1;
-}, "Not a valid dorm name");
-
-UserSchema.path("verificationToken").validate(function(verificationToken) {
-    if (!this.verificationToken) {
-        return true
-    }
-    return this.verificationToken.length == utils.numTokenDigits();
-}, "Verification token must have the correct number of digits");
 
 var UserModel = mongoose.model("User", UserSchema);
 

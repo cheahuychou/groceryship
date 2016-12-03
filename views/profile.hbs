@@ -4,14 +4,14 @@
   <tbody>
   	<tr>
   	  <td>Kerberos</td>
-  	  <td>{{user.username}}</td>
+  	  <td id='kerberos'>{{user.username}}</td>
   	</tr>
+    <tr>
+      <td>Full Name</td>
+      <td>{{user.firstName}} {{user.lastName}}</td>
+    </tr>
   	  <td>Phone Number</td>
   	  <td>{{user.phoneNumber}}</td>
-  	<tr>
-  	  <td>MIT ID</td>
-  	  <td>{{user.mitId}}</td>
-  	</tr>
   	<tr>
   	  <td>Dorm</td>
   	  <td>{{user.dorm}}</td>
@@ -31,7 +31,9 @@
         <h4 class="modal-title">Edit Profile</h4>
       </div>
       <div class="modal-body">
-        <form id='register-form' action='/users/{{user.username}}/profile/edit' method='post' onsubmit='return checkEditForm()'>
+        <div class="modal-messages"></div>
+        <form id='register-form' onsubmit='return checkEditForm()'>
+          <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
           <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>
           <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
           <input id='phone-number-register-box' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
@@ -40,7 +42,7 @@
             <option>{{this}}</option>
             {{/each}}
           </select><br>
-          <input type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm' value="Confirm Changes">
+          <button type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm'>Confirm Changes</button>
         </form>
       </div>     
     </div>

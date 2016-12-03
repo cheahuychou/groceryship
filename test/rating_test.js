@@ -22,8 +22,7 @@ describe("App", function() {
 
 		var testUser1 = new User({
 		    "username": "test-user1",
-			"password": "something",
-			"mit_id": 1,
+			"password": "Iwantpizza3@",
 			"phone_number": 1,
 			"dorm": "Baker",
 			"stripeId":"testuserStripeId", 
@@ -33,8 +32,7 @@ describe("App", function() {
 
 		var testUser2 = new User({
 			"username": "test-user2",
-			"password": "something2",
-			"mit_id": 2,
+			"password": "Iwantpizza3@",
 			"phone_number": 2,
 			"dorm": "Random",
 			"stripeId":"testuserStripeId", 

@@ -18,6 +18,7 @@
   <div class="col-sm-1">Minimum Requester Rating&nbsp;
     <select id='filter-rating' name='filter-rating' class="selectpicker" data-width="auto">
       <option {{#ifContains previousMinRating 1}}selected{{/ifContains}}>Any</option>
+      <option {{#ifContains previousMinRating 5}}selected{{/ifContains}}>5</option>
       <option {{#ifContains previousMinRating 4}}selected{{/ifContains}}>4</option>
       <option {{#ifContains previousMinRating 3}}selected{{/ifContains}}>3</option>
       <option {{#ifContains previousMinRating 2}}selected{{/ifContains}}>2</option>

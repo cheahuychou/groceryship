@@ -1,27 +1,41 @@
 {{!-- Author: Cheahuychou Mao --}}
 
 {{#each deliveryItems}}
-{{#if actualPrice}}
 <div id="close-modal-{{_id}}" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3 class="modal-title">Accept Delivery</h3>
+        <h3 class="modal-title">Close Delivery</h3>
       </div>
       <div class="modal-body">
+        <div class="modal-messages"></div>
         <div id="reimbursement">
-            <p>Below is a summary of your delivery for {{requester.username}}:</p>
+            <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
             <p>Total Cost: {{actualPrice}}</p>
             <p>Tips received: {{tips}}</p>
             <p>Total received: {{add actualPrice tips}}</p>
+            {{#ifContains status "claimed"}}
+              <p class="text-warning">WARNING: The requester has not paid for the delivery yet! Make sure the requester pays before handing the good to him/her and closing this delivery.</p>
+            {{/ifContains}}
+            {{#ifContains status "accepted"}}
+              <p class="text-success">{{requester.firstName}} {{requester.lastName}} has accepted and paid for your delivery.</p>
+            {{/ifContains}}
+            {{#ifContains status "rejected"}}
+              <p class="text-danger">
+              {{requester.firstName}} {{requester.lastName}} has rejected your delivery for the following reason:<br>
+              {{rejectedReason}}
+              </p>
+              <p>
+              Please get your good refunded from the supermarket.
+              </p>
+            {{/ifContains}}
         </div>
         <br>
         {{> rating isRequest=false}}
-        <button id='deliver-rate-button' class='btn btn-primary'>Rate &amp; Collect Money</button>
+        <button class='deliver-rate-button btn btn-primary'>Close &amp; Rate</button>
       </div>     
     </div>
   </div>
 </div>
-{{/if}}
 {{/each}}

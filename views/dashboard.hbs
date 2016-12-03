@@ -6,6 +6,7 @@
 <h1>{{title}}</h1>
 <div class='instructions'>
   <p>View and keep track of your requests and deliveries on the dashboard. Under 'Your Requests' you can view all current grocery requests you have made, and also cancel any unclaimed requests. Under 'To Deliver' you can view all the grocery requests you have claimed, and click on 'Deliver Now' to enter the price information and pickup time. Once a delivery has been scheduled, they will appear under your notifications, where you can proceed to take further action.</p>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </div>
 <div id='notifications'>
 	<h3>Notifications</h3>
@@ -21,6 +22,13 @@
 </div>
 <div id='deliver'>
 	<h3>To Deliver</h3>
+  <p>Remember to contact the requester to set a pickup time!</p>
   {{!-- TODO: what if table is empty, i.e. no items --}}
   {{> deliveries_table}}
 </div>
+{{#each requestItems}}
+{{> contact_information user=shopper}}
+{{/each}}
+{{#each deliveryItems}}
+{{> contact_information user=requester}}
+{{/each}}
