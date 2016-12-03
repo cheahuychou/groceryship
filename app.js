@@ -12,6 +12,7 @@ var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var deliveries = require('./routes/deliveries');
+var hbsHelpers = require('./javascripts/hbs_helpers.js');
 
 var app = express();
 
@@ -26,35 +27,17 @@ db.once('open', function (callback) {
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('.hbs', exphbs({extname: '.hbs', defaultLayout: 'index', helpers: {ifIsPast: function(time, now, options) {
-        if (now >= time) {
-            return options.fn(this);
-        }
-        return options.inverse(this);
-    },
-    add: function(a, b) {
-        return a+b;
-    },
-    ifContains: function(a, b, options) {
-        if (a instanceof Array) {
-            if (a.indexOf(b) > -1) {
-                return options.fn(this);
-            } else {
-                return options.inverse(this);
-            }
-        } else {
-            if (a === b) {
-                return options.fn(this);
-            } else {
-                return options.inverse(this);
-            }
-        }
-    }
-}}));
+app.engine('.hbs', exphbs({extname: '.hbs',
+                           defaultLayout: 'index',
+                           helpers: { ifIsPast: hbsHelpers.ifIsPast,
+                                      add: hbsHelpers.add,
+                                      ifContains: hbsHelpers.ifContains}}));
 app.set('view engine', 'hbs');
 
 // set up a secret to encrypt cookies
-app.use(session({ secret : process.env.SECRET || '6170GroceryShip', resave : true, saveUninitialized : true }));
+app.use(session({secret : process.env.SECRET || '6170GroceryShip',
+                 resave : true,
+                 saveUninitialized : true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -67,17 +50,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res, next) {
-    // stores env so we can send the correct verification link
-    req.env = app.get('env');
+    // stores env so it is accessible in other routes
+    req.devMode = app.get('env') === 'development';
     next();
 });
 
-// setup route middlewares 
+// setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
 
-// parse cookies 
-// we need this because "cookie" is true in csrfProtection 
+// parse cookies since "cookie" is true in csrfProtection 
 app.use(cookieParser())
 app.use(csrfProtection);
 

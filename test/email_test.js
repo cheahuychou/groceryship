@@ -22,7 +22,7 @@ describe("Email", function() {
             con.connection.db.dropDatabase(function() { done(); });
         });
 
-        var userJSON = {"username": "testuser", "password": "123456", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName", "lastName": "testLastName"};
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName", "lastName": "testLastName"};
 
         it("should have the correct number of digits", function(done) {
             User.create(userJSON, function(err, user) {
