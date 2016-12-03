@@ -3,6 +3,17 @@ $(document).ready(function () {
     var csrf = $('#csrf').val();
     // TODO: clear messages in .modal-messages when modal is closed
 
+    $('.notfication-tile').click(function(e) {
+        // don't open the modal if the direct click target is a button or a link
+        if ($(e.target).hasClass('btn') || $(e.target).attr('href')) {
+            e.preventDefault();
+        } else {
+            var id = $(this).attr('data-id');
+            $('#notification-modal-'+id).modal('toggle');
+        }
+    });
+
+
     $('.close-expired-notif').click(function() {
         var id = $(this).attr('data-id');
         console.log($(this).parent().parent());

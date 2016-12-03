@@ -34,14 +34,18 @@
       <th>Shopper</th>
       <td>{{shopper.username}}</td>
     </tr>
-    <tr>
-      <th>Pickup Time</th>
-      <td>{{pickupTime}}</td>
-    </tr>
     {{else}}
     <tr>
       <th>Requester</th>
       <td>{{requester.username}}</td>
     </tr>
     {{/if}}
+    <tr>
+      <th>Pickup Time</th>
+      <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
+    </tr>
+    <tr>
+      <th>Actual Price</th>
+      <td>{{#if actualPrice}}${{actualPrice}}{{else}}N/A{{/if}}</td>
+    </tr>
 </table>

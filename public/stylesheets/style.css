@@ -13,6 +13,14 @@ a {
   margin: auto;
 }
 
+.tile-icon img {
+    height: 40px;
+    display: block;
+    margin: 0;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
 
 .feature {
     float: left;
@@ -20,7 +28,7 @@ a {
 }
 
 .accept-reject-container {
-  width: 100px;
+  /*width: 100%;*/
   display: inline-block;
 }
 
@@ -76,7 +84,36 @@ h3 {
 }
 
 /* Accomodate the long tables in the modals */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
+    /* flatpickr calendar display of year overlaps for small devices */
+/*    .tile {
+        height: auto;
+        width: auto;
+    }
+
+    .add-request-tile {
+        text-align: center;
+        height: 150px;
+        vertical-align: middle;
+    }*/
+
+    .flatpickr-current-month > .numInputWrapper {
+        display: none !important;
+    }
+    #sort-direction {
+        margin-top: 0px;
+    }
+
+    #sort-direction .radio {
+        padding-left: 10px;
+    }
+
+    body {
+      padding: 30px 10%;
+      /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+    }
+}
+@media screen and (min-width: 480px) and (max-width: 767px) {
     /* flatpickr calendar display of year overlaps for small devices */
     .flatpickr-current-month > .numInputWrapper {
         display: none !important;
@@ -90,7 +127,7 @@ h3 {
     }
 
     body {
-      padding: 50px 40px;
+      padding: 30px 10%;
       /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
     }
 }
@@ -130,21 +167,77 @@ h3 {
 }
 
 .tile p {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    line-height: 1.25;
+}
+
+.tile-title, .tile-subtitle {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    /*word-wrap: break-word;*/
+}
+
+.modal-body table {
+    table-layout: fixed;
+    word-wrap: break-word;
+    vertical-align: middle;
 }
 
 .tile {
-    /*text-align: left;*/
-    height: 185px;
+    text-align: left;
+    height: 165px;
+/*    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;*/
+}
+
+.tile-content {
+    line-height: 2.5ex;
+    height: 5ex;
+    vertical-align: center;
+}
+
+.notfication-tile {
+    height: 165px;
+}
+
+#dashboard-notifications {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#dashboard-requests {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.request-tile {
+    height: 150px;
+}
+
+.request-tile-content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .tile:hover{
-    background-color: rgba(22, 160, 133,1);/*rgba(26, 188, 156,0.5)*//*#1abc9c;*//*#16a085;*/
+    background-color: rgba(22, 160, 133,0.25);/*rgba(26, 188, 156,0.5)*//*#1abc9c;*//*#16a085;*/
 }
 
 #add-request-icon {
     /* TODO: make this size depend on tile height? */
-    font-size: 80px;
+    font-size: 55px;
+}
+
+.add-request-tile {
+    text-align: center;
+    height: 150px;
+    vertical-align: middle;
 }
 
 .title-toggle:hover {
@@ -175,4 +268,18 @@ h3 {
 
 .flatpickr-month, .flatpickr-weekdays {
     background-color: #1abc9c;
+}
+
+td {
+    word-wrap: break-word;
+}
+
+#request-table > table {
+    table-layout: fixed;
+}
+
+#request-table th {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
