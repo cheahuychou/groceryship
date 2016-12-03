@@ -7,15 +7,10 @@ var Delivery = require('../models/delivery');
 var User = require('../models/user');
 var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
-<<<<<<< HEAD
 var config = require('../javascripts/config.js');
-=======
 var authentication = require('../javascripts/authentication.js');
-
-// setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
->>>>>>> 2034aa677c84a5478bba4807d1b67ae4f235dc0f
 
 /**
 Returns the "deliver" page consisting of all requests that a user can claim
