@@ -23,8 +23,42 @@ var UserSchema = mongoose.Schema({
     verificationToken: {type:String, default: null}
 });
 
+
+UserSchema.path("username").validate(function(username) {
+    return username.trim().length > 0;
+}, "No empty kerberos.");
+
+UserSchema.path("password").validate(function(password) {
+    return password.trim().length > 0;
+}, "No empty passwords.");
+
+UserSchema.path("firstName").validate(function(firstName) {
+    return firstName.trim().length > 0;
+}, "No empty first names.");
+
+UserSchema.path("lastName").validate(function(lastName) {
+    return lastName.trim().length > 0;
+}, "No empty last names.");
+
+UserSchema.path("phoneNumber").validate(function(phoneNumber) {
+    return phoneNumber.toString().length === 10;
+}, "US phone numbers must have exactly 10 digits");
+
+UserSchema.path("dorm").validate(function(dorm) {
+    var dorms = utils.allDorms();
+    return dorm.trim().length > 0 && dorms.indexOf(dorm) > -1;
+}, "Not a valid dorm name");
+
+UserSchema.path("verificationToken").validate(function(verificationToken) {
+    if (!this.verificationToken) {
+        return true
+    }
+    return this.verificationToken.length == utils.numTokenDigits();
+}, "Verification token must have the correct number of digits");
+
+
 /**
-* Set a verification token for the user
+* Sets a verification token for the user
 * @param {String} token - the 32-digit verification token
 * @param {Function} callback - the function that gets called after the token is set
 */
@@ -62,8 +96,15 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
     });
 };
 
-
-UserSchema.statics.logIn = function (username, password, callback) {
+/*
+* Checks if the provided username and password correspond to any user
+* @param {String} username - username of the account to grant authentication
+* @param {String} password - password of the account to grant authentication 
+* @param {Function} callback - the function that gets called after the check is done, err argument
+*                              is null if the given username and password are valid, otherwise,
+*                              err.message contains the appropriate message to show to the user
+*/
+UserSchema.statics.authenticate = function (username, password, callback) {
     this.findOne({ username: username }, function (err, user) {
         if (err || user == null) {
             callback({message:'Please enter a valid username'});
@@ -82,6 +123,15 @@ UserSchema.statics.logIn = function (username, password, callback) {
     }); 
 }
 
+/*
+* Registers a new user with the given userJSON (only if there is no user
+* with the given username)
+* @param {Object} userJSON - json object containing the appropriate fields
+* @param {Boolean} devMode - true if the app is in developer mode, false otherwise
+* @param {Function} callback - the function that gets called after the user is created, err argument
+*                              is null if the given the registration succeed, otherwise, err.message
+*                              contains the appropriate message to show to the user
+*/
 UserSchema.statics.signUp = function (userJSON, devMode, callback) {
     that = this;
     that.count({ username: userJSON.username }, function (err, count) {
@@ -94,6 +144,8 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
                 }
                 callback(err, user);
             });
+        } else {
+            callback({message: 'There is already an account with this kerberos'});
         }
     });
 }
@@ -123,38 +175,6 @@ UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback)
     var newLength = this.completedShippings.length;
     this.avgShippingRating = parseFloat((this.avgShippingRating * (newLength - 1) + rating) / newLength).toFixed(1)
 };
-
-UserSchema.path("username").validate(function(username) {
-    return username.trim().length > 0;
-}, "No empty kerberos.");
-
-UserSchema.path("password").validate(function(password) {
-    return password.trim().length > 0;
-}, "No empty passwords.");
-
-UserSchema.path("firstName").validate(function(firstName) {
-    return firstName.trim().length > 0;
-}, "No empty first names.");
-
-UserSchema.path("lastName").validate(function(lastName) {
-    return lastName.trim().length > 0;
-}, "No empty last names.");
-
-UserSchema.path("phoneNumber").validate(function(phoneNumber) {
-    return phoneNumber.toString().length === 10;
-}, "US phone numbers must have exactly 10 digits");
-
-UserSchema.path("dorm").validate(function(dorm) {
-    var dorms = utils.allDorms();
-    return dorm.trim().length > 0 && dorms.indexOf(dorm) > -1;
-}, "Not a valid dorm name");
-
-UserSchema.path("verificationToken").validate(function(verificationToken) {
-    if (!this.verificationToken) {
-        return true
-    }
-    return this.verificationToken.length == utils.numTokenDigits();
-}, "Verification token must have the correct number of digits");
 
 var UserModel = mongoose.model("User", UserSchema);
 

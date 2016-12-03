@@ -5,6 +5,7 @@ var bcrypt = require('bcrypt');
 var Authentication = function() {
 
 	var that = Object.create(Authentication.prototype);
+
 	/**
     * Checks if the request has a defined session and correct authentication
     * @param {Object} req - request to check for authentication
@@ -25,6 +26,11 @@ var Authentication = function() {
         }
     }
 
+    /*
+    * Encrypts the password using hashing and salting
+    * @param {String} password - the password to encrypt
+    * @param  {Function} callback - the function that takes in an object and is called once this function is done
+    */
     that.encryptPassword = function (password, callback) {
     	bcrypt.genSalt(function(err, salt) {
             if (err) {
@@ -41,6 +47,15 @@ var Authentication = function() {
         });
     }
 
+    /*
+    * Creates a JSON object whose fields are username, hashed password, first name, last name, phone number, dorm
+    * @param {String} username - the username for the user, must be a kerberos
+    * @param {String} password - the user's password
+    * @param {Integer} phoneNumber - the user's phone number
+    * @param {String} dorm - the dorm the user lives in
+    * @param {Object} mitData - the data about the user that is returned by MIT People API
+    * @param  {Function} callback - the function that takes in an object and is called once this function is done
+    */
     that.createUserJSON = function (username, password, phoneNumber, dorm, mitData, callback) {
     	that.encryptPassword(password, function (err, hash) {
     		if (err) {

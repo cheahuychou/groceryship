@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
 
 // Use passport.js for login authentication and bcrypt to encrypt passwords
 passport.use(new LocalStrategy(function (username, password, callback) {
-    User.logIn(username.toLowerCase(), password, callback);
+    User.authenticate(username.toLowerCase(), password, callback);
 }))
 
 passport.serializeUser(function (user, callback) {
@@ -51,6 +51,7 @@ passport.deserializeUser(function (user, callback) {
     });
 });
 
+// Logs the user in
 router.post('/login', parseForm, csrfProtection, function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
         data = {title: 'GroceryShip',
@@ -78,11 +79,13 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
     })(req, res, next);
 });
 
+// Logs the user out
 router.post('/logout', parseForm, csrfProtection, function(req, res, next) {
     req.logout();
     res.redirect('/');
 });
 
+// Verifies the account
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
     User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
         data = {title: 'GroceryShip',
@@ -97,6 +100,7 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
     })
 });
 
+// Sign up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var username = req.body.requestedKerberos.trim().toLowerCase();
     var password = req.body.requestedPassword.trim();
@@ -145,6 +149,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     }
 });
 
+// Connects Stripe account to the account
 router.get('/oauth/callback', function(req, res) {
     var code = req.query.code;
 
