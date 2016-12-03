@@ -17,7 +17,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:username', authentication.isAuthenticated, function (req, res, next) { 
-	res.render('dashboard', { title: 'Dashboard', username: req.params.username, fullName: user.fullName, csrfToken: req.csrfToken()});
+	res.render('dashboard', { title: 'Dashboard',
+							  username: req.params.username,
+							  fullName: user.fullName,
+							  csrfToken: req.csrfToken()});
 });
 
 router.get('/:username/request', authentication.isAuthenticated, function (req, res, next) { 
