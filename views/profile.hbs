@@ -37,14 +37,14 @@
         <div class="modal-messages"></div>
         <form id='register-form' onsubmit='return checkEditForm()'>
           <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input id='password-register-box' type='password' name='newPassword' placeholder='new password' required></input><br>
-          <input id='confirm-password-register-box' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
-          <input id='phone-number-register-box' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
-          <select name={{user.dorm}} id='edit-dormlist' required>
+          <input id='password-register-box' class='form-control' type='password' name='newPassword' placeholder='new password' required></input><br>
+          <input id='confirm-password-register-box' class='form-control' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
+          <input id='phone-number-register-box' class='form-control' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
+          <select name={{user.dorm}} id='edit-dormlist' class='form-control selectpicker' required>
             {{#each allDorms}}
             <option>{{this}}</option>
             {{/each}}
-          </select><br>
+          </select><br><br>
           <button type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm'>Confirm Changes</button>
         </form>
       </div>     
