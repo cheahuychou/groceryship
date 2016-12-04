@@ -11,7 +11,7 @@ $(document).ready(function () {
         var sortBy = $('#sort-by').val();
         var sortIncreasing = $("#sort-direction input[type='radio']:checked").val();
         var input = {stores: stores, pickupLocations: pickupLocations, minRating: minRating, sortBy: sortBy, sortIncreasing: sortIncreasing};
-        window.location.replace("/deliveries/requests?" + $.param(input));
+        window.location.replace("/deliveries/?" + $.param(input));
     });
 
     $('.claim-request').click(function() {

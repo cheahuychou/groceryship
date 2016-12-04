@@ -31,7 +31,8 @@ app.engine('.hbs', exphbs({extname: '.hbs',
                            defaultLayout: 'index',
                            helpers: { ifIsPast: hbsHelpers.ifIsPast,
                                       add: hbsHelpers.add,
-                                      ifContains: hbsHelpers.ifContains}}));
+                                      ifContains: hbsHelpers.ifContains,
+                                      roundOff: hbsHelpers.roundOff}}));
 app.set('view engine', 'hbs');
 
 // set up a secret to encrypt cookies
