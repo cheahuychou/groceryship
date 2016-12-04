@@ -22,14 +22,19 @@
         <div class="form-group">
           <label class="col-sm-3 control-label" for="card-number">Card Number</label>
           <div class="col-sm-9">
-            <input type="text" class="form-control" name="card-number" id="card-number" placeholder="Debit/Credit Card Number">
+            <div class="row">
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="card-number-{{_id}}" placeholder="Debit/Credit Card Number">
+              </div>
+            </div>
           </div>
+        </div>
         <div class="form-group">
           <label class="col-sm-3 control-label" for="expiry-month">Expiration Date</label>
           <div class="col-sm-9">
             <div class="row">
               <div class="col-xs-3">
-                <select class="form-control col-sm-2" name="expiry-month" id="expiry-month">
+                <select class="form-control col-sm-2" id="expiry-month-{{_id}}">
                   <option value="01">January</option>
                   <option value="02">February</option>
                   <option value="03">March</option>
@@ -45,7 +50,7 @@
                 </select>
               </div>
               <div class="col-xs-3">
-                <select class="form-control" name="expiry-year" id="expiry-year">
+                <select class="form-control" id="expiry-year-{{_id}}">
                   <option value="2016">2016</option>
                   <option value="2017">2017</option>
                   <option value="2018">2018</option>
@@ -65,11 +70,11 @@
         <div class="form-group">
           <label class="col-sm-3 control-label" for="cvc">Card CVC</label>
           <div class="col-sm-3">
-            <input type="text" class="form-control" name="cvc" id="cvc" placeholder="Security Code">
+            <input type="text" class="form-control" name="cvc" id="cvc-{{_id}}" placeholder="Security Code">
           </div>
         </div>
         <div class="form-group">
-          <button id='pay-rate-button' class='btn btn-primary' data-id='{{_id}}'>Pay &amp; Rate</button>
+          <button class='pay-rate-button btn btn-primary' data-id='{{_id}}'>Pay &amp; Rate</button>
         </div>
       </div>     
     </div>

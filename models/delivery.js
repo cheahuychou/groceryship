@@ -21,6 +21,7 @@ var DeliverySchema = mongoose.Schema({
     shopperRating: {type: Number, default: null}, // The rating that the requester gives the shopper
     rejectedReason: {type: String, required: false},
     seenExpired: {type: Boolean, default: false}, // Denotes whether the requester has seen that an unclaimed request is past the deadline. Used in populating notifications.
+    stripeTransactionId: {type: String, default: false}
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -114,13 +115,14 @@ DeliverySchema.methods.deliver = function(pickupTime, actualPrice, callback) {
  * @param {Function} callback - The function to execute after request is accepted. Callback
  * function takes 1 parameter: an error when the accept is not properly saved
  */
-DeliverySchema.methods.accept = function(shopperRating, callback) {
+DeliverySchema.methods.accept = function(transactionId, shopperRating, callback) {
     if (this.status !== "claimed") {
         callback(new Error("request is either pending or is already accepted/rejected"));
     } else if (this.actualPrice === null) {
         callback(new Error ("price of good has not been set yet"))
     } else {
         this.status = "accepted";
+        this.stripeTransactionId = transactionId;
         this.shopperRating = shopperRating;
         this.save(callback);
     }

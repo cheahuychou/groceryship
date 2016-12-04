@@ -205,30 +205,30 @@ $(document).ready(function () {
         }
     });
     
-    $('#pay-rate-button').click(function(){
-        var id = $(this).attr('data-id');
-        var cardNumber = $('#card-number').val();
-        var expMonth = $('#expiry-month').val();
-        var expYear = $('#expiry-year').val();
-        var cvc = $('#cvc').val();
-        return $.ajax({
-                    url: '/deliveries/'+id+'/pay',
-                    type: 'PUT',
-                    data: { 
-                        'number': cardNumber,
-                        'exp_month': Number(expMonth),
-                        'exp_year': Number(expYear),
-                        'cvc': cvc            
-                    }, success: function(data){
-                        if (data.success){
-                            addMessage('Successful payment.', 'success', true);
-                        } else {
-                            alert(data.message);
-                        }
-                    }, error: function(err){
-                        console.log(err);
-                        alert(err);
-                    }
-                });
-    });
+    // $('#pay-rate-button').click(function(){
+    //     var id = $(this).attr('data-id');
+    //     var cardNumber = $('#card-number').val();
+    //     var expMonth = $('#expiry-month').val();
+    //     var expYear = $('#expiry-year').val();
+    //     var cvc = $('#cvc').val();
+    //     return $.ajax({
+    //                 url: '/deliveries/'+id+'/pay',
+    //                 type: 'PUT',
+    //                 data: { 
+    //                     'number': cardNumber,
+    //                     'exp_month': Number(expMonth),
+    //                     'exp_year': Number(expYear),
+    //                     'cvc': cvc            
+    //                 }, success: function(data){
+    //                     if (data.success){
+    //                         addMessage('Successful payment.', 'success', true);
+    //                     } else {
+    //                         alert(data.message);
+    //                     }
+    //                 }, error: function(err){
+    //                     console.log(err);
+    //                     alert(err);
+    //                 }
+    //             });
+    // });
 });
