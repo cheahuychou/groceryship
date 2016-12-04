@@ -8,7 +8,11 @@ var User = require('../models/user');
 var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
 var config = require('../javascripts/config.js');
+var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
+var stripePlatform = require('stripe')(API_KEY);
 var authentication = require('../javascripts/authentication.js');
+
+// setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
 
@@ -241,11 +245,7 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    var stripe = require('stripe')(user.stripePublishableKey);
-    console.log("hi");
-    console.log(req.body.cardNumber);
-    console.log(req.body.expMonth);
-    console.log(req.body.expYear);
+    var stripeUser = require('stripe')(user.stripePublishableKey);
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
@@ -257,7 +257,7 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             res.json({success: false, message: err});
         } else {
             User.findById(currentDelivery.shopper, function(err, shopper){
-                stripe.tokens.create({
+                stripeUser.tokens.create({
                     card: {
                         'number': req.body.cardNumber,
                         'exp_month': req.body.expMonth,
@@ -269,10 +269,6 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
                         console.log(err);
                         res.json({success: false, message: "Invalid card."});
                     } else {
-                        console.log(token.id);
-                        var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
-                        console.log(API_KEY);
-                        var stripePlatform = require('stripe')(API_KEY);
                         stripePlatform.charges.create({
                             amount: (currentDelivery.actualPrice + currentDelivery.tips) * 100,
                             currency: 'usd',
@@ -301,51 +297,6 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
         }
     });
 });
-
-// router.put("/:id/pay", utils.isAuthenticated, function(req, res){
-//     var user = req.session.passport.user;
-//     var card = req.body;
-//     //var card = JSON.parse(req.body).card;
-//     var stripe = require('stripe')(user.stripePublishableKey);
-//     Delivery.findOne({_id: req.params.id, requester: user._id})
-//         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
-//         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
-//         if (currentDelivery === null) {
-//             err = new Error("cannot find specified request")
-//         }
-//         if (err) {
-//             console.log(err);
-//             res.json({success: false, message: err});
-//         } else {
-//             User.findById(currentDelivery.shopper, function(err, shopper){
-//                 stripe.tokens.create({
-//                     card: card
-//                 }, function(err, token){
-//                     if (err){
-//                         console.log(err);
-//                         res.json({success: false, message: "Tokenization fails."});
-//                     } else {
-//                         var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
-//                         var stripe = require('stripe')(API_KEY);
-//                         stripe.charges.create({
-//                             amount: currentDelivery.actualPrice * 100,
-//                             currency: 'usd',
-//                             source: token.id,
-//                             destination: shopper.stripeId
-//                         }, function(err, data){
-//                             if (err){
-//                                 console.log(err)
-//                                 res.json({success: false, message: "Charge fails."});
-//                             } else {
-//                                 res.json({success: true});
-//                             }
-//                         });
-//                     }
-//                 });
-//             });
-//         }
-//     });
-// });
 
 /** Updates a Delivery when a user rejects the delivery **/
 router.put("/:id/reject", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
