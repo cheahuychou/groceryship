@@ -4,7 +4,7 @@
 <td class='item-quantity'>{{itemQuantity}}</td>
 <td class='estimated-price'>${{estimatedPrice}}</td>
 <td class='stores'>{{stores}}</td>
-<td class='deadline'>{{deadline}}</td>
+<td class='deadline'>{{deadline}}<input type='hidden' name='raw-deadline' value='{{rawDeadline}}'></td>
 <td class='pickup-location'>{{pickupLocation}}</td>
 <td class='tip'>${{tips}}</td>
 <td class='item-description'>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>

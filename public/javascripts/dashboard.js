@@ -2,6 +2,11 @@
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
 
+    // stop modal from opening when clicking on a link on a tile
+    $('.tile a').click(function(e) {
+        e.stopPropagation();
+    });
+
     // toggle the glyphicon chevron icon depending on whether toggle is open or not
     // if open, icon should point down
     // if closed, icon should point right
@@ -28,7 +33,7 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-tile[data-id='+id+']').parent().remove();
-                    // TODO: ask for the reason of cancellation
+                    // TODO: ask for the reason of cancellation?
                     addMessage('Request canceled.', 'success', false, true);
                 } else {
                     console.log(data.message);
@@ -95,20 +100,18 @@ $(document).ready(function () {
                 });
 
                 var requester = originalRow.attr('data-requester');
+                // TODO: also copy the <a href> for the requester contact info tooltip
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
                 var deadline = originalRow.children('.deadline').text();
 
-                // var inputPickupTime = $(".selector").flatpickr({});
-                // input type='text' name='item-due' class='form-control flatpickr' placeholder='Select a deadline'></td>
                 var inputPickupTime = $('<input>', {
                     class: 'form-control flatpickr',
                     type: 'text',
-                    name: 'pickup-time',
-                    // TODO: set min as current datetime
-                    // TODO: set max as deadline
-                    // and maybe use another better datetime picker
+                    name: 'pickup-time'
                 });
+                // TODO: make a listener on .change to do static checking of date
+                // flatpickr only supports min and max date but not time
 
                 var inputPrice = $('<input>', {
                     class: 'price form-control',
@@ -126,21 +129,16 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#deliver-now-modal tbody').append(row);
-                    var currentTime = new Date();
 
-                        var deadlineString = deadline.split(',')[0];
-        deadlineString = deadlineString.substring(0, deadlineString.length - 2);
-        var dueTime = new Date(Date.parse(deadlineString));
-        var maxDateTime = currentTime.getFullYear()  + "-" + numberToJsTimeFormat(dueTime.getMonth()+1) + "-" + numberToJsTimeFormat(dueTime.getDate()) + "T00:00:00";
-                flatpickr('.flatpickr', {
-                            enableTime: true,
-                            // minDate: 'today',
-                            enable: [{from: 'today', to: maxDateTime}],
-                            // create an extra input solely for display purposes
-                altInput: true,
-                altFormat: "F j, Y h:i K"
-                        });
-                // setMinMaxDateTime(deadline);
+                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
+                flatpickr('.flatpickr[name=pickup-time]', {
+                    enableTime: true,
+                    // minDate: 'today',
+                    enable: [{from: 'today', to: rawDeadline}],
+                    // create an extra input solely for display purposes
+                    altInput: true,
+                    altFormat: "F j, Y h:i K"
+                });
             }
         });
     });

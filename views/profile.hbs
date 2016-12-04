@@ -1,28 +1,31 @@
 <script src='/javascripts/profile.js'></script>
 <h1>{{title}}</h1>
-<table class="table table-hover">
-  <tbody>
-  	<tr>
-  	  <td>Kerberos</td>
-  	  <td id='kerberos'>{{user.username}}</td>
-  	</tr>
-    <tr>
-      <td>Full Name</td>
-      <td>{{user.firstName}} {{user.lastName}}</td>
-    </tr>
-  	  <td>Phone Number</td>
-  	  <td>{{user.phoneNumber}}</td>
-  	<tr>
-  	  <td>Dorm</td>
-  	  <td>{{user.dorm}}</td>
-  	</tr>
-  	<tr>
-  	  <td>Stripe Account</td>
-  	  <td>{{user.stripeEmail}}</td>
-  	</tr>
-  </tbody>
-</table>
-<input type="button" class='btn btn-info btn-sm' data-toggle="modal" data-target="#register-modal" value='Edit Profile'></input>
+<div class='profile-table-container'>
+  <table class="table table-hover">
+    <tbody>
+    	<tr>
+    	  <td>Kerberos</td>
+    	  <td id='kerberos'>{{user.username}}</td>
+    	</tr>
+      <tr>
+        <td>Full Name</td>
+        <td>{{user.firstName}} {{user.lastName}}</td>
+      </tr>
+    	  <td>Phone Number</td>
+    	  <td>{{user.phoneNumber}}</td>
+    	<tr>
+    	  <td>Dorm</td>
+    	  <td>{{user.dorm}}</td>
+    	</tr>
+    	<tr>
+    	  <td>Stripe Account</td>
+    	  <td>{{user.stripeEmail}}</td>
+    	</tr>
+    </tbody>
+  </table>
+</div>
+<input type="button" class='btn btn-primary' data-toggle="modal" data-target="#register-modal" value='Edit Profile'></input>
+
 <div id="register-modal" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">

@@ -1,8 +1,3 @@
-/*body {
-  padding: 50px 120px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}*/
-
 a {
   color: #00B7FF;
 }
@@ -83,20 +78,8 @@ h3 {
     text-align: justify;
 }
 
-/* Accomodate the long tables in the modals */
 @media screen and (max-width: 480px) {
     /* flatpickr calendar display of year overlaps for small devices */
-/*    .tile {
-        height: auto;
-        width: auto;
-    }
-
-    .add-request-tile {
-        text-align: center;
-        height: 150px;
-        vertical-align: middle;
-    }*/
-
     .flatpickr-current-month > .numInputWrapper {
         display: none !important;
     }
@@ -109,8 +92,7 @@ h3 {
     }
 
     body {
-      padding: 30px 10%;
-      /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+      padding: 40px 10%;
     }
 }
 @media screen and (min-width: 480px) and (max-width: 767px) {
@@ -127,8 +109,7 @@ h3 {
     }
 
     body {
-      padding: 30px 10%;
-      /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+      padding: 40px 10%;
     }
 }
 @media screen and (min-width: 768px) {
@@ -146,23 +127,22 @@ h3 {
 
     body {
       padding: 50px 80px;
-      /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
     }
-    .modal-dialog {
-      /* Possible overflow! TODO: find a better solution */
-      width: 820px; /* New width for default modal */
-    }
-    .modal-sm {
-      width: 600px;  /*New width for small modal */
+
+    .profile-table-container {
+        padding-right: 20%;
     }
 }
 @media screen and (min-width: 992px) {
     body {
       padding: 50px 120px;
-      /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
     }
-    .modal-lg {
-      width: 950px; /* New width for large modal */
+
+    #request-form-container {
+        padding-right: 10%;
+    }
+    .profile-table-container {
+        padding-right: 30%;
     }
 }
 
@@ -282,4 +262,8 @@ td {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+
+.signup-input {
+    margin-bottom: 10px;
 }

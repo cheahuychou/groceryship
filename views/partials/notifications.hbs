@@ -5,46 +5,28 @@
 {{#each requestItems}}
   {{#if shopper}}
     {{#if pickupTime}}
-      {{#ifIsPast rawPickupTime ../now}}
-        <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
-          <div class='tile notfication-tile' data-id='{{_id}}'>
-            <div class='tile-icon' style='float: left'><img src="/images/exclamation.png"></img></div>
-            <h4 class='tile-title'>{{itemName}}</h4>
-            <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a></p>
-            <p class='tile-content'>Arrived: <br>{{pickupTime}}</p>
+      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
+        <div class='tile notfication-tile' data-id='{{_id}}'>
+          <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
+          <h4 class='tile-title'>{{itemName}}</h4>
+          <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
+          <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving{{/ifIsPast}} <br>{{pickupTime}}</p>
 
-            <div class="accept-reject-container">
-              <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-              <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
-            </div>
+          <div class="accept-reject-container">
+            <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
+            <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
           </div>
         </div>
-      {{else}} {{!-- for ifIsPast rawPickupTime --}}
-        <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
-          <div class='tile notfication-tile' data-id='{{_id}}'>
-            <div class='tile-icon' style='float: left'><img src="/images/checklist.png"></img></div>
-            <h4 class='tile-title'>{{itemName}}</h4>
-            <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a></p>
-            <p class='tile-content'>Arriving: <br>{{pickupTime}}</p>
-
-            <div class="accept-reject-container">
-              <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-              <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
-            </div>
-          </div>
-        </div>
-      {{/ifIsPast}}
+      </div>
     {{else}} {{!-- for if pickupTime --}}
       <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
         <div class='tile notfication-tile' data-id='{{_id}}'>
-          <div class='tile-icon' style='float: left'><img src="/images/checklist.png"></img></div>
+          <div class='tile-icon' style='float: left'><img src="/images/watch.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Claimed by: <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.username}}</a></p>
+          <p class='tile-subtitle'>Claimed by: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
           <p class='tile-content'><i>Contact the shopper and<br class='hidden-ms hidden-md'> set a pickup time!</i></p>
 
-          {{!--  TODO: make these buttons work and stop the modal from popping up --}}
           <div class="accept-reject-container">
-            {{!-- <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button> --}}
             <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
           </div>
         </div>
@@ -59,7 +41,6 @@
           <p class='tile-subtitle'><i>unclaimed</i></p>
           <p class='tile-content'><i>Sorry, this request expired!</i><br></p>
 
-          {{!--  TODO: make these buttons work and stop the modal from popping up --}}
           <div>
             <button type="button" class="close close-expired-notif" data-id="{{_id}}">Close</button>
           </div>
@@ -76,7 +57,7 @@
         <div class='tile notfication-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Requester: <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.username}}</a></p>
+          <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></p>
           <p class='tile-content'>Deliver on: <br>{{pickupTime}}</p>
 
           {{!--  TODO: make these buttons work and stop the modal from popping up --}}
@@ -89,7 +70,7 @@
       <div class='tile notfication-tile' data-id='{{_id}}'>
         <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
         <h4 class='tile-title'>{{itemName}}</h4>
-        <p class='tile-subtitle'>Requester: <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.username}}</a></p>
+        <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></p>
         <p class='tile-content'><i>{{status}} by requester</i></p>
 
         {{!--  TODO: make these buttons work and stop the modal from popping up --}}
