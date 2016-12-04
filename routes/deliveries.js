@@ -8,8 +8,9 @@ var User = require('../models/user');
 var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
 var config = require('../javascripts/config.js');
+var stripe = require('stripe');
 var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
-var stripePlatform = require('stripe')(API_KEY);
+var stripePlatform = stripe(API_KEY);
 var authentication = require('../javascripts/authentication.js');
 
 // setup csurf middlewares 
@@ -245,7 +246,7 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    var stripeUser = require('stripe')(user.stripePublishableKey);
+    var stripeUser = stripe(user.stripePublishableKey);
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {

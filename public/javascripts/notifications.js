@@ -40,6 +40,7 @@ $(document).ready(function () {
                 if (data.success) {
                     addMessage('Payment succeeded. The shopper has been notified.', 'success', false, true);
                     $('#accept-modal-' + id).modal('toggle');
+                    $('#notif-row-' + id).remove();
                 } else {
                     console.log(data.message);
                     addMessage(data.message + " Please try again.", 'danger', true, true);
