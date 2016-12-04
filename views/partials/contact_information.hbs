@@ -13,13 +13,13 @@
         <p>
           Shipping Rating:
           {{#ifContains user.completedShippings.length 0}}User has not received any shipping ratings yet
-          {{else}}{{user.avgShippingRating}}/5 (from {{user.completedShippings.length}} total deliveries made)
+          {{else}}{{roundOff user.avgShippingRating 1}}/5 (from {{user.completedShippings.length}} total deliveries made)
           {{/ifContains}}
         </p>
         <p>
           Request Rating:
           {{#ifContains user.completedRequests.length 0}}User has not received any request ratings yet
-          {{else}}{{user.avgShippingRating}}/5 (from {{user.completedRequests.length}} total requests made)
+          {{else}}{{roundOff user.avgRequestRating 1}}/5 (from {{user.completedRequests.length}} total requests made)
           {{/ifContains}}
         </p>
       </div>     

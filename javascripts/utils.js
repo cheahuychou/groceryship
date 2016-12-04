@@ -30,6 +30,20 @@ var Utils = function() {
     };
 
     /**
+    * @return {Number} The minimum allowed average shipping rating for users, below which the user will be suspended for a period of time
+    */
+    that.minAllowedShipRating = function() {
+    	return 3;
+    }
+
+    /**
+    * @return {Integer} The length of time (in milliseconds) that a user will be suspended for, if he falls below the minimum rating
+    */
+    that.suspensionPeriod = function() {
+    	return 1000*60*60*24*30; //30 days
+    }
+
+    /**
     * @return {Integer} the number of digits in verification token
     */
     that.numTokenDigits = function () {
