@@ -25,6 +25,11 @@ $(document).ready(function () {
                 $(targetElement + ' .shipping-rating').prop('hidden', false);
                 $(targetElement + ' .request-rating').prop('hidden', true);
                 break;
+            case 'request-feed':
+                $(targetElement + ' .shipping-rating').prop('hidden', false);
+                $(targetElement + ' .request-rating').prop('hidden', true);
+                $(targetElement + ' .user-phone').prop('hidden', true);
+                break;
             case 'requester':
                 $(targetElement + ' .shipping-rating').prop('hidden', true);
                 $(targetElement + ' .request-rating').prop('hidden', false);

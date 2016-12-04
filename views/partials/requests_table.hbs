@@ -30,7 +30,7 @@
           <td><button class='cancel-request btn btn-primary btn-sm'>Cancel</button></td>
           {{else}}
           {{!-- claim button should only appear for others' requests --}}
-          <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></td>
+          <td class='requester'><a href="#" data-toggle="tooltip" data-view="request-feed" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></td>
           <td><button class='claim-request btn btn-primary btn-sm'>Claim</button></td>
           {{/if}}
           {{/unless}}

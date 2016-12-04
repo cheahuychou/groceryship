@@ -16,8 +16,7 @@ $(document).ready(function () {
 
     $('.close-expired-notif').click(function() {
         var id = $(this).attr('data-id');
-        console.log($(this).parent().parent());
-        $(this).parent().parent().remove();
+        $('#notif-container-' + id).remove();
         $.ajax({
             url: '/deliveries/'+id+'/seeExpired',
             type: 'PUT',
@@ -40,7 +39,8 @@ $(document).ready(function () {
                 if (data.success) {
                     addMessage('Rejection succeeded. The shopper has been notified.', 'success', false, true);
                     $('#reject-modal-' + id).modal('toggle');
-                    $('#notif-row-' + id).remove();
+                    $('#notif-container-' + id).remove();
+                    // TODO: update the average rating of the user being rated in the UI as well
                 } else {
                     console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
@@ -65,7 +65,8 @@ $(document).ready(function () {
                 if (data.success) {
                     addMessage('Rating succeeded.', 'success', false, true);
                     $('#close-modal-' + id).modal('toggle');
-                    $('#notif-row-' + id).remove();
+                    $('#notif-container-' + id).remove();
+                    // TODO: update the average rating of the user being rated in the UI as well
                 } else {
                     console.log(data.message);
                     addMessage('Rating failed. Please try again.', 'danger', true, true);

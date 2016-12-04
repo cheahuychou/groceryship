@@ -2,7 +2,9 @@
 <div style="visibility: hidden">
   <div id="contact-tooltip-{{user._id}}">
     {{user.firstName}} {{user.lastName}}
-    <a href="tel:{{user.phoneNumber}}">{{user.phoneNumber}}</a><br>
+    <div class="user-phone">
+      <a href="tel:{{user.phoneNumber}}">{{formatPhone user.phoneNumber}}</a><br>
+    </div>
     <div class="shipping-rating">
       {{#ifContains user.completedShippings.length 0}}
         <i>no ratings yet</i>

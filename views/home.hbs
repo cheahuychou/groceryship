@@ -1,33 +1,34 @@
 <script src='/javascripts/login.js'></script>
-<h1>Welcome to {{title}}</h1><br>
-<div class="container">
-  <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-5 col-lg-4" id='about'>
-      <div class='feature'>
-        <img src="/images/cart.png"></img><span class="feature-img-text">Request for a peer grocery delivery</span>
-      </div>
-      <div class='feature'>
-        <img src="/images/checklist.png"></img><span class="feature-img-text">Deliver for others and earn pocket money</span>
-      </div>
-      <div class='feature'>
-        <img src="/images/wallet.png"></img><span class="feature-img-text">Pay using Stripe</span>
-      </div>
-    </div>
-
-    <div class="col-xs-10 col-sm-4 col-md-3 col-lg-3 login-column">
-      {{#if verificationToken}}
-        <div class="col-xs-offset-3 col-sm-offset-1 col-md-offset-1 col-lg-2">
-          <br><br class='hidden-xs hidden-ms'>
-                          <input id='username' type="hidden" value="{{username}}"></input>
-          <input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
-          <button id='verify-button' class='btn btn-primary btn-hg'>Verify Account</button>
+<div class="welcome-container">
+  <h1>Welcome to {{title}}</h1><br>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-7 col-md-5 col-lg-4" id='about'>
+        <div class='feature'>
+          <img src="/images/cart.png"></img><span class="feature-img-text">Request for a peer grocery delivery</span>
         </div>
-      {{else}}
-        {{>login_register}}
-        {{> signup}}
-      {{/if}}
+        <div class='feature'>
+          <img src="/images/checklist.png"></img><span class="feature-img-text">Deliver for others and earn pocket money</span>
+        </div>
+        <div class='feature'>
+          <img src="/images/wallet.png"></img><span class="feature-img-text">Pay using Stripe</span>
+        </div>
+      </div>
+
+      <div class="col-xs-10 col-sm-4 col-md-3 col-lg-3 col-md-offset-1 login-column">
+        {{#if verificationToken}}
+          <div class="col-xs-offset-3 col-sm-offset-1 col-md-offset-1 col-lg-2">
+            <br><br class='hidden-xs hidden-ms'>
+                            <input id='username' type="hidden" value="{{username}}"></input>
+            <input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
+            <button id='verify-button' class='btn btn-primary btn-hg'>Verify Account</button>
+          </div>
+        {{else}}
+          {{>login_register}}
+          {{> signup}}
+        {{/if}}
+      </div>
     </div>
   </div>
 </div>
-
 

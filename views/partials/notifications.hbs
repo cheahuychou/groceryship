@@ -5,7 +5,7 @@
 {{#each requestItems}}
   {{#if shopper}}
     {{#if pickupTime}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
+      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
         <div class='tile notfication-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
@@ -19,7 +19,7 @@
         </div>
       </div>
     {{else}} {{!-- for if pickupTime --}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
+      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
         <div class='tile notfication-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/watch.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
@@ -34,7 +34,7 @@
     {{/if}} {{!-- for if pickupTime --}}
   {{else}} {{!-- for if shopper --}}
     {{#ifIsPast rawDeadline ../now}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
+      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
         <div class='tile notfication-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/expired.jpg"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
@@ -53,7 +53,7 @@
 {{#each deliveryItems}}
   {{#ifContains status "claimed"}}
     {{#if actualPrice}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
+      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
         <div class='tile notfication-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
@@ -66,7 +66,7 @@
       </div>
     {{/if}}
   {{else}}
-    <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3'>
+    <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
       <div class='tile notfication-tile' data-id='{{_id}}'>
         <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
         <h4 class='tile-title'>{{itemName}}</h4>

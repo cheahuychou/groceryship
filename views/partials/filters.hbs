@@ -30,7 +30,7 @@
   {{!-- end of filter. start of sort --}}
   <strong id="xs-sort-by" class="visible-xs-inline col-xs-12">Sort by:</strong>
   <div class="col-sm-2">
-    <select id='sort-by' class="form-control">
+    <select id='sort-by' class="form-control selectpicker">
       <option value='tips' {{#ifContains previousSortBy "tips"}}selected{{/ifContains}}>Tip</option>
       <option value='deadline'{{#ifContains previousSortBy "deadline"}}selected{{/ifContains}}>Due date</option>
     </select>
