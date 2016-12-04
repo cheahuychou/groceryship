@@ -24,6 +24,7 @@ var checkEditForm = function () {
 }
 
 $(document).ready(function () {
+	$('#navbar-user').addClass('active');
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	
@@ -74,5 +75,4 @@ $(document).ready(function () {
 	        });
 		}
    	});
-   	
 });

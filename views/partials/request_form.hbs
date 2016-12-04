@@ -1,16 +1,72 @@
 {{!-- Author: Czarina Lao --}}
 <div id="request-form-container">
-  <table class="table table-hover">
-    <thead>
+  <table class="table" style="table-layout: fixed">
       <tr>
-        {{> item_headings}}
+        <th>Item Name</td>
+        <td><input type='text' name='item-name' class="form-control" required autofocus/></td>
       </tr>
-    </thead>
-    <tbody>
-      {{> request_item_form n='1'}}
-    </tbody>
+      <tr>
+        <th>Quantity</td>
+        <td><input type='string' name='item-qty' placeholder="6 17oz. cans, 20 gallons, 18 of the largest boxes" class="form-control" required/></td>
+      </tr>
+      <tr>
+        <th>Estimated Price</td>
+        <td>
+          <div class="input-group">
+            <span class="input-group-addon">$</span>
+            <input type="text" name='item-price-estimate' class="price form-control" required>
+          </div>
+        </td>
+      <tr>
+        <th>Stores</td>
+        <td>
+          <select multiple name='item-stores' class="selectpicker" data-none-selected-text="Select store(s)" data-width="100%">
+            {{#each allStores}}
+            <option>{{this}}</option>
+            {{/each}}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Deadline</td>
+        <td><input type='text' name='item-due' class='form-control flatpickr' placeholder='Select a deadline' required></td>
+      </tr>
+      <tr>
+        <th>Pickup Location</td>
+        <td>
+          <select name='item-pickup' class="form-control selectpicker">
+            {{#each allPickupLocations}}
+            <option>{{this}}</option>
+            {{/each}}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Tip</td>
+        <td>
+          <div class="input-group">
+            <span class="input-group-addon">$</span>
+            <input type="text" name='item-tip' class="price form-control" required>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Minimum Shipping Rating</th>
+        <td>
+          <select name='minimum-shipping-rating' class="form-control selectpicker">
+            <option value='1' selected>None</option>
+            <option value='5'>5</option>
+            <option value='4'>4</option>
+            <option value='3'>3</option>
+            <option value='2'>2</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Additional Description</td>
+        <td><input type='text' name='item-description' class="form-control" placeholder="(optional)" /></td>
+      </tr>
   </table>
-  {{!-- TODO: add listener to add item button click --}}
-  <button id='add-item' class='btn btn-default btn-sm'>Add More</button><br>
-  <button type='submit' id='make-request' class='btn btn-primary' style='float: right'>Make Request</button>
+
+  <button type='submit' id='make-request' class='btn btn-primary btn-lg' style='float: right'>Make Request</button>
 </div>

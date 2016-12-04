@@ -1,10 +1,11 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+    $('#navbar-deliver').addClass('active');
     $('#filter-sort').click(function() {
         var stores = $('#filter-stores').val();
         var pickupLocations = $('#filter-pickup-location').val();
         var minRating = $('#filter-rating').val();
-        if (minRating === "Any") {
+        if (minRating === "No minimum requester rating") {
             minRating = 1;
         }
         var sortBy = $('#sort-by').val();

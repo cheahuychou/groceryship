@@ -56,6 +56,16 @@ var HbsHelpers = function() {
         return parseFloat(number).toFixed(precision);
     }
 
+    /**
+     * Formats the phone number in the format xxx-xxx-xxxx
+     * @param  {String} phoneNumber a 10-digit US phone number
+     * @return {String}             a formatted phoneNumber
+     */
+    that.formatPhone = function(phoneNumber) {
+        var phoneString = String(phoneNumber);
+        return phoneString.substr(0,3) + '-' + phoneString.substr(3,3) + '-' + phoneString.substr(6,4);
+    }
+
 	Object.freeze(that);
     return that;
 };

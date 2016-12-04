@@ -120,7 +120,7 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
     var estimatedPrice = parseFloat(req.body.itemPriceEstimate);
     var tips = parseFloat(req.body.itemTips);
     var pickupLocation = req.body.itemPickupLocation;
-    //var minShippingRating = parseFloat(req.body.minShippingRating); //TODO: uncomment this code once minShippingRating is implemented in front end!
+    var minShippingRating = parseFloat(req.body.minShippingRating);
     Delivery.create({
         stores: stores,
         status: "pending",
@@ -132,7 +132,7 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
         tips: tips,
         pickupLocation: pickupLocation,
         requester: req.session.passport.user._id,
-        //minShippingRating: minShippingRating
+        minShippingRating: minShippingRating
     }, function(err, newDelivery) {
         if (err) {
             console.log(err);

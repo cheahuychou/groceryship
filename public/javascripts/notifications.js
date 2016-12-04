@@ -3,10 +3,20 @@ $(document).ready(function () {
     var csrf = $('#csrf').val();
     // TODO: clear messages in .modal-messages when modal is closed
 
+    $('.notfication-tile').click(function(e) {
+        // don't open the modal if the direct click target is a button or a link
+        if ($(e.target).hasClass('btn') || $(e.target).attr('href')) {
+            e.preventDefault();
+        } else {
+            var id = $(this).attr('data-id');
+            $('#notification-modal-'+id).modal('toggle');
+        }
+    });
+
+
     $('.close-expired-notif').click(function() {
         var id = $(this).attr('data-id');
-        console.log($(this).parent().parent());
-        $(this).parent().parent().remove();
+        $('#notif-container-' + id).remove();
         $.ajax({
             url: '/deliveries/'+id+'/seeExpired',
             type: 'PUT',
@@ -29,7 +39,9 @@ $(document).ready(function () {
                 if (data.success) {
                     addMessage('Rejection succeeded. The shopper has been notified.', 'success', false, true);
                     $('#reject-modal-' + id).modal('toggle');
-                    $('#notif-row-' + id).remove();
+                    $('#notif-container-' + id).remove();
+                    // TODO: update the average rating of the user being rated in the UI as well
+                    // TODO: if it's the last notification, show no notifications message
                 } else {
                     console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
@@ -54,7 +66,9 @@ $(document).ready(function () {
                 if (data.success) {
                     addMessage('Rating succeeded.', 'success', false, true);
                     $('#close-modal-' + id).modal('toggle');
-                    $('#notif-row-' + id).remove();
+                    $('#notif-container-' + id).remove();
+                    // TODO: update the average rating of the user being rated in the UI as well
+                    // TODO: if it's the last notification, show no notifications message
                 } else {
                     console.log(data.message);
                     addMessage('Rating failed. Please try again.', 'danger', true, true);

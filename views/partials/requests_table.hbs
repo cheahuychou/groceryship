@@ -10,6 +10,7 @@
         {{else}}
         <th>Requester</th>
         {{/if}}
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -19,7 +20,7 @@
         <tr class='request-item-row' data-id='{{_id}}'>
           {{> item_row this}}
           {{#if ../own}}
-          <td class='shopper'>{{#if shopper}}<a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a>{{else}}N/A{{/if}}</td>
+          <td class='shopper'>{{#if shopper}}<a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a>{{else}}N/A{{/if}}</td>
           <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
           {{/if}}
 
@@ -29,8 +30,7 @@
           <td><button class='cancel-request btn btn-primary btn-sm'>Cancel</button></td>
           {{else}}
           {{!-- claim button should only appear for others' requests --}}
-          {{!-- TODO: should show 'Unclaim' if has been claimed by current user --}}
-          <td class='requester'>{{requester.firstName}} {{requester.lastName}}</td>
+          <td class='requester'><a href="#" data-toggle="tooltip" data-view="request-feed" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></td>
           <td><button class='claim-request btn btn-primary btn-sm'>Claim</button></td>
           {{/if}}
           {{/unless}}
@@ -39,4 +39,13 @@
       {{/each}}
     </tbody>
   </table>
+  {{!-- show this message when there are no requestItems --}}
+  {{#unless requestItems}}
+    <div class="well well-lg">
+      {{#if ../own}} You have no requests to display yet. Make one by going to the Request tab!
+      {{else}}
+      No requests from other users to claim yet.
+      {{/if}}
+    </div>
+  {{/unless}}
 </div>

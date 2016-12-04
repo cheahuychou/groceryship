@@ -2,7 +2,7 @@
 <tr class='item' id='item-{{n}}' data-num='{{n}}'>
   <td><input id='item-name-{{n}}' type='text' name='item-name' class="form-control" required autofocus/></td>
   {{!-- TODO: fix sizing for input boxes that for numbers because they don't need to be that long --}}
-  <td><input id='item-qty-{{n}}' type='string' name='item-qty' value='1' class="form-control" required/></td>
+  <td><input id='item-qty-{{n}}' type='string' name='item-qty' placeholder="6 17oz. cans" class="form-control" required/></td>
   <td>
   <div class="input-group">
       <span class="input-group-addon">$</span>
@@ -11,7 +11,7 @@
   </td>
   <td>
     {{!-- TODO: Fix size --}}
-    <select multiple id='item-stores-{{n}}' name='item-stores' class="form-control">
+    <select multiple id='item-stores-{{n}}' name='item-stores' class="selectpicker" data-none-selected-text="Select store(s)" data-width="100%">
       {{#each allStores}}
       <option>{{this}}</option>
       {{/each}}
@@ -33,7 +33,7 @@
       <input id='item-tip-{{n}}' type="text" name='item-tip' class="price form-control" required>
     </div>
   </td>
-  <td><input id='item-description-{{n}}' type='text' name='item-description' class="form-control"/></td>
+  <td><input id='item-description-{{n}}' type='text' name='item-description' class="form-control" placeholder="(optional)" /></td>
   {{!-- delete item when this button is clicked --}}
   {{!-- TODO: decide how to handle n when an item is deleted --}}
   <td><button id='item-remove-{{n}}' type="button" class="close item-remove" hidden>&times;</button></td>
