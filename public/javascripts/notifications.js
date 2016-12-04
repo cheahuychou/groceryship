@@ -41,6 +41,7 @@ $(document).ready(function () {
                     $('#reject-modal-' + id).modal('toggle');
                     $('#notif-container-' + id).remove();
                     // TODO: update the average rating of the user being rated in the UI as well
+                    // TODO: if it's the last notification, show no notifications message
                 } else {
                     console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
@@ -67,6 +68,7 @@ $(document).ready(function () {
                     $('#close-modal-' + id).modal('toggle');
                     $('#notif-container-' + id).remove();
                     // TODO: update the average rating of the user being rated in the UI as well
+                    // TODO: if it's the last notification, show no notifications message
                 } else {
                     console.log(data.message);
                     addMessage('Rating failed. Please try again.', 'danger', true, true);
