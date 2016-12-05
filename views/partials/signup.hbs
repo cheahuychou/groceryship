@@ -1,5 +1,5 @@
 <div id="register-modal" class="modal fade" role="dialog">
-  <div class="modal-dialog modal-sm">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -9,16 +9,21 @@
         <div class="modal-messages"></div>
         <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
           <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input id='kerberos-register-box' class='form-control signup-input' type='text' name='requestedKerberos' placeholder='kerberos' required></input>
-          <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
-          <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
-          <input id='phone-number-register-box' class='form-control signup-input' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input>
-          <select name='dorm' class='form-control signup-input'>
-            {{#each allDorms}}
-            <option>{{this}}</option>
-            {{/each}}
-          </select>
-          <input type="submit" id='register-button' class='btn btn-primary btn-sm' value="SIGN UP & CONNECT WITH STRIPE">
+          <div class='row'>
+            <div class='col-xs-6'>
+              <input id='kerberos-register-box' class='form-control signup-input' type='text' name='requestedKerberos' placeholder='kerberos' required></input>
+              <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
+              <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
+              <input id='phone-number-register-box' class='form-control signup-input' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input>
+              <select name='dorm' class='form-control signup-input'>
+                {{#each allDorms}}
+                <option>{{this}}</option>
+                {{/each}}
+              </select>
+            </div>
+          </div>
+          <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP">
+          <small><i>Note that you will be redirected to Stripe to connect your account.</i></small>
         </form>
       </div>     
     </div>

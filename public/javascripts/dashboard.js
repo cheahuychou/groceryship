@@ -2,6 +2,10 @@
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
 
+    $('.modal').on('hidden.bs.modal', function() {
+        $('.modal-messages').empty();
+    });
+
     // stop modal from opening when clicking on a link on a tile
     $('.tile a').click(function(e) {
         e.stopPropagation();
@@ -94,12 +98,13 @@ $(document).ready(function () {
         $('.checkbox-cell input').each(function() {
             if (this.checked) {
                 var originalRow = $(this).parent().parent();
+                var id = originalRow.attr('data-id');
                 var row = $('<tr>', {
                     class: 'to-deliver-item',
-                    'data-id': originalRow.attr('data-id')
+                    'data-id': id
                 });
 
-                var requester = originalRow.attr('data-requester');
+                var requester = originalRow.children('.requester').html();
                 // TODO: also copy the <a href> for the requester contact info tooltip
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
@@ -122,7 +127,7 @@ $(document).ready(function () {
                 });
 
 
-                row.append($('<td>', {text: requester}));
+                row.append($('<td>', {html: requester}));
                 row.append($('<td>', {text: itemName}));
                 row.append($('<td>', {text: pickupPoint}));
                 row.append($('<td/>').append(inputPickupTime));
@@ -130,28 +135,43 @@ $(document).ready(function () {
 
                 $('#set-pickup-modal tbody').append(row);
 
+                // initialize flatpickr with restrictions based on time now and deadline
                 var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
-                flatpickr('.flatpickr[name=pickup-time]', {
+                flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]', {
                     enableTime: true,
                     // minDate: 'today',
                     enable: [{from: 'today', to: rawDeadline}],
                     // create an extra input solely for display purposes
                     altInput: true,
-                    altFormat: "F j, Y h:i K"
+                    altFormat: "M j Y, h:i K"
                 });
             }
+        });
+
+        // initialize all tooltips in modal
+        $('#set-pickup-modal [data-toggle=tooltip]').tooltip({
+            title: getContactTooltip,
+            container: 'body',
+            placement: 'bottom',
+            html: true
         });
     });
 
     // clear modal rows on close
-    $('#set-pickup-modal').on('hidden.bs.modal', function (e) {
+    $('#set-pickup-modal').on('hidden.bs.modal', function () {
+        // assign to a variable first because if no flatpickrs exist,
+        // flatpickrs.destroy() will throw an error
+        var flatpickrs = flatpickr('#set-pickup-modal .flatpickr[name=pickup-time]');
+        if (flatpickrs.length !== 0) {
+            flatpickrs.destroy();
+        }
         $('#set-pickup-modal tbody').empty();
     });
 
     $('#deliver-confirm-button').click(function() {
         var hasError = false;
         // validate inputs first
-        $('input').each(function() {
+        $('#set-pickup-modal input').each(function() {
             // check that all inputs are nonempty
             // if empty, alert the user of the error and show where it is
             if (!$(this).val() || $(this).val().trim()=='') {
@@ -159,6 +179,7 @@ $(document).ready(function () {
                     $(this).parent().addClass('has-error');
                 }
                 hasError = true;
+                console.log(this);
                 addMessage('All fields must be filled out.', 'danger', true, true);
                 return false;
             } else if ($(this).hasClass('price')
@@ -210,7 +231,8 @@ $(document).ready(function () {
                             originalRow.children('.checkbox-cell').empty();
                             // update pickup time
                             originalRow.children('.pickup-time').text(data.item.pickupTime);
-                            // remove item from modal
+                            // remove item and associated flatpickr from modal
+                            flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]').destroy();
                             currentItem.remove();
                         } else {
                             hasError = true;
@@ -230,7 +252,11 @@ $(document).ready(function () {
                 if ($('.deliveries-checkbox').length === 0) {
                     $('.header-checkbox').prop('disabled', true);
                     $('#deliver-items').prop('disabled', true);
+                } else if ($('.deliveries-checkbox:checked').size() === 0) {
+                    // disable deliver now button if no checkboxes are checked
+                    $('#deliver-items').prop('disabled', true);
                 }
+
                 if (hasError) {
                     addMessage('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!', 'danger', true, true);
                 } else {

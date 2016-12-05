@@ -6,7 +6,6 @@
 *                   the constraints 
 */
 var checkLogInForm = function () {
-    console.log('can you see me login');
     var kerberos = $('#kerberos-box').val().trim();
     var password = $('#password-box').val().trim();
     if (kerberos.length === 0 || /<[a-z][\s\S]*>/i.test(kerberos)) {
@@ -28,7 +27,6 @@ var checkLogInForm = function () {
 *                   the constraints 
 */
 var checkSignUpForm = function () {
-    console.log('can you see me signup');
     var kerberos = $('#kerberos-register-box').val().trim();
     var password = $('#password-register-box').val().trim();
     var confirmPassword = $('#confirm-password-register-box').val().trim();
@@ -84,5 +82,14 @@ $(document).ready(function () {
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
+    });
+
+    $('#register-modal').on('shown.bs.modal', function() {
+        // when user fills in kerberos and password in the main page
+        // then clicks sign up, help them fill up the sign up page
+        $('#kerberos-register-box').val($('#kerberos-box').val());
+        $('#password-register-box').val($('#password-box').val());
+
+        $('#kerberos-register-box').focus();
     });
 });

@@ -1,6 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function() {
-    flatpickr(".flatpickr", {
+    flatpickr("input[name=item-due]", {
         enableTime: true,
         // minDate seems to have a bug so not using it for now
         // minDate: 'today',

@@ -6,38 +6,14 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         {{#if isRequest}}
-        <h3 class="modal-title">Request</h3>
+        <h3 class="modal-title">Request Details</h3>
         {{else}}
-        <h3 class="modal-title">Delivery</h3>
+        <h3 class="modal-title">Delivery Details</h3>
         {{/if}}
       </div>
       <div class="modal-body">
         <div class="modal-messages"></div>
-        {{> request_item own=isRequest}}
-        {{!-- <table class="table table-hover">
-          <thead>
-            <tr>
-              {{> item_headings}}
-              {{#if isRequest}}
-              <th>Shopper</th>
-              {{else}}
-              <th>Requester</th>
-              {{/if}}
-              <th>Pickup Time</th>
-              <th>Actual Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{> item_row}}
-            {{#if isRequest}}
-            <td class='shopper'>{{#if shopper}}{{shopper.firstName}} {{shopper.lastName}}{{else}}N/A{{/if}}</td>
-            {{else}}
-            <td class='requester'>{{requester.firstName}} {{requester.lastName}}</td>
-            {{/if}}
-            <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
-            <td class='actual-price'>{{#if actualPrice}}{{actualPrice}}{{else}}N/A{{/if}}</td>
-          </tbody>
-        </table> --}}
+          {{> request_item own=isRequest}}
       </div>     
     </div>
   </div>
