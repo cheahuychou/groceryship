@@ -81,9 +81,6 @@ describe("App", function() {
 	});
 
 	describe("Rating", function() {
-
-		
-
 	  	it("can contain requester and shopper ratings in the delivery model", function(done) {
   			testDeliveryJSON["requesterRating"] = 4;
   			testDeliveryJSON["shopperRating"] = 5;
