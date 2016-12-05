@@ -7,6 +7,10 @@ var Delivery = require('../models/delivery');
 var User = require('../models/user');
 var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
+var config = require('../javascripts/config.js');
+var stripe = require('stripe');
+var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
+var stripePlatform = stripe(API_KEY);
 var authentication = require('../javascripts/authentication.js');
 
 // setup csurf middlewares 
@@ -253,6 +257,7 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
+    var stripeUser = stripe(user.stripePublishableKey);
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
@@ -263,14 +268,43 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.accept(parseInt(req.body.shopperRating), function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    email.sendAcceptanceEmails(utils.formatDate([currentDelivery])[0]);
-                    res.json({success: true});
-                }
+            User.findById(currentDelivery.shopper, function(err, shopper){
+                stripeUser.tokens.create({
+                    card: {
+                        'number': req.body.cardNumber,
+                        'exp_month': req.body.expMonth,
+                        'exp_year': req.body.expYear,
+                        'cvc': req.body.cvc 
+                    }
+                }, function(err, token){
+                    if (err){
+                        console.log(err);
+                        res.json({success: false, message: "Invalid card."});
+                    } else {
+                        stripePlatform.charges.create({
+                            amount: (currentDelivery.actualPrice + currentDelivery.tips) * 100,
+                            currency: 'usd',
+                            source: token.id,
+                            destination: shopper.stripeId
+                        }, function(err, data){
+                            if (err){
+                                console.log(err)
+                                res.json({success: false, message: "Invalid transaction."});
+                            } else {
+                                console.log(data.id);
+                                currentDelivery.accept(data.id, req.body.shopperRating, function(err) {
+                                    if (err) {
+                                        console.log(err);
+                                        res.json({success: false, message: err});
+                                    } else {
+                                        email.sendAcceptanceEmails(utils.formatDate([currentDelivery])[0]);
+                                        res.json({success: true});
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             });
         }
     });

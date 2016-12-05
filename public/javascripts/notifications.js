@@ -26,6 +26,43 @@ $(document).ready(function () {
         });
     });
     
+    $('.pay-rate-button').click(function() {
+        var id = $(this).attr('data-id');
+        var cardNumber = $('#card-number-'+id).val();
+        var expMonth = $('#expiry-month-'+id).val();
+        var expYear = $('#expiry-year-'+id).val();
+        var cvc = $('#cvc').val();
+        var rating = $(this).parent().parent().find('.fa-star').length;
+        $.ajax({
+            url: '/deliveries/'+id+'/accept',
+            type: 'PUT',
+            data: {
+                    id: id, 
+                    shopperRating: rating, 
+                    _csrf: csrf, 
+                    cardNumber: cardNumber,
+                    expMonth: expMonth,
+                    expYear: expYear,
+                    cvc: cvc
+                },
+            success: function(data) {
+                console.log(data);
+                if (data.success) {
+                    addMessage('Payment succeeded. The shopper has been notified.', 'success', false, true);
+                    $('#accept-modal-' + id).modal('toggle');
+                    $('#notif-row-' + id).remove();
+                } else {
+                    console.log(data.message);
+                    addMessage(data.message + " Please try again.", 'danger', true, true);
+                }
+            },
+            error: function(err) {
+                console.log(err);
+                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
+            }
+        });
+    });
+
     $('.reject-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
         var reason = $('#reason :selected').val();

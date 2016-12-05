@@ -179,8 +179,10 @@ router.get('/oauth/callback', function(req, res) {
             res.json({'success': false, 'message': err.message});
         } else {
             var user = JSON.parse(req.query.state);
-            var stripeId = JSON.parse(body).stripe_user_id;
+            var authResponse = JSON.parse(body);
+            var stripeId = authResponse.stripe_user_id;
             user['stripeId'] = stripeId;
+            user['stripePublishableKey'] = authResponse.stripe_publishable_key;
             stripe.accounts.retrieve(stripeId,
                 function(err, account){
                     if (err) {
