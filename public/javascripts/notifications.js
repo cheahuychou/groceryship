@@ -50,7 +50,9 @@ $(document).ready(function () {
                 if (data.success) {
                     addMessage('Payment succeeded. The shopper has been notified.', 'success', false, true);
                     $('#accept-modal-' + id).modal('toggle');
-                    $('#notif-row-' + id).remove();
+                    $('#notif-container-' + id).remove();
+                    // TODO: update the average rating of the user being rated in the UI as well
+                    // TODO: if it's the last notification, show no notifications message
                 } else {
                     console.log(data.message);
                     addMessage(data.message + " Please try again.", 'danger', true, true);

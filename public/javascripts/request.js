@@ -36,7 +36,7 @@ $(document).ready(function() {
                     $(this).parent().addClass('has-error');
                 }
                 hasError = true;
-                addMessage('All fields except Additional Description are required.', 'danger', false, true);
+                addMessage('All fields except More Info are required.', 'danger', false, true);
                 return false;
             } else if ($(this).hasClass('price')
                 && $(this).parent().hasClass('has-error')) {
@@ -64,7 +64,7 @@ $(document).ready(function() {
             var deadline = $('input[name=item-due]').val();
             var pickupLocation = $('select[name=item-pickup]').val();
             var tips = $('input[name=item-tip]').val();
-            var minShippingRating = $('select[name=minimum-shipping-rating').val();
+            var minShopperRating = $('select[name=minimum-shopper-rating').val();
             var description = $('input[name=item-description]').val();
             var csrf = $('#csrf').val();
             console.log(csrf);
@@ -80,7 +80,7 @@ $(document).ready(function() {
                 itemDescription: description,
                 itemTips: tips,
                 itemPickupLocation: pickupLocation,
-                minShippingRating: minShippingRating,
+                minShippingRating: minShopperRating,
                 _csrf: csrf
             }, function(data) {
                 if (!data.success) {

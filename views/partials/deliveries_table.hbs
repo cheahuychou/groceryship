@@ -26,7 +26,6 @@
   {{#unless deliveryItems}}
     <div class="well well-lg">No requests claimed yet.</div>
   {{/unless}}
-  {{!-- TODO: button should be disabled if there are no items / no items selected --}}
-  <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#deliver-now-modal' style='float: right' disabled>Deliver Now</button>
-  {{> deliver_now}}
+  <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#set-pickup-modal' style='float: right' disabled>Set Pickup Time</button>
+  {{> set_pickup}}
 </div>

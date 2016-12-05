@@ -36,13 +36,13 @@
     {{#ifIsPast rawDeadline ../now}}
       <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
         <div class='tile notfication-tile' data-id='{{_id}}'>
-          <div class='tile-icon' style='float: left'><img src="/images/expired.jpg"></img></div>
+          <div class='tile-icon' style='float: left'><img src="/images/expired.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
           <p class='tile-subtitle'><i>unclaimed</i></p>
           <p class='tile-content'><i>Sorry, this request expired!</i><br></p>
 
           <div>
-            <button type="button" class="close close-expired-notif" data-id="{{_id}}">Close</button>
+            <button type="button" class="close-expired-notif btn btn-xs btn-inverse" data-id="{{_id}}">Close</button>
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@
           {{#ifIsPast rawDeadline ../now}}
           <tr id='notif-row-{{_id}}' class='notification-row'>
           <td>
-            <div class='notification-icon'><img src="/images/expired.jpg"></img></div>
+            <div class='notification-icon'><img src="/images/expired.png"></img></div>
           </td>
           <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) went unclaimed and has expired.</td>
           <td></td>

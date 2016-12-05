@@ -128,7 +128,7 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPickupTime));
                 row.append($('<td/>').append(inputPrice));
 
-                $('#deliver-now-modal tbody').append(row);
+                $('#set-pickup-modal tbody').append(row);
 
                 var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
                 flatpickr('.flatpickr[name=pickup-time]', {
@@ -144,8 +144,8 @@ $(document).ready(function () {
     });
 
     // clear modal rows on close
-    $('#deliver-now-modal').on('hidden.bs.modal', function (e) {
-        $('#deliver-now-modal tbody').empty();
+    $('#set-pickup-modal').on('hidden.bs.modal', function (e) {
+        $('#set-pickup-modal tbody').empty();
     });
 
     $('#deliver-confirm-button').click(function() {
@@ -236,7 +236,7 @@ $(document).ready(function () {
                 } else {
                     addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
                     // only close the modal if all items were successfully updated
-                    $('#deliver-now-modal').modal('toggle');
+                    $('#set-pickup-modal').modal('toggle');
                 }
             });
         }
