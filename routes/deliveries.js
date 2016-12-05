@@ -174,22 +174,12 @@ router.delete("/:id", authentication.isAuthenticated, parseForm, csrfProtection,
 /** Updates a request when the user closes an "expired" notification, indicated the user has seen that the request is expired **/
 router.put("/:id/seeExpired", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res) {
 	var user = req.session.passport.user;
-	Delivery.findOne({_id: req.params.id, requester: user._id}).exec(function(err, currentDelivery) { //verify that the current user is the one who requested it
-    	if (currentDelivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
+	Delivery.seeExpired(req.params.id, user._id, function(err) {
 		if (err) {
 			console.log(err);
 			res.json({success: false, message: err});
 		} else {
-			currentDelivery.seeExpired(function(err) {
-				if (err) {
-					console.log(err);
-					res.json({success: false, message: err});
-				} else {
-					res.json({success: true});
-				}
-			});
+			res.json({success: true});
 		}
 	});
 });
@@ -197,28 +187,13 @@ router.put("/:id/seeExpired", authentication.isAuthenticated, parseForm, csrfPro
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
-        console.log(currentDelivery);
-    	if (currentDelivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
+    Delivery.claim(req.params.id, user._id, function(err, claimedDelivery) {
     	if (err) {
     		console.log(err);
     		res.json({success: false, message: err});
     	} else {
-	        currentDelivery.claim(user._id, function(err) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
-                    Delivery.findOne({_id: req.params.id})
-                        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
-                        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
-                            email.sendClaimEmail(currentDelivery);
-	                        res.json({success: true});
-                       });
-	            }
-	        });
+    		email.sendClaimEmail(claimedDelivery);
+    		res.json({success: true});
     	}
     });
 });
