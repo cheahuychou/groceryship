@@ -6,7 +6,7 @@
     <div class='tile request-tile' data-id='{{_id}}' data-toggle="modal" data-target='#request-modal-{{_id}}'>
       <h4 class='tile-title'>{{itemName}}</h4>
       <p class='tile-subtitle'>{{#if shopper}}Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a>{{else}}<i>unclaimed</i>{{/if}}</p>
-      <p class='request-tile-content'>{{#if pickupTime}}Arriving: {{pickupTime}}{{else}}pickup time not set yet{{/if}}</p>
+      <p class='request-tile-content'>{{#if pickupTime}}{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving:{{/ifIsPast}} {{pickupTime}}{{else}}pickup time not set yet{{/if}}</p>
 
       {{#if ../own}}
         {{!-- cancel button should only appear for own requests --}}

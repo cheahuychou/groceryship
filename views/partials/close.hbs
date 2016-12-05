@@ -1,7 +1,7 @@
 {{!-- Author: Cheahuychou Mao --}}
 
 {{#each deliveryItems}}
-<div id="close-modal-{{_id}}" class="modal fade" role="dialog">
+<div id="close-modal-{{_id}}" class="modal fade notif-action-modal close-modal" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -11,30 +11,38 @@
       <div class="modal-body">
         <div class="modal-messages"></div>
         <div id="reimbursement">
-            <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
-            <p>Total Cost: {{actualPrice}}</p>
-            <p>Tips received: {{tips}}</p>
-            <p>Total received: {{add actualPrice tips}}</p>
+          <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
+          {{> cost_summary}}
+          <br>
             {{#ifContains status "claimed"}}
-              <p class="text-warning">WARNING: The requester has not paid for the delivery yet! Make sure the requester pays before handing the good to him/her and closing this delivery.</p>
+              <p><span class="text-warning"><b>WARNING:</b></span> The requester has not paid for the delivery yet! Make sure the requester pays before handing the good to him/her and closing this delivery.</p>
             {{/ifContains}}
             {{#ifContains status "accepted"}}
-              <p class="text-success">{{requester.firstName}} {{requester.lastName}} has accepted and paid for your delivery.</p>
+              <p><span class="text-success"><b>All set!</b></span> {{requester.firstName}} {{requester.lastName}} has accepted and paid for your delivery.</p>
             {{/ifContains}}
             {{#ifContains status "rejected"}}
-              <p class="text-danger">
+              <center class="text-danger">
               {{requester.firstName}} {{requester.lastName}} has rejected your delivery for the following reason:<br>
-              {{rejectedReason}}
-              </p>
+              <i>{{rejectedReason}}</i>
+              </center>
+              <br>
               <p>
-              Please get your good refunded from the supermarket.
+                <small><i>If you've bought the item/s, please get your good/s refunded from the supermarket.</i></small>
               </p>
             {{/ifContains}}
         </div>
-        <br>
-        {{> rating isRequest=false}}
-        <button class='deliver-rate-button btn btn-primary'>Close &amp; Rate</button>
-      </div>     
+        <hr>
+        <div id='rating-container-{{_id}}'>
+          {{> rating isRequest=false}}
+        </div>
+        <br class='hidden-ms hidden-sm hidden-md hidden-lg'>
+        <div class='row'>
+          <div class='col-xs-offset-8 col-xs-4'>
+            <button class='deliver-rate-button btn btn-primary btn-wide' data-id='{{_id}}' style='float: right'>Close &amp; Rate</button>
+          </div>
+        </div>
+
+      </div> {{!-- end of modal-body --}}
     </div>
   </div>
 </div>

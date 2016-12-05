@@ -2,6 +2,7 @@
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
 
+    // delete all modal messages when modal gets closed
     $('.modal').on('hidden.bs.modal', function() {
         $('.modal-messages').empty();
     });

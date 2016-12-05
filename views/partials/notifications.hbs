@@ -10,7 +10,7 @@
           <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
           <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
-          <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving{{/ifIsPast}} <br>{{pickupTime}}</p>
+          <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving:{{/ifIsPast}} <br>{{pickupTime}}</p>
 
           <div class="accept-reject-container">
             <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>

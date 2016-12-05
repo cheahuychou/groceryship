@@ -58,6 +58,7 @@ a {
 }
 
 .fa-star-o, .fa-star {
+  font-size: 150% !important;
   color:  #FFD700;
 }
 
@@ -270,6 +271,22 @@ td.deadline, td.pickup-time {
 #set-pickup-modal th.price {
     /* temporary fix for price column size so that it's not too small */
     min-width: 100px;
+}
+
+.cost-summary, .card-input {
+    padding-left: 8%;
+}
+
+.card-input .form-group {
+    margin-bottom: 10px;
+}
+
+.card-input .col-expiry-month {
+    padding-right: 0;
+}
+
+.modal-body {
+    padding: 20px;
 }
 
 #request-table > table {

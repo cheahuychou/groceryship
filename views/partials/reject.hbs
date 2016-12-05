@@ -2,7 +2,7 @@
 
 {{#each requestItems}}
 {{#if shopper}}
-<div id="reject-modal-{{_id}}" class="action-modal modal fade" role="dialog">
+<div id="reject-modal-{{_id}}" class="modal fade notif-action-modal reject-modal" role="dialog">
   <div class="modal-dialog modal-xs">
     <div class="modal-content">
       <div class="modal-header">
@@ -11,9 +11,10 @@
       </div>
       <div class="modal-body">
         <div class="modal-messages"></div>
-        <div id="rejection">
+
+        <div class="rejection">
             <p>Reason for rejection:</p>
-            <select id='reason' class="form-control">
+            <select id='reason-{{_id}}' class="form-control reason">
                 <option>The deliverer did not show up.</option>
                 {{#if pickupTime}}
                 <option>The delivered item is not what I requested for.</option>
@@ -22,10 +23,19 @@
                 <option>I don't need the item anymore.</option>
             </select>
         </div>
-        <br>
-        {{> rating isRequest=true}}
-        <button class='reject-rate-button btn btn-primary'>Rate</button>
-      </div>     
+
+        <hr>
+        <div id='rating-container-{{_id}}'>
+          {{> rating isRequest=true}}
+        </div>
+        <br class='hidden-ms hidden-sm hidden-md hidden-lg'>
+        <div class='row'>
+          <div class='col-xs-offset-8 col-xs-4'>
+            <button class='reject-rate-button btn btn-primary btn-wide' data-id='{{_id}}' style='float: right'>Rate</button>
+          </div>
+        </div>
+
+      </div> {{!-- end of modal-body --}} 
     </div>
   </div>
 </div>

@@ -2,7 +2,7 @@
 
 {{#each requestItems}}
 {{#if shopper}}
-<div id="accept-modal-{{_id}}" class="modal fade" role="dialog">
+<div id="accept-modal-{{_id}}" class="modal fade notif-action-modal accept-modal" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -11,70 +11,29 @@
       </div>
       <div class="modal-body">
         <div class="modal-messages"></div>
+
         <div id="payment">
-            <p>Below is a summary of the delivery from {{shopper.firstName}} {{shopper.lastName}}: </p>
-            <p>Total Cost: {{actualPrice}}</p>
-            <p>Total Tips: {{tips}}</p>
-            <p>Total: {{add actualPrice tips}}</p>
+          <p>Below is a summary of the delivery from {{shopper.firstName}} {{shopper.lastName}}: </p>
+          {{> cost_summary}}
+        </div> {{!-- end of payment --}} 
+
+        <hr/>
+
+        {{> card_input}}
+
+        <hr/>
+
+        <div id='rating-container-{{_id}}'>
+          {{> rating isRequest=true}}
         </div>
-        <br>
-        {{> rating isRequest=true}}
-        <div class="form-group">
-          <label class="col-sm-3 control-label" for="card-number">Card Number</label>
-          <div class="col-sm-9">
-            <div class="row">
-              <div class="col-sm-7">
-                <input type="text" class="form-control" id="card-number-{{_id}}" placeholder="Debit/Credit Card Number">
-              </div>
-            </div>
+        <br class='hidden-ms hidden-sm hidden-md hidden-lg'>
+        <div class='row'>
+          <div class='col-xs-offset-8 col-xs-4'>
+            <button class='pay-rate-button btn btn-primary btn-wide' data-id='{{_id}}' style='float: right'>Pay &amp; Rate</button>
           </div>
         </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label" for="expiry-month">Expiration Date</label>
-          <div class="col-sm-9">
-            <div class="row">
-              <div class="col-xs-5">
-                <select class="form-control selectpicker col-sm-4" id="expiry-month-{{_id}}">
-                  <option value="01">January</option>
-                  <option value="02">February</option>
-                  <option value="03">March</option>
-                  <option value="04">April</option>
-                  <option value="05">May</option>
-                  <option value="06">June</option>
-                  <option value="07">July</option>
-                  <option value="08">August</option>
-                  <option value="09">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
-              </div>
-              <div class="col-xs-3">
-                <select class="form-control selectpicker" id="expiry-year-{{_id}}">
-                  <option value="2016">2016</option>
-                  <option value="2017">2017</option>
-                  <option value="2018">2018</option>
-                  <option value="2019">2019</option>
-                  <option value="2020">2020</option>
-                  <option value="2021">2021</option>
-                  <option value="2022">2022</option>
-                  <option value="2023">2023</option>
-                  <option value="2024">2024</option>
-                  <option value="2025">2025</option>
-                  <option value="2026">2026</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label" for="cvc">Card CVC</label>
-          <div class="col-sm-5">
-            <input type="text" class="form-control" name="cvc" id="cvc-{{_id}}" placeholder="Security Code">
-          </div>
-        </div>
-        <button class='pay-rate-button btn btn-primary' data-id='{{_id}}'>Pay &amp; Rate</button>
-      </div>     
+
+      </div> {{!-- end of modal-body --}}     
     </div>
   </div>
 </div>

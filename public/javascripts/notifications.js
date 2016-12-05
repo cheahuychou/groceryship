@@ -1,7 +1,17 @@
 // Author: Cheahuychou Mao
 $(document).ready(function () {
     var csrf = $('#csrf').val();
-    // TODO: clear messages in .modal-messages when modal is closed
+    $('.accept-modal').on('shown.bs.modal', function() {
+        $('.card-number').focus();
+    });
+
+    $('.reject-modal').on('shown.bs.modal', function() {
+        $('.reason').focus();
+    });
+
+    $('.close-modal').on('shown.bs.modal', function() {
+        $('.deliver-rate-button').focus();
+    });
 
     $('.notfication-tile').click(function(e) {
         // don't open the modal if the direct click target is a button or a link
@@ -31,8 +41,9 @@ $(document).ready(function () {
         var cardNumber = $('#card-number-'+id).val();
         var expMonth = $('#expiry-month-'+id).val();
         var expYear = $('#expiry-year-'+id).val();
-        var cvc = $('#cvc').val();
-        var rating = $(this).parent().parent().find('.fa-star').length;
+        var cvc = $('#cvc-'+id).val();
+        var rating = $('#rating-container-'+id).find('.fa-star').length;
+        console.log(id, rating, cardNumber, expMonth, expYear, cvc);
         $.ajax({
             url: '/deliveries/'+id+'/accept',
             type: 'PUT',
@@ -56,6 +67,7 @@ $(document).ready(function () {
                 } else {
                     console.log(data.message);
                     addMessage(data.message + " Please try again.", 'danger', true, true);
+                    $('.card-number').focus();
                 }
             },
             error: function(err) {
@@ -66,9 +78,9 @@ $(document).ready(function () {
     });
 
     $('.reject-rate-button').click(function() {
-        var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
-        var reason = $('#reason :selected').val();
-        var rating = $(this).parent().find('.fa-star').length;
+        var id = $(this).attr('data-id');
+        var reason = $('#reason-'+id+' :selected').val();
+        var rating = $('#rating-container-'+id).find('.fa-star').length;
         $.ajax({
             url: '/deliveries/'+id+'/reject',
             type: 'PUT',
@@ -94,8 +106,8 @@ $(document).ready(function () {
     });
 
 	$('.deliver-rate-button').click(function() {
-        var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
-        var rating = $(this).parent().find('.fa-star').length;
+        var id = $(this).attr('data-id');
+        var rating = $('#rating-container-'+id).find('.fa-star').length;
         $.ajax({
             url: '/deliveries/'+id+'/rateRequester',
             type: 'PUT',
