@@ -2,6 +2,7 @@
 
 {{#each deliveryItems}}
 <div id="close-modal-{{_id}}" class="modal fade" role="dialog">
+  <div class="modal-messages"></div>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -9,7 +10,6 @@
         <h3 class="modal-title">Close Delivery</h3>
       </div>
       <div class="modal-body">
-        <div class="modal-messages"></div>
         <div id="reimbursement">
             <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
             <p>Total Cost: {{actualPrice}}</p>
