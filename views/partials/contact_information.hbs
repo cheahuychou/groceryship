@@ -1,6 +1,6 @@
 {{!-- Author: Joseph Kuan --}}
-<div style="visibility: hidden">
-  <div id="contact-tooltip-{{user._id}}">
+<div class='hide-from-view'>
+  <div class="contact-tooltip-{{user._id}}" id="contact-tooltip-{{user._id}}">
     {{user.firstName}} {{user.lastName}}
     <div class="user-phone">
       <a href="tel:{{user.phoneNumber}}">{{formatPhone user.phoneNumber}}</a><br>
@@ -21,31 +21,3 @@
     </div>
   </div>
 </div>
-
-{{!-- <div id="contact-modal-{{user._id}}" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h3 class="modal-title">Contact information for {{user.firstName}} {{user.lastName}}</h3>
-      </div>
-      <div class="modal-body information">
-        <p>MIT Email: {{user.username}}@mit.edu</p>
-        <p>Phone Number: {{user.phoneNumber}}</p>
-        <p>
-          Shipping Rating:
-          {{#ifContains user.completedShippings.length 0}}User has not received any shipping ratings yet
-          {{else}}{{roundOff user.avgShippingRating 1}}/5 (from {{user.completedShippings.length}} total deliveries made)
-          {{/ifContains}}
-        </p>
-        <p>
-          Request Rating:
-          {{#ifContains user.completedRequests.length 0}}User has not received any request ratings yet
-          {{else}}{{roundOff user.avgRequestRating 1}}/5 (from {{user.completedRequests.length}} total requests made)
-          {{/ifContains}}
-        </p>
-      </div>     
-    </div>
-  </div>
-</div>
- --}}

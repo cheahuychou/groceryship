@@ -1,51 +1,54 @@
+{{!-- Author: Czarina Lao --}}
 <table class="table">
-    <tr>
-      <th>Item Name</td>
-      <td>{{itemName}}</td>
-    </tr>
-    <tr>
-      <th>Quantity</td>
-      <td>{{itemQuantity}}</td>
-    </tr>
-      <th>Estimated Price</td>
-      <td>${{estimatedPrice}}</td>
-    <tr>
-      <th>Stores</td>
-      <td>{{stores}}</td>
-    </tr>
-    <tr>
-      <th>Deadline</td>
-      <td>{{deadline}}</td>
-    </tr>
-    <tr>
-      <th>Pickup Location</td>
-      <td>{{pickupLocation}}</td>
-    </tr>
-    <tr>
-      <th>Tip</td>
-      <td>${{tips}}</td>
-    </tr>
-    <tr>
-      <th>Item Description</td>
-      <td>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
-    </tr>
-    {{#if own}}
-    <tr>
-      <th>Shopper</th>
-      <td>{{shopper.username}}</td>
-    </tr>
-    {{else}}
-    <tr>
-      <th>Requester</th>
-      <td>{{requester.username}}</td>
-    </tr>
-    {{/if}}
-    <tr>
-      <th>Pickup Time</th>
-      <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
-    </tr>
-    <tr>
-      <th>Actual Price</th>
-      <td>{{#if actualPrice}}${{actualPrice}}{{else}}N/A{{/if}}</td>
-    </tr>
+  <tr>
+    <th>Item</td>
+    <td class='item-name'>{{itemName}}</td>
+  </tr>
+  <tr>
+    <th>Quantity</td>
+    <td>{{itemQuantity}}</td>
+  </tr>
+    <th>Estimated Price</td>
+    <td>${{estimatedPrice}}</td>
+  <tr>
+    <th>Stores</td>
+    <td>{{stores}}</td>
+  </tr>
+  <tr>
+    <th>Deadline</td>
+    <td>{{deadline}}</td>
+  </tr>
+  <tr>
+    <th>Pickup Location</td>
+    <td>{{pickupLocation}}</td>
+  </tr>
+  <tr>
+    <th>Tip</td>
+    <td>${{tips}}</td>
+  </tr>
+  <tr>
+    <th>More Info</td>
+    <td class='item-description'>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
+  </tr>
+  {{#if own}}
+  <tr>
+    <th>Shopper</th>
+    <td>{{#if shopper}}<a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a>
+        {{else}}N/A{{/if}}
+    </td>
+  </tr>
+  {{else}}
+  <tr>
+    <th>Requester</th>
+    <td><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></td>
+  </tr>
+  {{/if}}
+  <tr>
+    <th>Pickup Time</th>
+    <td>{{#if pickupTime}}{{pickupTime}}{{else}}N/A{{/if}}</td>
+  </tr>
+  <tr>
+    <th>Actual Price</th>
+    <td>{{#if actualPrice}}${{actualPrice}}{{else}}N/A{{/if}}</td>
+  </tr>
 </table>

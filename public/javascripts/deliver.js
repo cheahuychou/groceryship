@@ -1,6 +1,20 @@
 // Author: Czarina Lao
+
+/**
+ * Checks if there are no requests in the table.
+ * If there are none, shows the no requests message
+ * @return {void} 
+ */
+var checkIfNoRequests = function () {
+    if ($('.request-item-row').size() === 0) {
+        $('.empty-requests-table-message').removeClass('hide');
+    }
+}
+
 $(document).ready(function () {
     $('#navbar-deliver').addClass('active');
+    checkIfNoRequests();
+
     $('#filter-sort').click(function() {
         var stores = $('#filter-stores').val();
         var pickupLocations = $('#filter-pickup-location').val();
@@ -26,6 +40,7 @@ $(document).ready(function () {
                 if (data.success) {
                     $('.request-item-row[data-id='+id+']').remove();
                     addMessage('Request claimed! It has been added to your dashboard. Remember to contact the requester to set a pickup time.', 'success', false, true);
+                    checkIfNoRequests();
                 } else {
                     addMessage('The request could not be claimed. It might have already been claimed by another user or canceled by the requester.', 'danger', false, true);
                 }

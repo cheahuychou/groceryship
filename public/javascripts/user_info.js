@@ -1,5 +1,4 @@
 // Author: Czarina Lao
-
 var getContactTooltip = function() {
     var targetElement = $(this).attr('data-target');
 

@@ -38,6 +38,13 @@ a {
     float: left;
 }
 
+.navbar-logo {
+    width: 30px;
+    display: inline !important;
+    margin-top: -5px;
+    margin-right: 5px;
+}
+
 .right-space {
   margin-right:15px;
 }
@@ -61,6 +68,7 @@ a {
 }
 
 .fa-star-o, .fa-star {
+  font-size: 150% !important;
   color:  #FFD700;
 }
 
@@ -148,6 +156,10 @@ h3 {
         padding-right: 20%;
     }
 
+    .modal-dialog-wide {
+        width: 750px;
+    }
+
     .modal-messages, #messages {
         left: 2%;
         max-width: 25%;
@@ -163,6 +175,10 @@ h3 {
     }
     .profile-table-container {
         padding-right: 30%;
+    }
+
+    .modal-dialog-wide {
+        width: 850px;
     }
 
     .modal-messages, #messages {
@@ -185,8 +201,8 @@ h3 {
 }
 
 .modal-body table {
-    table-layout: fixed;
-    word-wrap: break-word;
+/*    table-layout: fixed;
+    word-wrap: break-word;*/
     vertical-align: middle;
 }
 
@@ -275,21 +291,58 @@ h3 {
     background-color: #1abc9c;
 }
 
-td {
+td.item-name, td.item-description {
     word-wrap: break-word;
+    word-break: break-all;
+}
+
+td.set-pickup-item {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+td.deadline, td.pickup-time {
+    /* make sure that date won't break between month and day */
+    min-width: 95px;
+}
+
+#set-pickup-modal .pickup-time {
+    /* make input box big enough for whole date */
+    width: 190px;
+}
+
+#set-pickup-modal th.price {
+    /* temporary fix for price column size so that it's not too small */
+    width: 100px;
+}
+
+.cost-summary, .card-input {
+    padding-left: 8%;
+}
+
+.card-input .form-group {
+    margin-bottom: 10px;
+}
+
+.card-input .col-expiry-month {
+    padding-right: 0;
+}
+
+.modal-body {
+    padding: 20px;
 }
 
 #request-table > table {
-    table-layout: fixed;
+    /*table-layout: fixed;*/
 }
 
 #request-table th {
-    text-overflow: ellipsis;
+/*    text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
+    white-space: nowrap;*/
 }
 
-.signup-input {
+.signup-input, .edit-profile-input {
     margin-bottom: 10px;
 }
 
@@ -297,9 +350,19 @@ td {
     padding-top: 5%;
 }
 
+#register-button {
+    margin: 5px 10px 0 0;
+}
+
+/* https://www.sitepoint.com/five-ways-to-hide-elements-in-css/ */
+.hide-from-view {
+   position: absolute;
+   top: -9999px;
+   left: -9999px;
+}
+
 .modal-messages, #messages {
     position: fixed;
     bottom: 0;
     z-index: 1050;
 }
-

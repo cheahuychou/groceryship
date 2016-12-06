@@ -1,5 +1,10 @@
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
+	// delete all modal messages when modal gets closed
+    $('.modal').on('hidden.bs.modal', function() {
+        $('.modal-messages').empty();
+        $('input').parent().removeClass('has-error');
+    });
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	$('#edit-confirm-button').click(function () {
@@ -17,9 +22,9 @@ $(document).ready(function () {
             }
             hasError = true;
             if (phoneNumber.trim() != ''){
-            	addMessage('US phone numbers must have exactly 10 digits.', 'danger', true, true);
+            	addMessage('US phone numbers must have exactly 10 digits.', 'danger', false, true);
             } else {
-            	addMessage('All fields must be filled out.', 'danger', true, true);
+            	addMessage('All fields must be filled out.', 'danger', false, true);
             }
             return false;
         }
@@ -34,16 +39,16 @@ $(document).ready(function () {
 			   	},
 	            success: function(data) {
 	                if (data.success) {
-	                    addMessage('Profile updated!', 'success', true, true);
+	                    addMessage('Profile updated!', 'success', false, true);
 	                    window.location.reload(false); 
 	                } else {
 	                    console.log(data.message);
-	                    addMessage('Profile update failed', 'danger', true, true);
+	                    addMessage('Profile update failed', 'danger', false, true);
 	                }
 	            },
 	            error: function(err) {
 	                console.log(err);
-	                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
+	                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
 	            }
 	        });
 		}
@@ -61,7 +66,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
+	        addMessage('Please enter a non-empty and valid password.', 'danger', false, true);
 			return false; 
 		}
 		if (newPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(newPassword)) {
@@ -69,7 +74,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
+	        addMessage('Please enter a non-empty and valid new password.', 'danger', false, true);
 			return false; 
 		}
 		if (confirmedPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(confirmedPassword)) {
@@ -77,7 +82,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid confirmed password.', 'danger', true, true);
+	        addMessage('Please enter a non-empty and valid confirmed password.', 'danger', false, true);
 			return false; 
 		}
 		if (newPassword.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(newPassword)) {
@@ -86,7 +91,8 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
+	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character,' 
+	        	+ ' one lowercase character, a number and one special character.', 'danger', false, true);
 	        return false; 
 	    }
 		if (confirmedPassword !== newPassword) {
@@ -94,7 +100,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('The password and confirmed password you entered did not match, please try again.', 'danger', true, true);
+	        addMessage('The password and confirmed password you entered did not match, please try again.', 'danger', false, true);
 			return false;
 		}
 		if(!hasError){
@@ -115,7 +121,7 @@ $(document).ready(function () {
 	                }
 	            },
 	            error: function(err) {
-	                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
+	                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
 	            }
 	        });
 		}

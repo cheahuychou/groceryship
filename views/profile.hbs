@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="/stylesheets/rating.css"/>
 <script src='/javascripts/user_info.js'></script>
@@ -8,25 +7,25 @@
   <table class="table table-hover">
     <tbody>
     	<tr>
-    	  <td>Kerberos</td>
+    	  <th>Kerberos</th>
     	  <td id='kerberos'>{{user.username}}</td>
     	</tr>
       <tr>
-        <td>Full Name</td>
+        <th>Full Name</th>
         <td>{{user.firstName}} {{user.lastName}}</td>
       </tr>
-    	  <td>Phone Number</td>
+    	  <th>Phone Number</th>
     	  <td>{{user.phoneNumber}}</td>
     	<tr>
-    	  <td>Dorm</td>
+    	  <th>Dorm</th>
     	  <td>{{user.dorm}}</td>
     	</tr>
     	<tr>
-    	  <td>Stripe Account</td>
+    	  <th>Stripe Account</th>
     	  <td>{{user.stripeEmail}}</td>
     	</tr>
       <tr>
-        <td>Request Rating</td>
+        <th>Request Rating</th>
         <td>
           {{#ifContains user.completedRequests.length 0}}
             <i>no ratings yet</i>
@@ -36,7 +35,7 @@
         </td>
       </tr>
       <tr>
-        <td>Shipping Rating</td>
+        <th>Shipping Rating</th>
         <td>
           {{#ifContains user.completedShippings.length 0}}
             <i>no ratings yet</i>
@@ -66,7 +65,7 @@
             <div class="row">
               <div class="col-xs-6">
               </div>
-                <input id='phone-number-register-box' class='form-control' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
+                <input id='phone-number-register-box' class='form-control edit-profile-input' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
             </div>
           </div>
           <label class="col-sm-3 control-label">Dorm</label>
@@ -74,7 +73,7 @@
             <div class="row">
               <div class="col-xs-6">
               </div>
-                <select name='{{user.dorm}}' id='edit-dormlist' class='form-control selectpicker' required>
+                <select name='{{user.dorm}}' id='edit-dormlist' class='form-control edit-profile-input' required>
                   {{#each allDorms}}
                   <option>{{this}}</option>
                   {{/each}}
@@ -97,9 +96,9 @@
       <div class="modal-body">
         <div class="modal-messages"></div>
         <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-        <input id='current-password-box' class='form-control' type='password' name='currentPassword' placeholder='current password' required></input><br>
-        <input id='new-password-box' class='form-control' type='password' name='newPassword' placeholder='new password' required></input><br>
-        <input id='confirmed-new-password-box' class='form-control' type='password' name='confirmedPassword' placeholder='confirmed password' required></input><br>
+        <input id='current-password-box' class='form-control edit-profile-input' type='password' name='currentPassword' placeholder='current password' required></input><br>
+        <input id='new-password-box' class='form-control edit-profile-input' type='password' name='newPassword' placeholder='new password' required></input><br>
+        <input id='confirmed-new-password-box' class='form-control edit-profile-input' type='password' name='confirmedPassword' placeholder='confirmed password' required></input><br>
         <button type="submit" id='change-password-button' class='btn btn-primary btn-sm'>Confirm Password Change</button>
       </div>     
     </div>

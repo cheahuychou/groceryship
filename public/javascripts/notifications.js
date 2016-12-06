@@ -95,7 +95,7 @@ $(document).ready(function () {
         });
     });
 
-	$('.deliver-rate-button').click(function() {
+    $('.deliver-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
         var rating = $(this).parent().find('.fa-star').length;
         $.ajax({

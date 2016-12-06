@@ -3,6 +3,19 @@ $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
     refreshAllCounts();
 
+    // by default empty message is hidden to remove logic from hbs
+    checkIfNoNotifs();
+
+    // delete all modal messages when modal gets closed
+    $('.modal').on('hidden.bs.modal', function() {
+        $('.modal-messages').empty();
+    });
+
+    // remove all added items on set pickup time modal
+    $('#set-pickup-modal').on('hidden.bs.modal', function() {
+        $('#set-pickup-modal tbody').empty();
+    });
+
     // stop modal from opening when clicking on a link on a tile
     $('.tile a').click(function(e) {
         e.stopPropagation();
@@ -70,7 +83,7 @@ $(document).ready(function () {
             rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
         }
 
-        // disable deliver now button if no checkboxes are checked
+        // disable set pickup time button if no checkboxes are checked
         if ($('.deliveries-checkbox:checked').size() === 0) {
             $('#deliver-items').prop('disabled', true);
         } else {
@@ -99,21 +112,24 @@ $(document).ready(function () {
         $('.checkbox-cell input').each(function() {
             if (this.checked) {
                 var originalRow = $(this).parent().parent();
+                var id = originalRow.attr('data-id');
                 var row = $('<tr>', {
                     class: 'to-deliver-item',
-                    'data-id': originalRow.attr('data-id')
+                    'data-id': id
                 });
 
-                var requester = originalRow.attr('data-requester');
-                // TODO: also copy the <a href> for the requester contact info tooltip
+                // also copy the <a href> for the requester contact info tooltip
+                var requester = originalRow.children('.requester').html();
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
                 var deadline = originalRow.children('.deadline').text();
+                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
 
                 var inputPickupTime = $('<input>', {
                     class: 'form-control flatpickr',
                     type: 'text',
-                    name: 'pickup-time'
+                    name: 'pickup-time',
+                    'data-deadline': rawDeadline
                 });
                 // TODO: make a listener on .change to do static checking of date
                 // flatpickr only supports min and max date but not time
@@ -123,40 +139,54 @@ $(document).ready(function () {
                     type: 'String',
                     name: 'price'
                 }).change(function() {
-                    showPriceFormatErrors(this);
+                    showPriceFormatErrors(this, false);
                 });
 
 
-                row.append($('<td>', {text: requester}));
-                row.append($('<td>', {text: itemName}));
+                row.append($('<td>', {html: requester}));
+                row.append($('<td>', {class: 'set-pickup-item', text: itemName}));
                 row.append($('<td>', {text: pickupPoint}));
                 row.append($('<td/>').append(inputPickupTime));
                 row.append($('<td/>').append(inputPrice));
 
-                $('#deliver-now-modal tbody').append(row);
+                $('#set-pickup-modal tbody').append(row);
 
-                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
-                flatpickr('.flatpickr[name=pickup-time]', {
+                // initialize flatpickr with restrictions based on time now and deadline
+                flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]', {
                     enableTime: true,
                     // minDate: 'today',
                     enable: [{from: 'today', to: rawDeadline}],
                     // create an extra input solely for display purposes
                     altInput: true,
-                    altFormat: "F j, Y h:i K"
+                    altFormat: "M j Y, h:i K"
                 });
             }
+        });
+
+        // initialize all tooltips in modal
+        $('#set-pickup-modal [data-toggle=tooltip]').tooltip({
+            title: getContactTooltip,
+            container: 'body',
+            placement: 'bottom',
+            html: true
         });
     });
 
     // clear modal rows on close
-    $('#deliver-now-modal').on('hidden.bs.modal', function (e) {
-        $('#deliver-now-modal tbody').empty();
+    $('#set-pickup-modal').on('hidden.bs.modal', function () {
+        // assign to a variable first because if no flatpickrs exist,
+        // flatpickrs.destroy() will throw an error
+        var flatpickrs = flatpickr('#set-pickup-modal .flatpickr[name=pickup-time]');
+        if (flatpickrs.length !== 0) {
+            flatpickrs.destroy();
+        }
+        $('#set-pickup-modal tbody').empty();
     });
 
     $('#deliver-confirm-button').click(function() {
         var hasError = false;
         // validate inputs first
-        $('input').each(function() {
+        $('#set-pickup-modal input').each(function() {
             // check that all inputs are nonempty
             // if empty, alert the user of the error and show where it is
             if (!$(this).val() || $(this).val().trim()=='') {
@@ -164,6 +194,7 @@ $(document).ready(function () {
                     $(this).parent().addClass('has-error');
                 }
                 hasError = true;
+                console.log(this);
                 addMessage('All fields must be filled out.', 'danger', true, true);
                 return false;
             } else if ($(this).hasClass('price')
@@ -177,14 +208,15 @@ $(document).ready(function () {
             }
 
             if ($(this).attr('name') == 'pickup-time') {                
-                // check if pickup time is in the future
+                // check if pickup time is in the future and <= deadline
                 // TODO: attach this validator to .change of datetime pickers instead
-                if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
+                var pickupTime = new Date($(this).val()+getFormattedTimezoneOffset());
+                if (pickupTime < Date.now() || pickupTime > new Date($(this).attr('data-deadline'))) {
                     if (!$(this).parent().hasClass('has-error')) {
                         $(this).parent().addClass('has-error');
                     }
                     hasError = true;
-                    addMessage('Please enter a date and time after the current date and time.', 'danger', true, true);
+                    addMessage('Please enter a date and time in the future and before the deadline.', 'danger', true, true);
                     return false;
                 } else {
                     $(this).parent().removeClass('has-error');
@@ -215,7 +247,8 @@ $(document).ready(function () {
                             originalRow.children('.checkbox-cell').empty();
                             // update pickup time
                             originalRow.children('.pickup-time').text(data.item.pickupTime);
-                            // remove item from modal
+                            // remove item and associated flatpickr from modal
+                            flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]').destroy();
                             currentItem.remove();
                         } else {
                             hasError = true;
@@ -235,13 +268,20 @@ $(document).ready(function () {
                 if ($('.deliveries-checkbox').length === 0) {
                     $('.header-checkbox').prop('disabled', true);
                     $('#deliver-items').prop('disabled', true);
+                } else if ($('.deliveries-checkbox:checked').size() === 0) {
+                    // disable deliver now button if no checkboxes are checked
+                    $('#deliver-items').prop('disabled', true);
                 }
+
                 if (hasError) {
                     addMessage('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!', 'danger', true, true);
                 } else {
                     addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
                     // only close the modal if all items were successfully updated
-                    $('#deliver-now-modal').modal('toggle');
+                    $('#set-pickup-modal').modal('toggle');
+                    // refresh to get new notifications from newly set pickup times
+                    window.location.reload(true);
+                    addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
                 }
             });
         }
