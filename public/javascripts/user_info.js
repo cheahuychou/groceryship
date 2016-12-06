@@ -39,7 +39,7 @@ var fillStars = function(selector, isTooltip) {
             width: rating * starSize,
         })).append($('<span>', {
             class: 'sr-only',
-            text: 'Rating: ' + rating.toFixed(2) + ' out of ' + NUM_STARS
+            text: 'Rating: ' + rating.toFixed(2) + ' out of ' + NUM_STARS.toFixed(2)
         }));
     });
 };
