@@ -276,6 +276,7 @@ $(document).ready(function () {
                     $('#set-pickup-modal').modal('toggle');
                     // refresh to get new notifications from newly set pickup times
                     window.location.reload(true);
+                    addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
                 }
             });
         }

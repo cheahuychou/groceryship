@@ -36,7 +36,10 @@ var fillStars = function(selector, isTooltip) {
         var starSize = isTooltip ? TOOLTIP_STAR_SIZE : ($(e).width() / NUM_STARS);
 
         $(e).html($('<span>', {
-            width: rating * starSize
+            width: rating * starSize,
+        })).append($('<span>', {
+            class: 'sr-only',
+            text: 'Rating: ' + rating.toFixed(2) + ' out of ' + NUM_STARS
         }));
     });
 };
