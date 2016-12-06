@@ -28,9 +28,9 @@ describe("Utils", function() {
         // Before running any test, connect to the database.
         before(function(done) {
             con = mongoose.connect("mongodb://localhost/grocery-utils-test", function() {
-                var userJSON1 = {"username": "testUser1", "password": "Iwantpizza3@", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Baker", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName1", "lastName": "testLastName1"};
+                var userJSON1 = {"username": "testUser1", "password": "Iwantpizza3@", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Baker", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": "testFirstName1", "lastName": "testLastName1"};
 
-                var userJSON2 = {"username": "testUser2", "password": "Iwantpizza3@", "mitId": 234567890, "phoneNumber": 2345678901, "dorm": "MacGregor", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName2", "lastName": "testLastName2"};
+                var userJSON2 = {"username": "testUser2", "password": "Iwantpizza3@", "mitId": 234567890, "phoneNumber": 2345678901, "dorm": "MacGregor", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": "testFirstName2", "lastName": "testLastName2"};
 
                 User.create([userJSON1, userJSON2], function(err, users) {
                     if (err) {
@@ -79,7 +79,7 @@ describe("Utils", function() {
 
         it("should format both due and pickup time correctly", function(done) {
             var formatedDeliveries = utils.formatDate([acceptedDelivery]);
-            assert(formatedDeliveries[0].deadline === 'November 23rd, 6:00 AM' && formatedDeliveries[0].pickupTime === 'November 22nd, 6:00 PM'); // TODO: needs to change once time zone issue is fixed
+            assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM'); // TODO: needs to change once time zone issue is fixed
             done();
         });
 
@@ -91,13 +91,13 @@ describe("Utils", function() {
 
         it("should still format due time and not throw an error when pickup time is not set", function(done) {
             var formatedDeliveries = utils.formatDate([pendingDelivery]);
-            assert(formatedDeliveries[0].deadline === 'November 21st, 6:59 PM'); // TODO: needs to change once time zone issue is fixed
+            assert(formatedDeliveries[0].deadline === 'Nov 21, 6:59 PM'); // TODO: needs to change once time zone issue is fixed
             done();
         });
 
         it("should format both due and pickup time correctly for every delivery", function(done) {
             var formatedDeliveries = utils.formatDate([acceptedDelivery, pendingDelivery]);
-            assert(formatedDeliveries[0].deadline === 'November 23rd, 6:00 AM' && formatedDeliveries[0].pickupTime === 'November 22nd, 6:00 PM' && formatedDeliveries[1].deadline === 'November 21st, 6:59 PM'); // TODO: needs to change once time zone issue is fixed
+            assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM' && formatedDeliveries[1].deadline === 'Nov 21, 6:59 PM'); // TODO: needs to change once time zone issue is fixed
             done();
         });
     });
