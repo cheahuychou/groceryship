@@ -80,9 +80,29 @@ UserSchema.methods.verify = function (callback) {
 }
 
 /**
-* Changes the hashed password to a new one.
-* @param {String} hash - the new hashed password
+* Changes the phone number to a new one.
+* @param {String} phoneNumber - the new phone number.
 * @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.changePhoneNumber = function(phoneNumber, callback){
+    this.phoneNumber = phoneNumber;
+    this.save(callback);
+}
+
+/**
+* Changes the dorm to a new one.
+* @param {String} dorm - the new dorm.
+* @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.changeDorm = function(dorm, callback){
+    this.dorm = dorm;
+    this.save(callback);
+}
+
+/**
+* Changes the hashed password to a new one.
+* @param {String} hash - the new hashed password.
+* @param {Function} callback - the function that gets called after.
 */
 UserSchema.methods.changePassword = function(hash, callback){
     this.password = hash;
@@ -213,14 +233,20 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
  * function takes 1 parameter: an error when the request is not properly claimed
  */
 UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, callback) {
-    this.findOneAndUpdate({'username': username}, { 
-        "$set": {"phoneNumber": newPhoneNumber, "dorm": newDorm}
-    }).exec(function(err, user){
-        if (err) {
-            callback(new Error("Invaild phone number or dorm."));
-        } else {
-            callback(null);
-        }
+    this.findOne({'username': username}, function(err, user){
+        user.changePhoneNumber(newPhoneNumber, function(err){
+            if (err) {
+                callback(new Error("Invalid phone number."));
+            } else {
+                user.changeDorm(newDorm, function(err){
+                    if (err) {
+                        callback(new Error("Invalid dorm."));
+                    } else {
+                        callback(null);
+                    }
+                });
+            }
+        });
     });
 };
 

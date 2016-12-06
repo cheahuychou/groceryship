@@ -264,7 +264,7 @@ describe("Models", function() {
     });
 
     describe("editFields", function(){
-      it("statis method to change a password", function(done){
+      it("should be able to change a password", function(done){
         var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
         User.create(userJSON, function(err, user) {
           User.changePassword(user.username, "Iwantpizza2@", function(err){
@@ -276,7 +276,7 @@ describe("Models", function() {
           });
         });
       });
-      it("statis method to change phone number and dorm", function(done){
+      it("should be able to change phone number and dorm", function(done){
         var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
         User.create(userJSON, function(err, user) {
           User.editProfile(user.username, 1234567899, "Next House", function(err){
@@ -284,6 +284,28 @@ describe("Models", function() {
             User.findOne({"username" : "testuser"}, function(err, user){
               assert.strictEqual(user.phoneNumber, 1234567899);
               assert.strictEqual(user.dorm, "Next House");
+              done();
+            });
+          });
+        });
+      });
+      it("should not be able to change to an invalid phone number", function(done){
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          User.findOne({"username" : "testuser"}, function(err, user){
+            user.changePhoneNumber(123456789, function(err){
+              assert.isNotNull(err);
+              done();
+            });
+          });
+        });
+      });
+      it("should not be able to change to an invalid dorm", function(done){
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          User.findOne({"username" : "testuser"}, function(err, user){
+            user.changeDorm("House", function(err){
+              assert.isNotNull(err);
               done();
             });
           });

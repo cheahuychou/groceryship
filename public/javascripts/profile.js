@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
@@ -11,7 +12,7 @@ $(document).ready(function () {
 		// validate inputs first
         // check that all inputs are nonempty
         // if empty, alert the user of the error and show where it is
-        if (!phoneNumber || phoneNumber.trim().length!=10 || !dorm || dorm.trim()=='') {
+        if (!phoneNumber || !phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10 || !dorm || dorm.trim()=='') {
             if (!$(this).parent().hasClass('has-error')) {
                 $(this).parent().addClass('has-error');
             }
