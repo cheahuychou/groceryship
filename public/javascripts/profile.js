@@ -1,15 +1,3 @@
-/**
-* Checks that the fields in the signup form are non-empty strings,
-* valid and do not contain html elements, alert the user if
-* these are not satisified
-* @return {Boolean} false if the kerberos and password violate
-*					the constraints 
-*/
-var checkPasswordChange = function () {
-	
-	  
-}
-
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
@@ -47,6 +35,7 @@ $(document).ready(function () {
 	            success: function(data) {
 	                if (data.success) {
 	                    addMessage('Profile updated!', 'success', true, true);
+	                    window.location.reload(false); 
 	                } else {
 	                    console.log(data.message);
 	                    addMessage('Profile update failed', 'danger', true, true);
@@ -75,6 +64,31 @@ $(document).ready(function () {
 	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
 			return false; 
 		}
+		if (newPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(newPassword)) {
+			if (!$(this).parent().hasClass('has-error')) {
+                $(this).parent().addClass('has-error');
+            }
+            hasError = true;
+	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
+			return false; 
+		}
+		if (confirmedPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(confirmedPassword)) {
+			if (!$(this).parent().hasClass('has-error')) {
+                $(this).parent().addClass('has-error');
+            }
+            hasError = true;
+	        addMessage('Please enter a non-empty and valid confirmed password.', 'danger', true, true);
+			return false; 
+		}
+		if (newPassword.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(newPassword)) {
+	        // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
+	        if (!$(this).parent().hasClass('has-error')) {
+                $(this).parent().addClass('has-error');
+            }
+            hasError = true;
+	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
+	        return false; 
+	    }
 		if (confirmedPassword !== newPassword) {
 			if (!$(this).parent().hasClass('has-error')) {
                 $(this).parent().addClass('has-error');
@@ -94,15 +108,13 @@ $(document).ready(function () {
 	            },
 	            success: function(data){
 	            	if (data.success) {
-	                    addMessage('Password changed!', 'success', true, true);
+	            		$('#change-password-modal').modal('toggle');
+	                    addMessage('Password changed!', 'success', false, true);
 	                } else {
-	                    console.log(data.message);
 	                    addMessage(data.message, 'danger', true, true);
 	                }
 	            },
 	            error: function(err) {
-	                console.log(err);
-	                console.log("yoooo");
 	                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
 	            }
 	        });

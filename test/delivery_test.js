@@ -462,7 +462,7 @@ describe("Models", function() {
     describe("Accept and Reject", function() {
       it("should allow requester to accept requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept(5, function(err) {
+            doc.accept("testTransactionId", 5, function(err) {
               assert.strictEqual(doc.status, "accepted");
               assert.strictEqual(doc.shopperRating, 5);
               done();
@@ -492,7 +492,7 @@ describe("Models", function() {
               pickupLocation: "New House",
               requester: id2,
               shopper: id1}, function(err, doc) {
-                doc.accept(5, function(err) {
+                doc.accept("testTransactionId", 5, function(err) {
                   assert.throws(function() {
                     assert.ifError(err);
                   });
@@ -503,7 +503,7 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be accepted", function(done) {
         Delivery.create(pending_delivery1, function(err, doc) {
-            doc.accept(4, function(err) {
+            doc.accept("testTransactionId", 4, function(err) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -546,7 +546,7 @@ describe("Models", function() {
 
       it("should not allow invalid requester rating", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept(10, function(err) {
+            doc.accept("testTransactionId", 10, function(err) {
               assert.isNotNull(err);
               done();
             });
@@ -555,7 +555,7 @@ describe("Models", function() {
 
       it("should allow shopper to rate requester after the delivery is accepted", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept(4, function(err) {
+            doc.accept("testTransactionId", 4, function(err) {
               assert.isNull(err);
               doc.rateRequester(4, function (err) {
                 assert.isNull(err);
