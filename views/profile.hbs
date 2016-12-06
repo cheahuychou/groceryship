@@ -25,7 +25,7 @@
     	  <td>{{user.stripeEmail}}</td>
     	</tr>
       <tr>
-        <td>Request Rating</td>
+        <th>Request Rating</th>
         <td>
           {{#ifContains user.completedRequests.length 0}}
             <i>no ratings yet</i>
@@ -35,7 +35,7 @@
         </td>
       </tr>
       <tr>
-        <td>Shipping Rating</td>
+        <th>Shipping Rating</th>
         <td>
           {{#ifContains user.completedShippings.length 0}}
             <i>no ratings yet</i>
@@ -57,7 +57,6 @@
         <h4 class="modal-title">Edit Profile</h4>
       </div>
       <div class="modal-body">
-<<<<<<< HEAD
         <div class="modal-messages"></div>
         <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
