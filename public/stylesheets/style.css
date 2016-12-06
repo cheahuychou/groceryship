@@ -142,6 +142,9 @@ h3 {
     .profile-table-container {
         padding-right: 20%;
     }
+    .modal-dialog-wide {
+        width: 750px;
+    }
 }
 @media screen and (min-width: 992px) {
     body {
@@ -153,6 +156,9 @@ h3 {
     }
     .profile-table-container {
         padding-right: 30%;
+    }
+    .modal-dialog-wide {
+        width: 850px;
     }
 }
 
@@ -277,12 +283,12 @@ td.deadline, td.pickup-time {
 
 #set-pickup-modal .pickup-time {
     /* make input box big enough for whole date */
-    min-width: 190px;
+    width: 190px;
 }
 
 #set-pickup-modal th.price {
     /* temporary fix for price column size so that it's not too small */
-    min-width: 100px;
+    width: 100px;
 }
 
 .cost-summary, .card-input {
