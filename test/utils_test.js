@@ -79,7 +79,7 @@ describe("Utils", function() {
 
         it("should format both due and pickup time correctly", function(done) {
             var formatedDeliveries = utils.formatDate([acceptedDelivery]);
-            assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM'); // TODO: needs to change once time zone issue is fixed
+            assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM');
             done();
         });
 
