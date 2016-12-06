@@ -32,3 +32,6 @@
   text-shadow: 0 1px #997000;
   display: block;
 }
+.star-rating.profile-stars {
+  width: 84px;
+}

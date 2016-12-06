@@ -31,7 +31,7 @@
           {{#ifContains user.completedRequests.length 0}}
             <i>no ratings yet</i>
           {{else}}
-            <div class="star-rating">{{user.avgRequestRating}}</div>
+            <div class="star-rating profile-stars">{{user.avgRequestRating}}</div>
           {{/ifContains}}
         </td>
       </tr>
@@ -41,7 +41,7 @@
           {{#ifContains user.completedShippings.length 0}}
             <i>no ratings yet</i>
           {{else}}
-            <div class="star-rating">{{user.avgShippingRating}}</div>
+            <div class="star-rating profile-stars">{{user.avgShippingRating}}</div>
           {{/ifContains}}
         </td>
       </tr>
