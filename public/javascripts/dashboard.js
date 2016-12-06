@@ -2,6 +2,9 @@
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
 
+    // by default empty message is hidden to remove logic from hbs
+    checkIfNoNotifs();
+
     // delete all modal messages when modal gets closed
     $('.modal').on('hidden.bs.modal', function() {
         $('.modal-messages').empty();
@@ -110,16 +113,18 @@ $(document).ready(function () {
                     'data-id': id
                 });
 
+                // also copy the <a href> for the requester contact info tooltip
                 var requester = originalRow.children('.requester').html();
-                // TODO: also copy the <a href> for the requester contact info tooltip
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
                 var deadline = originalRow.children('.deadline').text();
+                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
 
                 var inputPickupTime = $('<input>', {
                     class: 'form-control flatpickr',
                     type: 'text',
-                    name: 'pickup-time'
+                    name: 'pickup-time',
+                    'data-deadline': rawDeadline
                 });
                 // TODO: make a listener on .change to do static checking of date
                 // flatpickr only supports min and max date but not time
@@ -129,7 +134,7 @@ $(document).ready(function () {
                     type: 'String',
                     name: 'price'
                 }).change(function() {
-                    showPriceFormatErrors(this);
+                    showPriceFormatErrors(this, false);
                 });
 
 
@@ -142,7 +147,6 @@ $(document).ready(function () {
                 $('#set-pickup-modal tbody').append(row);
 
                 // initialize flatpickr with restrictions based on time now and deadline
-                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
                 flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]', {
                     enableTime: true,
                     // minDate: 'today',
@@ -199,14 +203,15 @@ $(document).ready(function () {
             }
 
             if ($(this).attr('name') == 'pickup-time') {                
-                // check if pickup time is in the future
+                // check if pickup time is in the future and <= deadline
                 // TODO: attach this validator to .change of datetime pickers instead
-                if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
+                var pickupTime = new Date($(this).val()+getFormattedTimezoneOffset());
+                if (pickupTime < Date.now() || pickupTime > new Date($(this).attr('data-deadline'))) {
                     if (!$(this).parent().hasClass('has-error')) {
                         $(this).parent().addClass('has-error');
                     }
                     hasError = true;
-                    addMessage('Please enter a date and time after the current date and time.', 'danger', true, true);
+                    addMessage('Please enter a date and time in the future and before the deadline.', 'danger', true, true);
                     return false;
                 } else {
                     $(this).parent().removeClass('has-error');
@@ -269,6 +274,8 @@ $(document).ready(function () {
                     addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
                     // only close the modal if all items were successfully updated
                     $('#set-pickup-modal').modal('toggle');
+                    // refresh to get new notifications from newly set pickup times
+                    window.location.reload(true);
                 }
             });
         }

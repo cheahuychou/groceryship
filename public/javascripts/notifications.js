@@ -15,7 +15,7 @@ $(document).ready(function () {
         $('.deliver-rate-button').focus();
     });
 
-    $('.notfication-tile').click(function(e) {
+    $('.notification-tile').click(function(e) {
         // don't open the modal if the direct click target is a button or a link
         if ($(e.target).hasClass('btn') || $(e.target).attr('href')) {
             e.preventDefault();
@@ -54,7 +54,7 @@ $(document).ready(function () {
                 $(this).parent().removeClass('has-error');
             }
         });
-        
+
         if (hasError) {
             addMessage('All fields are required.', 'danger', true, true);
         } else {

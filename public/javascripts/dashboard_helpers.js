@@ -7,7 +7,7 @@
  */
 var checkIfNoNotifs = function() {
     if ($('.notification-tile').size() === 0) {
-        $('.no-notif-message').addClass('hide');
+        $('.no-notif-message').removeClass('hide');
     }
 };
 
