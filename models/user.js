@@ -127,6 +127,35 @@ UserSchema.statics.authenticate = function (username, password, callback) {
 }
 
 /*
+* Sends a verification email to the user if there exists an account with such username.
+* If devMode is true, send a verification link with localhost prefix, otherwise send the
+* production URL prefix
+* @param {String} username - username of the user 
+* @param {Boolean} devMode - true if the app is in developer mode, false otherwise
+* @param {Function} callback - the function that gets called after the user is created, err argument
+*                              is null if the given the registration succeed, otherwise, err.message
+*/
+UserSchema.statics.sendVerficationEmail = function (username, devMode, callback) {
+    that = this;
+    that.count({ username: username }, function (err, count) {
+        if (count === 0) {
+            callback({message: 'Invalid username'});
+        } else {
+            that.findOne({username: username}, function (err, user) {
+                if (err) {
+                    callback(err)
+                } else if (user && !user.isVerified) {
+                    email.sendVerficationEmail(user, devMode);
+                    callback(err, user);
+                } else {
+                    callback({message: 'Your account has already been verified. You can now log in.'});
+                }
+            })
+        }
+    });
+}
+
+/*
 * Registers a new user with the given userJSON (only if there is no user
 * with the given username)
 * @param {Object} userJSON - json object containing the appropriate fields
@@ -138,14 +167,11 @@ UserSchema.statics.authenticate = function (username, password, callback) {
 UserSchema.statics.signUp = function (userJSON, devMode, callback) {
     that = this;
     that.count({ username: userJSON.username }, function (err, count) {
-        if (count === 0) {
+        if (err) {
+            callback({success: false, message: 'Database error'});
+        } else if (count === 0) {
             that.create(userJSON, function(err, user){
-                if (devMode) {
-                    email.sendVerficationEmail(user, true);
-                } else {
-                    email.sendVerficationEmail(user, false);
-                }
-                callback(err, user);
+                Users.sendVerficationEmail(user.username, devMode, callback);
             });
         } else {
             callback({message: 'There is already an account with this kerberos'});
