@@ -7,6 +7,11 @@ $(document).ready(function () {
         $('.modal-messages').empty();
     });
 
+    // remove all added items on set pickup time modal
+    $('#set-pickup-modal').on('hidden.bs.modal', function() {
+        $('#set-pickup-modal tbody').empty();
+    });
+
     // stop modal from opening when clicking on a link on a tile
     $('.tile a').click(function(e) {
         e.stopPropagation();
@@ -70,7 +75,7 @@ $(document).ready(function () {
             rowCheckbox.prop('checked', !rowCheckbox.prop('checked'));
         }
 
-        // disable deliver now button if no checkboxes are checked
+        // disable set pickup time button if no checkboxes are checked
         if ($('.deliveries-checkbox:checked').size() === 0) {
             $('#deliver-items').prop('disabled', true);
         } else {
@@ -129,7 +134,7 @@ $(document).ready(function () {
 
 
                 row.append($('<td>', {html: requester}));
-                row.append($('<td>', {text: itemName}));
+                row.append($('<td>', {class: 'set-pickup-item', text: itemName}));
                 row.append($('<td>', {text: pickupPoint}));
                 row.append($('<td/>').append(inputPickupTime));
                 row.append($('<td/>').append(inputPrice));
@@ -268,31 +273,4 @@ $(document).ready(function () {
             });
         }
     });
-    
-    // $('#pay-rate-button').click(function(){
-    //     var id = $(this).attr('data-id');
-    //     var cardNumber = $('#card-number').val();
-    //     var expMonth = $('#expiry-month').val();
-    //     var expYear = $('#expiry-year').val();
-    //     var cvc = $('#cvc').val();
-    //     return $.ajax({
-    //                 url: '/deliveries/'+id+'/pay',
-    //                 type: 'PUT',
-    //                 data: { 
-    //                     'number': cardNumber,
-    //                     'exp_month': Number(expMonth),
-    //                     'exp_year': Number(expYear),
-    //                     'cvc': cvc            
-    //                 }, success: function(data){
-    //                     if (data.success){
-    //                         addMessage('Successful payment.', 'success', true);
-    //                     } else {
-    //                         alert(data.message);
-    //                     }
-    //                 }, error: function(err){
-    //                     console.log(err);
-    //                     alert(err);
-    //                 }
-    //             });
-    // });
 });

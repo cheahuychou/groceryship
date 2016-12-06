@@ -258,6 +258,11 @@ td.item-name, td.item-description {
     word-break: break-all;
 }
 
+td.set-pickup-item {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
 td.deadline, td.pickup-time {
     /* make sure that date won't break between month and day */
     min-width: 95px;

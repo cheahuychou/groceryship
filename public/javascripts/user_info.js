@@ -25,20 +25,52 @@ var getContactTooltip = function() {
     return $(targetElement).html();
 };
 
+// Adapted from: https://github.com/FortAwesome/Font-Awesome/issues/4147
+var fillStars = function(selector, isTooltip) {
+    // need tooltip star size because css does weird things
+    // and we can't get the element's proper width when updating ratings
+    var TOOLTIP_STAR_SIZE = 13;
+    var NUM_STARS = 5;
+    $(selector).each(function(i, e) {
+        var rating = parseFloat($(e).text());
+        var starSize = isTooltip ? TOOLTIP_STAR_SIZE : ($(e).width() / NUM_STARS);
+
+        $(e).html($('<span>', {
+            width: rating * starSize
+        }));
+    });
+};
+
+
+/**
+ * Creates the jQuery object for the star rating
+ * @param  {Integer} rating the rating for hte star rating
+ * @return {Object}         the jQuery object for the star rating
+ */
+var createStarRating = function(rating) {
+    return $('<div>', {
+        class: 'star-rating',
+        text: rating
+    });
+};
+
+/**
+ * Updates the star rating displayed on the tooltip for the user with id userId.
+ * @param  {String}  userId     the id of the user
+ * @param  {Integer}  newRating
+ * @param  {Boolean} isShipping true if newRating is the new shipping rating; false if it's for the new request rating
+ * @return {void}             
+ */
+var updateStarRating = function(userId, newRating, isShipping) {
+    var starRatingDiv = createStarRating(newRating);
+    var ratingTypeSelector = isShipping ? '.shipping-rating' : '.request-rating';
+    var userRatingSelector = '.contact-tooltip-'+userId;
+
+    $(userRatingSelector+' '+ratingTypeSelector).empty().append(starRatingDiv);
+    fillStars(userRatingSelector+' .star-rating', true);
+};
+
 $(document).ready(function () { 
-    // Adapted from: https://github.com/FortAwesome/Font-Awesome/issues/4147
-    var fillStars = function(selector) {
-        var NUM_STARS = 5;
-        $(selector).each(function(i, e) {
-            var rating = parseFloat($(e).text());
-            var starSize = ($(e).width() / NUM_STARS);
-
-            $(e).html($('<span>', {
-                width: rating * starSize
-            }));
-        });
-    };
-
     fillStars('.star-rating');
 
     $('[data-toggle="tooltip"]').tooltip({

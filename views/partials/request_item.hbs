@@ -2,7 +2,7 @@
 <table class="table">
   <tr>
     <th>Item</td>
-    <td>{{itemName}}</td>
+    <td class='item-name'>{{itemName}}</td>
   </tr>
   <tr>
     <th>Quantity</td>
@@ -28,7 +28,7 @@
   </tr>
   <tr>
     <th>More Info</td>
-    <td>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
+    <td class='item-description'>{{#if itemDescription}}{{itemDescription}}{{else}}N/A{{/if}}</td>
   </tr>
   {{#if own}}
   <tr>

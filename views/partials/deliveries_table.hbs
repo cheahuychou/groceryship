@@ -23,9 +23,9 @@
     </tbody>
   </table>
   {{!-- show this message when there are no deliveryItems --}}
-  {{#unless deliveryItems}}
-    <div class="well well-lg">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
-  {{/unless}}
+  {{!-- {{#unless deliveryItems}} --}}
+    <div class="well well-lg empty-delivery-table {{#if deliveryItems}}hide{{/if}}">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
+  {{!-- {{/unless}} --}}
   <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#set-pickup-modal' style='float: right' disabled>Set Pickup Time</button>
   {{> set_pickup}}
 </div>

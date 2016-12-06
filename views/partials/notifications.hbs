@@ -196,10 +196,6 @@
   {{#each deliveryItems}}
     {{> notification_item isRequest=false}}
   {{/each}}
-
-  {{#unless requestItems}}
-    {{#unless deliveryItems}}
-      <div class="well well-lg">No notifications yet.</div>
-    {{/unless}}
-  {{/unless}}
 </div>
+
+<div class="well well-lg no-notif-message {{#if requestItems}}hide{{else}}{{#if deliveryItems}}hide{{/if}}{{/if}}">No notifications yet.</div>
