@@ -209,7 +209,7 @@ $(document).ready(function () {
                             // remove checkbox because pickup time has been set
                             originalRow.children('.checkbox-cell').empty();
                             // update pickup time
-                            originalRow.children('.pickup-time').text(data.item.pickupTime);
+                            originalRow.children('.pickup-time').text(new Date(pickupTime+getFormattedTimezoneOffset()));
                             // remove item from modal
                             currentItem.remove();
                         } else {

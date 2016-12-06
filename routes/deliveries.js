@@ -87,29 +87,9 @@ router.get("/username/:username", authentication.isAuthenticated, function(req, 
     });
 });
 
-//TODO: Remove this route if not needed.
-//TODO: If implemented, remove sensitive information from json response.
-/**
-Populates the notification popup, returning the relevant request or delivery
-fields returned: delivery
-router.get("/id/:id", authentication.isAuthenticated, function(req, res){
-    var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id}).populate('shopper requester').lean().exec(function(err, current_delivery) {
-        if (current_delivery === null) {
-        	err = new Error("cannot find specified request or delivery.");
-        }
-        if (err) {
-            res.json({'success': false, 'message': err})
-        } else {
-            res.json({'success': true, delivery: utils.formatDate([current_delivery])});
-        }
-    });
-});
-**/
-
 /**
 Posts a new request from a user
-request body fields: stores, itemDue, itemName, itemDescription, itemQty, itemPriceEstimate, itemTips, itemPickupLocation
+request body fields: stores, itemDue, itemName, itemDescription, itemQty, itemPriceEstimate, itemTips, itemPickupLocation, minShippingRating
 **/
 router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     console.log(req.body);
@@ -150,23 +130,12 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
 /** Removes a Delivery when the user cancels the request **/
 router.delete("/:id", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var userId = req.session.passport.user._id;
-    Delivery.findOne({_id: req.params.id, requester: userId, status: "pending"}, function(err, current_delivery) { //verify that the current user is the one who requested it. Also,
-    	                                                                                                           //verify that the request has not been claimed
-        if (current_delivery === null) {
-        	err = new Error("cannot find specified request. Request might have been claimed");
-        }
+    Delivery.cancel(req.params.id, userId, function(err) {
         if (err) {
         	console.log(err);
         	res.json({success: false, message: err});
         } else {
-        	current_delivery.remove(function(err, data) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
-	                res.json({success: true});
-	            }
-        	});
+        	res.json({success: true});
         }
     });
 });
@@ -204,38 +173,32 @@ request body fields: pickupTime, actualPrice
 **/
 router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, shopper: user._id})
-        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
-        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+    Delivery.deliver(req.params.id, user._id, new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err, currentDelivery) {
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
         	console.log(currentDelivery);
-            if (currentDelivery === null) {
-                err = new Error("cannot find specified request")
-            }
-            if (err) {
-                console.log(err);
-                res.json({success: false, message: err});
-            } else {
-                currentDelivery.deliver(new Date(req.body.pickupTime), parseFloat(req.body.actualPrice), function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.json({success: false, message: err});
-                    } else {
-                        var formattedDelivery = utils.formatDate([currentDelivery])[0];
-                        email.sendDeliveryEmail(formattedDelivery);
-                        res.json({success: true, item: formattedDelivery});
-                    }
-                });
-            }
-        });
+            var formattedDelivery = utils.formatDate([currentDelivery])[0];
+            email.sendDeliveryEmail(formattedDelivery);
+            res.json({success: true});
+        }
+    });
 });
 
-/** Updates a Delivery when a user accepts the delivery **/
+/**
+Updates a Delivery & process transaction when a user accepts the delivery
+request body fields: cardNumber, expMonth, expYear, cvc, shopperRating
+**/
 router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     var stripeUser = stripe(user.stripePublishableKey);
-    Delivery.findOne({_id: req.params.id, requester: user._id})
-        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
-        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+    
+    //first, get the current delivery data along with the necessary information for stripe transaction
+    Delivery.findOne({_id: req.params.id, requester: user._id, status: "claimed", actualPrice: {$ne: null}})
+        .populate('shopper', '-password -stripePublishableKey -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm')
+        .exec(function(err, currentDelivery) {
         if (currentDelivery === null) {
             err = new Error("cannot find specified request")
         }
@@ -243,96 +206,73 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            User.findById(currentDelivery.shopper, function(err, shopper){
-                stripeUser.tokens.create({
-                    card: {
-                        'number': req.body.cardNumber,
-                        'exp_month': req.body.expMonth,
-                        'exp_year': req.body.expYear,
-                        'cvc': req.body.cvc 
-                    }
-                }, function(err, token){
-                    if (err){
-                        console.log(err);
-                        res.json({success: false, message: "Invalid card."});
-                    } else {
-                        stripePlatform.charges.create({
-                            amount: (currentDelivery.actualPrice + currentDelivery.tips) * 100,
-                            currency: 'usd',
-                            source: token.id,
-                            destination: shopper.stripeId
-                        }, function(err, data){
-                            if (err){
-                                console.log(err)
-                                res.json({success: false, message: "Invalid transaction."});
-                            } else {
-                                console.log(data.id);
-                                currentDelivery.accept(data.id, req.body.shopperRating, function(err) {
-                                    if (err) {
-                                        console.log(err);
-                                        res.json({success: false, message: err});
-                                    } else {
-                                        email.sendAcceptanceEmails(utils.formatDate([currentDelivery])[0]);
-                                        res.json({success: true});
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            });
+        	stripeUser.tokens.create({card: {'number': req.body.cardNumber, //create tokens from credit card details
+					                        'exp_month': req.body.expMonth,
+					                        'exp_year': req.body.expYear,
+					                        'cvc': req.body.cvc}
+        	}, function(err, token) {
+        		if (err) {
+                    console.log(err);
+                    res.json({success: false, message: "Invalid card."});
+        		} else {
+                    stripePlatform.charges.create({ //process the transaction
+                        amount: (currentDelivery.actualPrice + currentDelivery.tips) * 100,
+                        currency: 'usd',
+                        source: token.id,
+                        destination: currentDelivery.shopper.stripeId
+                    }, function(err, data) {
+                    	if (err) {
+                            console.log(err)
+                            res.json({success: false, message: "Invalid transaction."});
+                        } else {
+                            currentDelivery.accept(data.id, req.body.shopperRating, function(err) { //store in the database that the delivery is accepted only after transaction is successful
+                                if (err) {
+                                    console.log(err);
+                                    res.json({success: false, message: err});
+                                } else {
+                                    email.sendAcceptanceEmails(utils.formatDate([currentDelivery])[0]);
+                                    res.json({success: true});//Add newRating in res.json
+                                }
+                            });
+                        }
+                    });
+        		}
+        	});
         }
     });
 });
 
-/** Updates a Delivery when a user rejects the delivery **/
+/**
+Updates a Delivery when a user rejects the delivery
+request body fields: shopperRating, reason
+**/
 router.put("/:id/reject", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, requester: user._id})
-        .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
-        .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
-        if (currentDelivery === null) {
-            err = new Error("cannot find specified request")
-        }
+    Delivery.reject(req.params.id, user._id, req.body.reason, parseInt(req.body.shopperRating), function(err, currentDelivery) {
         if (err) {
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.reject(req.body.reason, parseInt(req.body.shopperRating), function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    email.sendRejectionEmails(utils.formatDate([currentDelivery])[0]);
-                    res.json({success: true});
-                }
-            });
+            email.sendRejectionEmails(utils.formatDate([currentDelivery])[0]);
+            res.json({success: true});//Add newRating in res.json
         }
     });
 });
 
-/** Sets requester rating of the delivery **/
+/**
+Sets requester rating of the delivery
+request body fields: requesterRating
+**/
 router.put("/:id/rateRequester", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    Delivery.findOne({_id: req.params.id, shopper: user._id}, function(err, currentDelivery) {
-        if (currentDelivery === null) {
-            err = new Error("cannot find specified request")
-        }
+    Delivery.rateRequester(req.params.id, user._id, parseInt(req.body.requesterRating), function(err) {
         if (err) {
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            currentDelivery.rateRequester(parseInt(req.body.requesterRating), function(err) {
-                if (err) {
-                    console.log(err);
-                    res.json({success: false, message: err});
-                } else {
-                    res.json({success: true});
-                }
-            });
+            res.json({success: true});
         }
     });
 });
 
 module.exports = router;
-

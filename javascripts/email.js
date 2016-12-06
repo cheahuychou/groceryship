@@ -121,7 +121,7 @@ var Email = function() {
    	* @return {String} the body of the email to the requester
    	*/
 	var deliveryEmailContent = function (delivery) {
-		return  '{}<center><p> Hi {} {}! {} {} is deliverying {} of {} to {} on {}. Please be sure to be there in time!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.pickupLocation, delivery.pickupTime);		
+		return  '{}<center><p> Hi {} {}! {} {} is delivering {} of {} to {} on {}. Please be sure to be there in time!</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.requester.lastName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.pickupLocation, delivery.pickupTime);		
 	}
 
 	/**
