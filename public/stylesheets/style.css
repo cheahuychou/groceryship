@@ -16,6 +16,9 @@ a {
     margin-bottom: 5px;
 }
 
+.badge {
+    margin-bottom: 23px;
+}
 
 .feature {
     float: left;
@@ -201,7 +204,7 @@ h3 {
     vertical-align: center;
 }
 
-.notfication-tile {
+.notification-tile {
     height: 165px;
 }
 
