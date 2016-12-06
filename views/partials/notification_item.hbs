@@ -1,6 +1,7 @@
 {{!-- Author: Joseph Kuan --}}
 
 <div id="notification-modal-{{_id}}" class="notification-item-modal modal fade" role="dialog">
+  <div class="modal-messages"></div>
   <div class="modal-dialog modal-xs">
     <div class="modal-content">
       <div class="modal-header">
@@ -12,8 +13,7 @@
         {{/if}}
       </div>
       <div class="modal-body">
-        <div class="modal-messages"></div>
-          {{> request_item own=isRequest}}
+        {{> request_item own=isRequest}}
       </div>     
     </div>
   </div>
