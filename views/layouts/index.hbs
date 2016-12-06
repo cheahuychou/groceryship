@@ -11,10 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
   <link rel="stylesheet" href="/stylesheets/bootstrap-480-767-grid.css"/>
   <link href="/stylesheets/flat-ui.min.css" rel="stylesheet">
-  {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/2.2.3/flatpickr.min.css"> --}}
-  {{!-- use edited local version of flatpickr because of bug --}}
-  {{!-- https://github.com/chmln/flatpickr/issues/203 --}}
-  <link rel="stylesheet" href="/stylesheets/flatpickr.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/2.2.3/flatpickr.min.css">
   <link rel="stylesheet" href="/stylesheets/style.css"/>
   <link rel="stylesheet" href="/stylesheets/rating.css"/>
 
@@ -37,7 +34,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-            {{#username}}
+            {{#fullName}}
             <!-- for when the navbar collapses when the window is small -->
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -46,13 +43,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {{/username}}
-            <a href="/" class="navbar-brand"><img class='navbar-logo' src='/images/icon.png'/>GroceryShip</a>
+            {{/fullName}}
+            <a href="/" class="navbar-brand">GroceryShip</a>
         </div>
         <div class="navbar-collapse collapse">
-        {{#username}}
+        {{#fullName}}
           {{> navbar_logged_in ../this}}
-        {{/username}}
+        {{/fullName}}
         </div>
       </div>
     </div>
