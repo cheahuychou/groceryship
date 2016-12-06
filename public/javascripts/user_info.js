@@ -74,7 +74,7 @@ var updateStarRating = function(userId, newRating, isShipping) {
 };
 
 $(document).ready(function () { 
-    fillStars('.star-rating');
+    fillStars('.star-rating', true);
 
     $('[data-toggle="tooltip"]').tooltip({
         title: getContactTooltip,
