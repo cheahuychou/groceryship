@@ -1,5 +1,10 @@
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
+	// delete all modal messages when modal gets closed
+    $('.modal').on('hidden.bs.modal', function() {
+        $('.modal-messages').empty();
+        $('input').parent().removeClass('has-error');
+    });
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	$('#edit-confirm-button').click(function () {

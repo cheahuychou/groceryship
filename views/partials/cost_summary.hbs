@@ -1,0 +1,28 @@
+<div class='cost-summary'>
+  <div class='row'>
+    <div class='col-xs-6 col-ms-4 col-sm-3 col-md-3 col-lg-3'>
+      <b>Item Price:</b>
+    </div>
+    <div class='col-xs-1 col-ms-1 col-md-1 col-lg-1'>
+      {{#if actualPrice}}${{actualPrice}}{{else}}N/A{{/if}}
+    </div>
+  </div>
+
+  <div class='row'>
+    <div class='col-xs-6 col-ms-4 col-sm-3 col-md-3 col-lg-3'>
+      <b>Tip:</b>
+    </div>
+    <div class='col-xs-1'>
+      ${{tips}}
+    </div>
+  </div>
+
+  <div class='row'>
+    <div class='col-xs-6 col-ms-4 col-sm-3 col-md-3 col-lg-3'>
+      <b>Total Cost:</b>
+    </div>
+    <div class='col-xs-1'>
+      {{#if actualPrice}}${{add actualPrice tips}}{{else}}N/A{{/if}}
+    </div>
+  </div>
+</div>
