@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);

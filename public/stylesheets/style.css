@@ -96,6 +96,11 @@ h3 {
     body {
       padding: 40px 10%;
     }
+
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 50%;
+    }
 }
 @media screen and (min-width: 480px) and (max-width: 767px) {
     /* flatpickr calendar display of year overlaps for small devices */
@@ -112,6 +117,11 @@ h3 {
 
     body {
       padding: 40px 10%;
+    }
+
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 25%;
     }
 }
 @media screen and (min-width: 768px) {
@@ -134,6 +144,11 @@ h3 {
     .profile-table-container {
         padding-right: 20%;
     }
+
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 25%;
+    }
 }
 @media screen and (min-width: 992px) {
     body {
@@ -145,6 +160,11 @@ h3 {
     }
     .profile-table-container {
         padding-right: 30%;
+    }
+
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 25%;
     }
 }
 
@@ -272,5 +292,11 @@ td {
 
 .welcome-container {
     padding-top: 5%;
+}
+
+.modal-messages, #messages {
+    position: fixed;
+    bottom: 0;
+    z-index: 1050;
 }
 
