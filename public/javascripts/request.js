@@ -12,7 +12,9 @@ $(document).ready(function() {
 
     $('#navbar-request').addClass('active');
     $('.price').change(function() {
-        showPriceFormatErrors(this);
+        // price estimate > 0, while other prices >= 0
+        var isZeroOk = $(this).attr('name') !== 'item-price-estimate';
+        showPriceFormatErrors(this, isZeroOk);
     });
 
     $('input[name=item-due]').change(function() {

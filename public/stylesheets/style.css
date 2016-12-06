@@ -35,6 +35,13 @@ a {
     float: left;
 }
 
+.navbar-logo {
+    width: 30px;
+    display: inline !important;
+    margin-top: -5px;
+    margin-right: 5px;
+}
+
 .right-space {
   margin-right:15px;
 }
