@@ -27,6 +27,7 @@
 <input type="button" class='btn btn-primary' data-toggle="modal" data-target="#register-modal" value='Edit Profile'></input>
 
 <div id="register-modal" class="modal fade" role="dialog">
+  <div class="modal-messages"></div>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -34,7 +35,6 @@
         <h4 class="modal-title">Edit Profile</h4>
       </div>
       <div class="modal-body">
-        <div class="modal-messages"></div>
         <form id='register-form' onsubmit='return checkEditForm()'>
           <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
           <input id='password-register-box' class='form-control' type='password' name='newPassword' placeholder='new password' required></input><br>

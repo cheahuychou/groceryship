@@ -1,4 +1,5 @@
 <div id="register-modal" class="modal fade" role="dialog">
+  <div class="modal-messages"></div>
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -6,7 +7,6 @@
         <h4 class="modal-title">Sign Up</h4>
       </div>
       <div class="modal-body">
-        <div class="modal-messages"></div>
         <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
           <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <input id='kerberos-register-box' class='form-control signup-input' type='text' name='requestedKerberos' placeholder='kerberos' required></input>
