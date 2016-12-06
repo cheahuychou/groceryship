@@ -1,6 +1,7 @@
 // Author: Czarina Lao
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
+    refreshAllCounts();
 
     // by default empty message is hidden to remove logic from hbs
     checkIfNoNotifs();
@@ -20,17 +21,20 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
-    // toggle the glyphicon chevron icon depending on whether toggle is open or not
-    // if open, icon should point down
-    // if closed, icon should point right
+    // toggle the glyphicon chevron icon and count depending on whether toggle is open or not
+    // if open, icon should point down, count is not seen
+    // if closed, icon should point right, count is seen
     $('.title-toggle').click(function() {
         var icon = $(this).find('.glyphicon');
+        var count = $(this).find('.badge');
         if (icon.hasClass('glyphicon-chevron-right')) {
             icon.removeClass('glyphicon-chevron-right');
             icon.addClass('glyphicon-chevron-down');
+            count.addClass('hide');
         } else {
             icon.removeClass('glyphicon-chevron-down');
             icon.addClass('glyphicon-chevron-right');
+            count.removeClass('hide');
         }
     });
 
@@ -46,6 +50,7 @@ $(document).ready(function () {
                 console.log(data);
                 if (data.success) {
                     $('.request-tile[data-id='+id+']').parent().remove();
+                    refreshAllCounts();
                     // TODO: ask for the reason of cancellation?
                     addMessage('Request canceled.', 'success', false, true);
                 } else {
