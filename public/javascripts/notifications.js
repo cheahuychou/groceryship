@@ -65,7 +65,7 @@ $(document).ready(function () {
 
     $('.reject-rate-button').click(function() {
         var id = $(this).parent().parent().parent().parent().attr('id').split('-')[2];
-        var reason = $('#reason :selected').val();
+        var reason = $('#reason-'+id).val();
         var rating = $(this).parent().find('.fa-star').length;
         $.ajax({
             url: '/deliveries/'+id+'/reject',

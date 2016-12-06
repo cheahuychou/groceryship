@@ -5,6 +5,7 @@ var bcrypt = require('bcrypt');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
 var email = require('../javascripts/email.js');
+var authentication = require('../javascripts/authentication.js');
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
@@ -75,6 +76,11 @@ UserSchema.methods.setVerificationToken = function (token, callback) {
 */
 UserSchema.methods.verify = function (callback) {
     this.verified = true;
+    this.save(callback);
+}
+
+UserSchema.methods.changePassword = function(hash, callback){
+    this.password = hash;
     this.save(callback);
 }
 
@@ -149,6 +155,42 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
             });
         } else {
             callback({message: 'There is already an account with this kerberos'});
+        }
+    });
+}
+
+/**
+ * Edits the profile of a query user. 
+ * @param {String} username - The username of the query user. 
+ * @param {Number} newPhoneNumber - The new phone number of the user. 
+ * @param {String} newDorm - The new dorm of the user. 
+ * @param {Function} callback - The function to execute after the profile is editted. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, callback) {
+    this.findOneAndUpdate({'username': username}, { 
+        "$set": {"phoneNumber": newPhoneNumber, "dorm": newDorm}
+    }).exec(function(err, user){
+        if (err) {
+            callback(new Error("Invaild phone number or dorm."));
+        } else {
+            callback();
+        }
+    });
+};
+
+UserSchema.statics.changePassword = function(username, newPassword, callback){
+    this.findOne({username: username}, function (err, user) {
+        if (err) {
+            callback(new Error("Invalid username."));
+        } else {
+            authentication.encryptPassword(newPassword, function(err, hash){
+                if (err){
+                    callback(new Error("The new password is invalid."));
+                } else {
+                    user.changePassword(hash, callback); 
+                }
+            });
         }
     });
 }

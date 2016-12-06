@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/stylesheets/rating.css"/>
+<script src='/javascripts/user_info.js'></script>
 <script src='/javascripts/profile.js'></script>
 <h1>{{title}}</h1>
 <div class='profile-table-container'>
@@ -21,12 +24,32 @@
     	  <td>Stripe Account</td>
     	  <td>{{user.stripeEmail}}</td>
     	</tr>
+      <tr>
+        <td>Request Rating</td>
+        <td>
+          {{#ifContains user.completedRequests.length 0}}
+            <i>no ratings yet</i>
+          {{else}}
+            <div class="star-rating">{{user.avgRequestRating}}</div>
+          {{/ifContains}}
+        </td>
+      </tr>
+      <tr>
+        <td>Shipping Rating</td>
+        <td>
+          {{#ifContains user.completedShippings.length 0}}
+            <i>no ratings yet</i>
+          {{else}}
+            <div class="star-rating">{{user.avgShippingRating}}</div>
+          {{/ifContains}}
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
-<input type="button" class='btn btn-primary' data-toggle="modal" data-target="#register-modal" value='Edit Profile'></input>
-
-<div id="register-modal" class="modal fade" role="dialog">
+<input type="button" class="btn btn-primary" data-toggle="modal" data-target="#profile-edit-modal" value="Edit Profile"></input>
+<input type="button" class="btn btn-primary" data-toggle="modal" data-target="#change-password-modal" value="Change Password"></input>
+<div id="profile-edit-modal" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -35,18 +58,48 @@
       </div>
       <div class="modal-body">
         <div class="modal-messages"></div>
-        <form id='register-form' onsubmit='return checkEditForm()'>
-          <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input id='password-register-box' class='form-control' type='password' name='newPassword' placeholder='new password' required></input><br>
-          <input id='confirm-password-register-box' class='form-control' type='password' name='confirmPassword' placeholder='confirm password' required></input><br>
-          <input id='phone-number-register-box' class='form-control' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
-          <select name={{user.dorm}} id='edit-dormlist' class='form-control selectpicker' required>
-            {{#each allDorms}}
-            <option>{{this}}</option>
-            {{/each}}
-          </select><br><br>
-          <button type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm'>Confirm Changes</button>
-        </form>
+        <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Phone Number</label>
+          <div class="col-sm-9">
+            <div class="row">
+              <div class="col-xs-6">
+              </div>
+                <input id='phone-number-register-box' class='form-control' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
+            </div>
+          </div>
+          <label class="col-sm-3 control-label">Dorm</label>
+          <div class="col-sm-9">
+            <div class="row">
+              <div class="col-xs-6">
+              </div>
+                <select name='{{user.dorm}}' id='edit-dormlist' class='form-control selectpicker' required>
+                  {{#each allDorms}}
+                  <option>{{this}}</option>
+                  {{/each}}
+                </select><br><br>
+            </div>
+          </div>
+        </div>
+        <button type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm'>Confirm Changes</button>
+      </div>     
+    </div>
+  </div>
+</div>
+<div id="change-password-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Change Password</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-messages"></div>
+        <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input id='current-password-box' class='form-control' type='password' name='currentPassword' placeholder='current password' required></input><br>
+        <input id='new-password-box' class='form-control' type='password' name='newPassword' placeholder='new password' required></input><br>
+        <input id='confirmed-new-password-box' class='form-control' type='password' name='confirmedPassword' placeholder='confirmed password' required></input><br>
+        <button type="submit" id='change-password-button' class='btn btn-primary btn-sm'>Confirm Password Change</button>
       </div>     
     </div>
   </div>
