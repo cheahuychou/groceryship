@@ -13,21 +13,21 @@ var countDeliveries = function() {
 var refreshNotifsCount = function() {
     var count = countNotifs();
     // uncomment if you don't want 0 to display as a count
-    // count = count === 0 ? '' : count;
+    count = count === 0 ? '' : count;
     $('.notifs-count').text(count);
 };
 
 var refreshRequestsCount = function() {
     var count = countRequests();
     // uncomment if you don't want 0 to display as a count
-    // count = count === 0 ? '' : count;
+    count = count === 0 ? '' : count;
     $('.requests-count').text(count);
 };
 
 var refreshDeliveriesCount = function() {
     var count = countDeliveries();
     // uncomment if you don't want 0 to display as a count
-    // count = count === 0 ? '' : count;
+    count = count === 0 ? '' : count;
     $('.deliveries-count').text(count);
 };
 
