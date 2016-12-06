@@ -102,7 +102,7 @@ var Email = function() {
    	* @return {String} the body of the email to the requester
    	*/
 	var claimEmailContent = function (delivery) {
-		return  '{}<p> Hi {}!<br><br>{} {} has bought {} of {} you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.shopper.phoneNumber, that.signature);		
+		return  '{}<p> Hi {}!<br><br>{} {} has bought {} ({}) you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemName, delivery.itemQuantity, delivery.shopper.phoneNumber, that.signature);		
 	}
 
 	/**
@@ -122,7 +122,7 @@ var Email = function() {
    	* @return {String} the body of the email to the requester
    	*/
 	var deliveryEmailContent = function (delivery) {
-		return  '{}<p> Hi {}! <br><br> {} {} is deliverying {} of {} to {} on {}. Please be sure to be there in time!<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemQuantity, delivery.itemName, delivery.pickupLocation, delivery.pickupTime, that.signature);		
+		return  '{}<p> Hi {}! <br><br> {} {} is delivering {} ({}) to {} on {}. Please be sure to be there in time!<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemName, delivery.itemQuantity, delivery.pickupLocation, delivery.pickupTime, that.signature);		
 	}
 
 	/**
@@ -151,7 +151,7 @@ var Email = function() {
    	* @return {String} the body of the email to the shopper
    	*/
 	var shopperAcceptanceEmailContent = function (delivery) {
-		return '{}<p> Hi {}! <br><br> This is to confirm that you rejected the delivery for {} from {} {} on {}. You received &#36;{} of tip from this delivery. The payment has been completed successfully. <br><br>Have a nice day!<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.tips, that.signature);
+		return '{}<p> Hi {}! <br><br> This is to confirm that you accepted the delivery for {} from {} {} on {}. You received &#36;{} of tip from this delivery. The payment has been completed successfully. <br><br>Have a nice day!<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.itemName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.pickupTime, delivery.tips, that.signature);
 	}
 
 	/**

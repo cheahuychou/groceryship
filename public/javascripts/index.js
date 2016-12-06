@@ -16,11 +16,7 @@ var addMessage = function(message, type, isModal, clearOld) {
     messageDiv.text(message);
     // dismiss button. code from bootstrap
     messageDiv.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
-    if (isModal) {
-        $(messageDiv).appendTo($(divSelector)).hide().slideDown("slow");
-    } else {
-        $(messageDiv).appendTo($(divSelector)).hide().slideDown("slow");
-    }
+    $(messageDiv).appendTo($(divSelector)).hide().slideDown("slow");
 };
 
 /**

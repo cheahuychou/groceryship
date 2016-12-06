@@ -91,13 +91,13 @@ describe("Utils", function() {
 
         it("should still format due time and not throw an error when pickup time is not set", function(done) {
             var formatedDeliveries = utils.formatDate([pendingDelivery]);
-            assert(formatedDeliveries[0].deadline === 'Nov 21, 6:59 PM'); // TODO: needs to change once time zone issue is fixed
+            assert(formatedDeliveries[0].deadline === 'Nov 21, 6:59 PM'); 
             done();
         });
 
         it("should format both due and pickup time correctly for every delivery", function(done) {
             var formatedDeliveries = utils.formatDate([acceptedDelivery, pendingDelivery]);
-            assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM' && formatedDeliveries[1].deadline === 'Nov 21, 6:59 PM'); // TODO: needs to change once time zone issue is fixed
+            assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM' && formatedDeliveries[1].deadline === 'Nov 21, 6:59 PM'); 
             done();
         });
     });
