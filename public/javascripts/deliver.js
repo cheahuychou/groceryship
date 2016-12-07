@@ -1,9 +1,23 @@
 // Author: Czarina Lao
+/**
+ * Makes the pagination buttons use Flat UI styling
+ * instead of the default provided by datatables.js,
+ * which is not responsive.
+ */
+var fixPaginationButtons = function () {
+    $('li.previous').children().addClass('fui-arrow-left').text('');
+    $('li.next').children().addClass('fui-arrow-right').text('');
+};
+
 $(document).ready(function () {
     $('#request-table').DataTable({
         //"order": [],
         "ordering": false
+    }).on('draw', function() {
+        fixPaginationButtons();
     });
+
+    fixPaginationButtons();
 
     $('#navbar-deliver').addClass('active');
     $('#filter-sort').click(function() {
