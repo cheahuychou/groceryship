@@ -1,5 +1,10 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+    $('#deliveries-table').DataTable({
+        "order": [],
+        "columnDefs": [{ "orderable": false, "targets": [0, 1, 2, 3, 4, 7, 8] }]
+    });
+
     $('#navbar-dashboard').addClass('active');
 
     // stop modal from opening when clicking on a link on a tile
