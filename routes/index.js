@@ -168,7 +168,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                                     } else {
                                         res.redirect(AUTHORIZE_URI + '?' + 
                                              qs.stringify({ response_type: 'code',
-                                                            redirect: 'https://groceryship.herokuapp.com/oauth/callback',
+                                                            redirect_uri: 'https://groceryship.herokuapp.com/oauth/callback',
                                                             scope: 'read_write',
                                                             client_id: CLIENT_ID,
                                                             state: JSON.stringify(userJSON)
