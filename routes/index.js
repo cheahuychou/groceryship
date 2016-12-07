@@ -177,7 +177,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                             });
                         };
                 });
-            } else if (!data.success) {
+            } else if (!mitData.success) {
                 data.message = 'Sorry, we aren\'t able to verify your kerberos at the moment.'
                                 + 'Please try again.';
                 res.render('home', data);
