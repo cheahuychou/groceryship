@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcrypt');
+var passport = require('passport');
 var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var User = require('../models/user.js');
@@ -45,34 +46,36 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
 	});
 });
 
-// TODO: please add an edit function in the model
-router.put('/:username/profile', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
-	var newPassword = req.body.newPassword.trim();
+router.put('/:username/profile/edit', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
 	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
-	var dorm = req.body.dorm.trim();
+	var newDorm = req.body.newDorm.trim();
 	console.log('yo updating');
-	bcrypt.genSalt(function(err, salt) {
+	User.editProfile(req.params.username, newPhoneNumber, newDorm, function(err){
 		if (err) {
-	  		return next(err);
-	  	} else {
-	  		bcrypt.hash(newPassword, salt, function(err, hash) {
-	  			if (err) {
-	  				return next(err);
-	  			} else {
-	  				User.findOneAndUpdate({'username': req.params.username}, { 
-							"$set": {"password": hash, "phoneNumber": newPhoneNumber, "dorm": dorm}
-					}).exec(function(err, user){
-						if (err) {
-							return next(err);
-						} else {
-							res.redirect('back');
-						}
-					});
-	  			}
-	  		});
-	  	}
-	});
+			res.json({success: false, message: err});
+		} else {
+			res.json({success: true});
+		}
+	});  			
 });
 
+router.put('/:username/changePassword', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
+	var currentPassword = req.body.currentPassword.trim();
+	var newPassword = req.body.newPassword.trim();
+	console.log('yo updating');
+	User.authenticate(req.params.username, currentPassword, function(err, user){
+		if (err){
+			res.json({success: false, message: err.message});
+		} else {
+			User.changePassword(user.username, newPassword, function(err){
+				if (err) {
+					res.json({success: false, message: err.message});
+				} else {
+					res.json({success: true});
+				}
+			});
+		}
+	});			
+});
 
 module.exports = router;

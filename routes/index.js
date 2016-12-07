@@ -65,7 +65,9 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
             return res.redirect('/');
         } 
         if (!user.verified) {
-            data.message = 'Your account has not been verified, please go to your mailbox to verify.'
+            data.message = 'Your account has not been verified, please go to your mailbox to verify.';
+            data.isValidAccount = true;
+            data.username = user.username;
             return res.render('home', data);
         }
         req.logIn(user, function(err) {
@@ -85,6 +87,22 @@ router.post('/logout', parseForm, csrfProtection, function(req, res, next) {
     res.redirect('/');
 });
 
+// Resends verification email
+router.get('/verify/:username/resend', function(req, res, next) {
+    var username = req.params.username
+    data = {title: 'GroceryShip',
+            username: username,
+            allDorms: utils.allDorms(),
+            csrfToken: req.csrfToken()}
+    User.sendVerficationEmail(username, req.devMode, function (err, user) {
+        if (err) {
+            return res.render('home', data);
+        }
+        data.message = 'We have sent another verification email. Please check your MIT email.';
+        res.render('home', data);
+    });    
+});
+
 // Directs user to verification page
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
     data = {title: 'GroceryShip',
@@ -92,8 +110,7 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
             verificationToken: req.params.verificationToken,
             allDorms: utils.allDorms(),
             csrfToken: req.csrfToken()}
-    res.render('home', data);
-        
+    res.render('home', data);      
 });
 
 // Verifies the account
@@ -110,7 +127,6 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
         data.success = true;
         data.redirect = '/'
         res.json(data);
-        // return res.render('home', data);
     })
 });
 
@@ -142,16 +158,26 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                         } else {
                             authentication.createUserJSON(username, password, phoneNumber, dorm, mitData,
                                 function (err, userJSON) {
-                                    res.redirect(AUTHORIZE_URI + '?' + 
-                                             qs.stringify({ response_type: 'code',
+                                    if (req.devMode){
+                                        res.redirect(AUTHORIZE_URI + '?' + 
+                                             qs.stringify({ response_type: 'code',     
                                                             scope: 'read_write',
                                                             client_id: CLIENT_ID,
                                                             state: JSON.stringify(userJSON)
-                                    }));
+                                        }));
+                                    } else {
+                                        res.redirect(AUTHORIZE_URI + '?' + 
+                                             qs.stringify({ response_type: 'code',
+                                                            redirect_uri: 'https://groceryship.herokuapp.com/oauth/callback',
+                                                            scope: 'read_write',
+                                                            client_id: CLIENT_ID,
+                                                            state: JSON.stringify(userJSON)
+                                        }));
+                                    }
                             });
                         };
                 });
-            } else if (!data.success) {
+            } else if (!mitData.success) {
                 data.message = 'Sorry, we aren\'t able to verify your kerberos at the moment.'
                                 + 'Please try again.';
                 res.render('home', data);

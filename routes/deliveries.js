@@ -11,6 +11,8 @@ var config = require('../javascripts/config.js');
 var stripe = require('stripe');
 var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
 var stripePlatform = stripe(API_KEY);
+var PUBLISHABLE_KEY = process.env.PUBLISHABLE_API_KEY || config.stripePublishableKey();
+var stripe = stripe(PUBLISHABLE_KEY);
 var authentication = require('../javascripts/authentication.js');
 
 // setup csurf middlewares 
@@ -27,39 +29,39 @@ router.get("/", authentication.isAuthenticated, function(req, res) {
     var stores = req.query.stores;
     var pickupLocations = req.query.pickupLocations;
     if (req.query.minRating) {
-    	var minRating = parseInt(req.query.minRating);
+        var minRating = parseInt(req.query.minRating);
     }
     var sortBy = req.query.sortBy;
     if (req.query.sortIncreasing) {
-    	var sortIncreasing = parseInt(req.query.sortIncreasing);
+        var sortIncreasing = parseInt(req.query.sortIncreasing);
     }
     Delivery.getRequests(user._id, now, stores, pickupLocations, minRating, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
-        	if (err.message = "User has been suspended from making deliveries") {
-        		res.render('suspended', {username: user.username,
-        			                     fullName: user.fullName,
-        		                         title: 'Suspended :(',
-        		                         suspendedUntil: err.suspendedUntil,
-        		                         csrfToken: req.csrfToken()
-        		                     });
-        	} else {
-	        	console.log(err);
-	            res.send({'success': false, 'message': err});
-        	}
+            if (err.message = "User has been suspended from making deliveries") {
+                res.render('suspended', {username: user.username,
+                                         fullName: user.fullName,
+                                         title: 'Suspended :(',
+                                         suspendedUntil: err.suspendedUntil,
+                                         csrfToken: req.csrfToken()
+                                     });
+            } else {
+                console.log(err);
+                res.send({'success': false, 'message': err});
+            }
         } else {
             res.render('deliver', {username: user.username,
                                    fullName: user.fullName,
-            	                   title: 'Request Feed',
-            	                   requestItems: utils.formatDate(requestItems),
-            	                   allPickupLocations: utils.allPickupLocations(),
-            	                   allStores: utils.allStores(),
-            	                   previousStores: stores,
-            	                   previousPickupLocations: pickupLocations,
-            	                   previousMinRating: minRating,
-            	                   previousSortBy: sortBy,
-            	                   previousSortIncreasing: sortIncreasing,
+                                   title: 'Request Feed',
+                                   requestItems: utils.formatDate(requestItems),
+                                   allPickupLocations: utils.allPickupLocations(),
+                                   allStores: utils.allStores(),
+                                   previousStores: stores,
+                                   previousPickupLocations: pickupLocations,
+                                   previousMinRating: minRating,
+                                   previousSortBy: sortBy,
+                                   previousSortIncreasing: sortIncreasing,
                                    csrfToken: req.csrfToken()
-            	               });
+                               });
         }
     });
 });
@@ -77,12 +79,12 @@ router.get("/username/:username", authentication.isAuthenticated, function(req, 
         } else {
             res.render('dashboard', {username: user.username,
                                      fullName: user.fullName,
-            	                     title: 'Dashboard',
-            	                     now: now,
-            	                     requestItems: utils.formatDate(requestItems),
-            	                     deliveryItems: utils.formatDate(deliveryItems),
+                                     title: 'Dashboard',
+                                     now: now,
+                                     requestItems: utils.formatDate(requestItems),
+                                     deliveryItems: utils.formatDate(deliveryItems),
                                      csrfToken: req.csrfToken()
-            	                 });
+                                 });
         }
     });
 });
@@ -95,7 +97,7 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
     console.log(req.body);
     var stores = req.body['stores[]'];
     if (!stores) {
-    	stores = utils.allStores();
+        stores = utils.allStores();
     }
     var deadline = new Date(req.body.itemDue);
     var itemName = req.body.itemName;
@@ -132,8 +134,8 @@ router.delete("/:id", authentication.isAuthenticated, parseForm, csrfProtection,
     var userId = req.session.passport.user._id;
     Delivery.cancel(req.params.id, userId, function(err) {
         if (err) {
-        	console.log(err);
-        	res.json({success: false, message: err});
+            console.log(err);
+            res.json({success: false, message: err});
         } else {
         	res.json({success: true});
         }

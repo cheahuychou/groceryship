@@ -1,5 +1,6 @@
 {{!-- Author: Czarina Lao --}}
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src='/javascripts/dashboard_helpers.js'></script>
 <script src='/javascripts/dashboard.js'></script>
 <script src='/javascripts/rating.js'></script>
 <script src='/javascripts/user_info.js'></script>
@@ -13,7 +14,7 @@
 </div>
 
 <div id='notifications'>
-  <span class='title-toggle' id='notifications-toggle' data-toggle="collapse" data-target="#dashboard-notifications"><h3>Notifications  <span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  <span class='title-toggle' id='notifications-toggle' data-toggle="collapse" data-target="#dashboard-notifications"><h3>Notifications <span class="badge hide notifs-count"></span> <span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
   <div id='dashboard-notifications' class='collapse in'>
   {{> notifications}}
 	{{> accept}}
@@ -23,14 +24,14 @@
 </div>
 
 <div id='request'>
-	<span class='title-toggle' id='requests-toggle' data-toggle="collapse" data-target="#dashboard-requests"><h3>Your Requests  <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
+	<span class='title-toggle' id='requests-toggle' data-toggle="collapse" data-target="#dashboard-requests"><h3>Your Requests <span class="badge requests-count"></span> <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
   <div id='dashboard-requests' class='collapse'>
     {{> requests own=true}}
   </div>
 </div>
 
 <div id='deliver'>
-	<span class='title-toggle' id='deliver-toggle' data-toggle="collapse" data-target="#dashboard-deliver"><h3>To Deliver  <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
+	<span class='title-toggle' id='deliver-toggle' data-toggle="collapse" data-target="#dashboard-deliver"><h3>To Deliver <span class="badge deliveries-count">{{deliveryItems.length}}</span> <span class="glyphicon glyphicon-chevron-right" id="requests-chevron-toggle"></span></h3></span>
   <div id='dashboard-deliver' class='collapse'>
     <p>Remember to contact the requester first to set a pickup time!</p>
     {{> deliveries_table}}

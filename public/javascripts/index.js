@@ -16,31 +16,33 @@ var addMessage = function(message, type, isModal, clearOld) {
     messageDiv.text(message);
     // dismiss button. code from bootstrap
     messageDiv.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
-    $(divSelector).append(messageDiv);
+    $(messageDiv).appendTo($(divSelector)).hide().slideDown("slow");
 };
 
 /**
  * Check that the price given by priceString is valid.
  * Accepts prices with more than 2 decimal points but rounds it to 2.
- * @param  {String} priceString the price being checked
- * @return {Float/Boolean}      the price rounded to 2 decimal places if the price is valid;
+ * @param  {String}  priceString the price being checked
+ * @param  {Boolean} isZeroOk    true if price >=0; false if price > 0
+ * @return {Float/Boolean}       the price rounded to 2 decimal places if the price is valid;
  *                                  false otherwise
  */
-var checkPriceFormat = function(priceString) {
+var checkPriceFormat = function(priceString, isZeroOk) {
     var price = parseFloat(priceString).toFixed(2);
-    if (isNaN(price) || price < 0) return false;
+    if (isNaN(price) || price < 0 || (!isZeroOk && price == 0)) return false;
     return price;
 };
 
 /**
  * Adds a 'has-error' class to the parent element of a price
- * if it's not valid (negative or not a number).
+ * if it's not valid (negative/nonnnegative or not a number).
  * Accepts prices with more than 2 decimal points but rounds it to 2.
  * Removes the 'has-error' class if it exists on a valid price.
- * @param  {Object} element the element containing the price
+ * @param  {Object}   element the element containing the price
+ * @param  {Boolean}  true if we want price >=0; false if price > 0
  */
-var showPriceFormatErrors = function(element) {
-    var price = checkPriceFormat($(element).val());
+var showPriceFormatErrors = function(element, isZeroOk) {
+    var price = checkPriceFormat($(element).val(), isZeroOk);
     if (price) {
         $(element).val(price);
         $(element).parent().removeClass('has-error');
