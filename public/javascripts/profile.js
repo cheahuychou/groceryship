@@ -1,10 +1,20 @@
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
+
 	// delete all modal messages when modal gets closed
     $('.modal').on('hidden.bs.modal', function() {
         $('.modal-messages').empty();
         $('input').parent().removeClass('has-error');
     });
+
+    $('#profile-edit-modal').on('shown.bs.modal', function() {
+        $('#phone-number-register-box').focus();
+    });
+
+    $('#change-password-modal').on('shown.bs.modal', function() {
+        $('#current-password-box').focus();
+    });
+
    	$("#edit-dormlist").val(document.getElementById('edit-dormlist').name);
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	$('#edit-confirm-button').click(function () {
@@ -67,6 +77,7 @@ $(document).ready(function () {
             }
             hasError = true;
 	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
+	        $('#current-password-box').focus();
 			return false; 
 		}
 		if (newPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(newPassword)) {
@@ -75,6 +86,7 @@ $(document).ready(function () {
             }
             hasError = true;
 	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
+	        $('#new-password-box').focus();
 			return false; 
 		}
 		if (confirmedPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(confirmedPassword)) {
@@ -82,7 +94,8 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid confirmed password.', 'danger', true, true);
+	        addMessage('Please enter a non-empty and valid confirmation of your new password.', 'danger', true, true);
+	        $('#confirmed-new-password-box').focus();
 			return false; 
 		}
 		if (newPassword.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(newPassword)) {
@@ -93,6 +106,7 @@ $(document).ready(function () {
             hasError = true;
 	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character,' 
 	        	+ ' one lowercase character, a number and one special character.', 'danger', true, true);
+	        $('#new-password-box').focus();
 	        return false; 
 	    }
 		if (confirmedPassword !== newPassword) {
@@ -100,7 +114,8 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('The password and confirmed password you entered did not match, please try again.', 'danger', true, true);
+	        addMessage('The new passwords you entered did not match. Please try again.', 'danger', true, true);
+	        $('#new-password-box').focus();
 			return false;
 		}
 		if(!hasError){

@@ -342,7 +342,7 @@ td.deadline, td.pickup-time {
     white-space: nowrap;*/
 }
 
-.signup-input, .edit-profile-input {
+.signup-input {
     margin-bottom: 10px;
 }
 
@@ -352,6 +352,10 @@ td.deadline, td.pickup-time {
 
 #register-button {
     margin: 5px 10px 0 0;
+}
+
+#change-password-button, #edit-confirm-button {
+    margin-right: 15px;
 }
 
 /* https://www.sitepoint.com/five-ways-to-hide-elements-in-css/ */

@@ -60,7 +60,7 @@
       <div class="modal-body">
         <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
-          <label class="col-sm-3 control-label">Phone Number</label>
+          <label class="col-sm-3 control-label"><b>Phone Number</b></label>
           <div class="col-sm-9">
             <div class="row">
               <div class="col-xs-6">
@@ -68,7 +68,7 @@
                 <input id='phone-number-register-box' class='form-control edit-profile-input' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
             </div>
           </div>
-          <label class="col-sm-3 control-label">Dorm</label>
+          <label class="col-sm-3 control-label"><b>Dorm</b></label>
           <div class="col-sm-9">
             <div class="row">
               <div class="col-xs-6">
@@ -77,11 +77,13 @@
                   {{#each allDorms}}
                   <option>{{this}}</option>
                   {{/each}}
-                </select><br><br>
+                </select><br>
             </div>
           </div>
         </div>
-        <button type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm'>Confirm Changes</button>
+        <div class='row'>
+          <button type="submit" id='edit-confirm-button' class='btn btn-primary btn-sm pull-right'>Confirm Changes</button>
+        </div>
       </div>     
     </div>
   </div>
@@ -98,8 +100,10 @@
         <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
         <input id='current-password-box' class='form-control edit-profile-input' type='password' name='currentPassword' placeholder='current password' required></input><br>
         <input id='new-password-box' class='form-control edit-profile-input' type='password' name='newPassword' placeholder='new password' required></input><br>
-        <input id='confirmed-new-password-box' class='form-control edit-profile-input' type='password' name='confirmedPassword' placeholder='confirmed password' required></input><br>
-        <button type="submit" id='change-password-button' class='btn btn-primary btn-sm'>Confirm Password Change</button>
+        <input id='confirmed-new-password-box' class='form-control edit-profile-input' type='password' name='confirmedPassword' placeholder='confirm new password' required></input><br>
+        <div class='row'>
+          <button type="submit" id='change-password-button' class='btn btn-primary btn-sm pull-right'>Confirm Password Change</button>
+        </div>
       </div>     
     </div>
   </div>
