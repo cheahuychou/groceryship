@@ -376,6 +376,7 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
                            pickupLocation: {$in: pickupLocationList},
                            minShippingRating: {$lte: userShippingRating}})
                     .sort({[sortBy[0]]: sortBy[1]})
+                    .limit(400) //limit total number of returned requests
                     .populate({path: 'requester',
                                match: {avgRequestRating: {$gte: minRating}}, //populates requester info only if the requester has an average requester rating above the minimum
                                select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -phoneNumber -avgShippingRating'}) //exclude sensitive information
@@ -395,6 +396,7 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
                     .populate({path: 'requester',
                                match: {avgRequestRating: {$gte: minRating}}, //populates requester info only if the requester has an average requester rating above the minimum
                                select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -phoneNumber -avgShippingRating'}) //exclude sensitive information
+                    .limit(400) //limit total number of returned requests
                     .lean().exec(function(err, requestItems) {
                         requestItems = requestItems.filter(function(item) { //filter out those requests where requester info was not populated
                             return item.requester;
