@@ -320,6 +320,7 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
                             var requestItems = requestItemsClaimed.concat(requestItemsPending);
                             mongoose.model('Delivery', DeliverySchema)
                                 .find({shopper: userID, requesterRating: null})
+                                .sort({pickupTime: 1, deadline: 1})
                                 .populate('requester').lean().exec(function(err, deliveryItems) {
                                     callback(err, requestItems, deliveryItems);
                                 });
