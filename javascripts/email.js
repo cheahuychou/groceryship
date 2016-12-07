@@ -44,8 +44,9 @@ var Email = function() {
    								successfully, false otherwise
    	*/
 	var sendEmail = function (kerberos, subject, htmlContent) {
+		var sendFrom = process.env.GMAIL_ADDRESS || config.emailAddress();
 		var mailOptions = {
-		    from: 'GroceryShip 6170 <' + config.emailAddress() + '>', // sender address
+		    from: 'GroceryShip 6170 <' + sendFrom + '>', // sender address
 		    to: kerberos + '@mit.edu',
 		    subject: subject, // subject line
 		    text: '', // plaintext body
