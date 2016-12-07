@@ -1,5 +1,10 @@
 // Author: Czarina Lao
 $(document).ready(function () {
+    $('#request-table').DataTable({
+        //"order": [],
+        "ordering": false
+    });
+
     $('#navbar-deliver').addClass('active');
     $('#filter-sort').click(function() {
         var stores = $('#filter-stores').val();

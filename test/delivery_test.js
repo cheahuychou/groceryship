@@ -797,7 +797,7 @@ describe("Models", function() {
             Delivery.getRequests(id2, new Date('2016-11-20T15:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], null, null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 1);
               assert.strictEqual(requestItems[0].itemName, "test-item-beer");
-              assert.strictEqual(requestItems[0].requester.phoneNumber, 1234567890);
+              assert.strictEqual(requestItems[0].requester.username, "username1");
               done();
             });
           });

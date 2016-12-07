@@ -306,14 +306,16 @@ DeliverySchema.statics.rateRequester = function(id, shopperID, requesterRating, 
 DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
     this.find({requester: userID, status: "claimed"})
         .sort({pickupTime: 1})
-        .populate('shopper').lean().exec(function(err, requestItemsClaimed) {
+        .populate('shopper', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -avgRequestRating') //exclude sensitive information
+        .lean().exec(function(err, requestItemsClaimed) {
             if (err) {
                 callback(err, requestItemsClaimed, null);
             } else {
                 mongoose.model('Delivery', DeliverySchema)
                     .find({requester: userID, status: "pending", seenExpired: false})
                     .sort({deadline: 1})
-                    .populate('shopper').lean().exec(function(err, requestItemsPending) {
+                    .populate('shopper', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -avgRequestRating') //exclude sensitive information
+                    .lean().exec(function(err, requestItemsPending) {
                         if (err) {
                             callback(err, requestItemsClaimed, null);
                         } else {
@@ -321,7 +323,8 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
                             mongoose.model('Delivery', DeliverySchema)
                                 .find({shopper: userID, requesterRating: null})
                                 .sort({pickupTime: 1, deadline: 1})
-                                .populate('requester').lean().exec(function(err, deliveryItems) {
+                                .populate('requester', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -avgShippingRating') //exclude sensitive information
+                                .lean().exec(function(err, deliveryItems) {
                                     callback(err, requestItems, deliveryItems);
                                 });
                         }
@@ -373,7 +376,9 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
                            pickupLocation: {$in: pickupLocationList},
                            minShippingRating: {$lte: userShippingRating}})
                     .sort({[sortBy[0]]: sortBy[1]})
-                    .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}}) //populates requester info only if the requester has an average requester rating above the minimum
+                    .populate({path: 'requester',
+                               match: {avgRequestRating: {$gte: minRating}}, //populates requester info only if the requester has an average requester rating above the minimum
+                               select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -phoneNumber -avgShippingRating'}) //exclude sensitive information
                     .lean().exec(function(err, requestItems) {
                         requestItems = requestItems.filter(function(item) { //filter out those requests where requester info was not populated
                             return item.requester;
@@ -387,7 +392,9 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
                            stores: {$in: storesList},
                            pickupLocation: {$in: pickupLocationList},
                            minShippingRating: {$lte: userShippingRating}})
-                    .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}}) //populates requester info only if the requester has an average requester rating above the minimum
+                    .populate({path: 'requester',
+                               match: {avgRequestRating: {$gte: minRating}}, //populates requester info only if the requester has an average requester rating above the minimum
+                               select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -phoneNumber -avgShippingRating'}) //exclude sensitive information
                     .lean().exec(function(err, requestItems) {
                         requestItems = requestItems.filter(function(item) { //filter out those requests where requester info was not populated
                             return item.requester;
