@@ -11,7 +11,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
   <link rel="stylesheet" href="/stylesheets/bootstrap-480-767-grid.css"/>
   <link href="/stylesheets/flat-ui.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/2.2.3/flatpickr.min.css">
+  {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/2.2.3/flatpickr.min.css"> --}}
+  {{!-- use edited local version of flatpickr because of bug --}}
+  {{!-- https://github.com/chmln/flatpickr/issues/203 --}}
+  <link rel="stylesheet" href="/stylesheets/flatpickr.min.css"/>
   <link rel="stylesheet" href="/stylesheets/style.css"/>
   <link rel="stylesheet" href="/stylesheets/rating.css"/>
 
@@ -44,7 +47,7 @@
                 <span class="icon-bar"></span>
             </button>
             {{/fullName}}
-            <a href="/" class="navbar-brand">GroceryShip</a>
+            <a href="/" class="navbar-brand"><img class='navbar-logo' src='/images/icon.png'/>GroceryShip</a>
         </div>
         <div class="navbar-collapse collapse">
         {{#fullName}}

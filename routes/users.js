@@ -47,7 +47,7 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
 	});
 });
 
-router.put('/:username/editProfile', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
+router.put('/:username/profile/edit', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
 	var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
 	var newDorm = req.body.newDorm.trim();
 	console.log('yo updating');

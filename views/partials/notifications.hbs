@@ -10,7 +10,7 @@
           <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
           <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
-          <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving{{/ifIsPast}} <br>{{pickupTime}}</p>
+          <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving:{{/ifIsPast}} <br>{{pickupTime}}</p>
 
           <div class="accept-reject-container">
             <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
@@ -42,7 +42,7 @@
           <p class='tile-content'><i>Sorry, this request expired!</i><br></p>
 
           <div>
-            <button type="button" class="close close-expired-notif" data-id="{{_id}}">Close</button>
+            <button type="button" class="close-expired-notif btn btn-xs btn-inverse" data-id="{{_id}}">Close</button>
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@
           {{#ifIsPast rawDeadline ../now}}
           <tr id='notif-row-{{_id}}' class='notification-row'>
           <td>
-            <div class='notification-icon'><img src="/images/expired.jpg"></img></div>
+            <div class='notification-icon'><img src="/images/expired.png"></img></div>
           </td>
           <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) went unclaimed and has expired.</td>
           <td></td>
@@ -196,10 +196,6 @@
   {{#each deliveryItems}}
     {{> notification_item isRequest=false}}
   {{/each}}
-
-  {{#unless requestItems}}
-    {{#unless deliveryItems}}
-      <div class="well well-lg">No notifications yet.</div>
-    {{/unless}}
-  {{/unless}}
 </div>
+
+<div class="well well-lg no-notif-message hide">No notifications yet.</div>

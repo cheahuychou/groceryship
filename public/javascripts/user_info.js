@@ -44,6 +44,34 @@ var fillStars = function(selector, isTooltip) {
     });
 };
 
+/**
+ * Creates the jQuery object for the star ratin
+ * @param  {Integer} rating the rating for hte star rating     
+ * @return {Object}         the jQuery object for the star rating      
+ */        
+var createStarRating = function(rating) {      
+    return $('<div>', {        
+        class: 'star-rating',      
+        text: rating       
+    });        
+};     
+       
+/**        
+ * Updates the star rating displayed on the tooltip for the user with id userId.       
+ * @param  {String}  userId     the id of the user     
+ * @param  {Integer}  newRating        
+ * @param  {Boolean} isShipping true if newRating is the new shipping rating; false if it's for the new request rating     
+ * @return {void}                  
+ */        
+var updateStarRating = function(userId, newRating, isShipping) {       
+    var starRatingDiv = createStarRating(newRating);       
+    var ratingTypeSelector = isShipping ? '.shipping-rating' : '.request-rating';      
+    var userRatingSelector = '.contact-tooltip-'+userId;       
+       
+    $(userRatingSelector+' '+ratingTypeSelector).empty().append(starRatingDiv);        
+    fillStars(userRatingSelector+' .star-rating', true);       
+};
+
 $(document).ready(function () {
     fillStars('.star-rating.tooltip-stars',true);
     fillStars('.star-rating.profile-stars',false);

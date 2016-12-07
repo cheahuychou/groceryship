@@ -30,7 +30,7 @@ $(document).ready(function () {
         }
         if (!hasError) {
 			$.ajax({
-	            url: '/users/'+ username +'/editProfile',
+	            url: '/users/'+ username +'/profile/edit',
 	            type: 'PUT',
 	            data: {
 			    		newPhoneNumber: phoneNumber,
@@ -66,7 +66,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid password.', 'danger', false, true);
+	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
 			return false; 
 		}
 		if (newPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(newPassword)) {
@@ -74,7 +74,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid new password.', 'danger', false, true);
+	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
 			return false; 
 		}
 		if (confirmedPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(confirmedPassword)) {
@@ -82,7 +82,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('Please enter a non-empty and valid confirmed password.', 'danger', false, true);
+	        addMessage('Please enter a non-empty and valid confirmed password.', 'danger', true, true);
 			return false; 
 		}
 		if (newPassword.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(newPassword)) {
@@ -92,7 +92,7 @@ $(document).ready(function () {
             }
             hasError = true;
 	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character,' 
-	        	+ ' one lowercase character, a number and one special character.', 'danger', false, true);
+	        	+ ' one lowercase character, a number and one special character.', 'danger', true, true);
 	        return false; 
 	    }
 		if (confirmedPassword !== newPassword) {
@@ -100,7 +100,7 @@ $(document).ready(function () {
                 $(this).parent().addClass('has-error');
             }
             hasError = true;
-	        addMessage('The password and confirmed password you entered did not match, please try again.', 'danger', false, true);
+	        addMessage('The password and confirmed password you entered did not match, please try again.', 'danger', true, true);
 			return false;
 		}
 		if(!hasError){
@@ -121,7 +121,7 @@ $(document).ready(function () {
 	                }
 	            },
 	            error: function(err) {
-	                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
+	                addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
 	            }
 	        });
 		}
