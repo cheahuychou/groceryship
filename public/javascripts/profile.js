@@ -19,16 +19,16 @@ $(document).ready(function () {
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	$('#edit-confirm-button').click(function () {
    		var username = $('#kerberos').text();
-   		var phoneNumber = $(this).parent().find('#phone-number-register-box').val();
-	   	var dorm = $(this).parent().find('#edit-dormlist :selected').val();
-		var csrf = $(this).parent().find('#csrf').val();
+   		var phoneNumber = $('#phone-number-register-box').val();
+	   	var dorm = $('#edit-dormlist :selected').val();
+		var csrf = $('#csrf').val();
 		var hasError = false;
 		// validate inputs first
         // check that all inputs are nonempty
         // if empty, alert the user of the error and show where it is
         if (!phoneNumber || !phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10 || !dorm || dorm.trim()=='') {
-            if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
+            if (!$('#phone-number-register-box').parent().hasClass('has-error')) {
+                $('#phone-number-register-box').parent().addClass('has-error');
             }
             hasError = true;
             if (phoneNumber.trim() != ''){
@@ -37,6 +37,8 @@ $(document).ready(function () {
             	addMessage('All fields must be filled out.', 'danger', false, true);
             }
             return false;
+        } else {
+        	$('#phone-number-register-box').parent().removeClass('has-error');
         }
         if (!hasError) {
 			$.ajax({
@@ -68,55 +70,69 @@ $(document).ready(function () {
 		var currentPassword = $('#current-password-box').val();
 		var newPassword = $('#new-password-box').val();
 		var confirmedPassword = $('#confirmed-new-password-box').val();
-		var csrf = $(this).parent().find('#csrf').val();
+		var csrf = $('#csrf').val();
 		var hasError = false;
 		
 		if (currentPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(currentPassword)) {
-			if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
+			if (!$('#current-password-box').parent().hasClass('has-error')) {
+                $('#current-password-box').parent().addClass('has-error');
             }
             hasError = true;
 	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
 	        $('#current-password-box').focus();
 			return false; 
+		} else {
+			$('#current-password-box').parent().removeClass('has-error');
 		}
 		if (newPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(newPassword)) {
-			if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
+			if (!$('#new-password-box').parent().hasClass('has-error')) {
+                $('#new-password-box').parent().addClass('has-error');
             }
             hasError = true;
 	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
 	        $('#new-password-box').focus();
 			return false; 
+		} else {
+			$('#new-password-box').parent().removeClass('has-error');
 		}
 		if (confirmedPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(confirmedPassword)) {
-			if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
+			if (!$('#confirmed-new-password-box').parent().hasClass('has-error')) {
+                $('#confirmed-new-password-box').parent().addClass('has-error');
             }
             hasError = true;
 	        addMessage('Please enter a non-empty and valid confirmation of your new password.', 'danger', true, true);
 	        $('#confirmed-new-password-box').focus();
 			return false; 
+		} else {
+			$('#confirmed-new-password-box').parent().removeClass('has-error');
 		}
 		if (newPassword.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(newPassword)) {
 	        // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
-	        if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
+	        if (!$('#new-password-box').parent().hasClass('has-error')) {
+                $('#new-password-box').parent().addClass('has-error');
             }
             hasError = true;
 	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character,' 
 	        	+ ' one lowercase character, a number and one special character.', 'danger', true, true);
 	        $('#new-password-box').focus();
 	        return false; 
-	    }
+	    } else {
+			$('#new-password-box').parent().removeClass('has-error');
+		}
 		if (confirmedPassword !== newPassword) {
-			if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
+			if (!$('#new-password-box').parent().hasClass('has-error')) {
+                $('#new-password-box').parent().addClass('has-error');
+            }
+            if (!$('#confirmed-new-password-box').parent().hasClass('has-error')) {
+                $('#confirmed-new-password-box').parent().addClass('has-error');
             }
             hasError = true;
 	        addMessage('The new passwords you entered did not match. Please try again.', 'danger', true, true);
 	        $('#new-password-box').focus();
 			return false;
+		} else {
+			$('#new-password-box').parent().removeClass('has-error');
+			$('#confirmed-new-password-box').parent().removeClass('has-error');
 		}
 		if(!hasError){
 			$.ajax({

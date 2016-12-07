@@ -61,6 +61,7 @@ $(document).ready(function () {
         var username = $('#username').val();
         var verificationToken = $('#verificationToken').val();
         var csrf = $('#csrf').val();
+        console.log(username, verificationToken, csrf);
         $.ajax({
             url: '/verify/'+username+'/'+verificationToken,
             type: 'PUT',

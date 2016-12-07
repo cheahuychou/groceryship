@@ -98,9 +98,17 @@
       </div>
       <div class="modal-body">
         <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-        <input id='current-password-box' class='form-control edit-profile-input' type='password' name='currentPassword' placeholder='current password' required></input><br>
-        <input id='new-password-box' class='form-control edit-profile-input' type='password' name='newPassword' placeholder='new password' required></input><br>
-        <input id='confirmed-new-password-box' class='form-control edit-profile-input' type='password' name='confirmedPassword' placeholder='confirm new password' required></input><br>
+        <div>
+          <input id='current-password-box' class='form-control edit-profile-input' type='password' name='currentPassword' placeholder='current password' required></input>
+        </div>
+        <br>
+        <div>
+          <input id='new-password-box' class='form-control edit-profile-input' type='password' name='newPassword' placeholder='new password' required></input><br>
+        </div>
+        <div>
+          <input id='confirmed-new-password-box' class='form-control edit-profile-input' type='password' name='confirmedPassword' placeholder='confirm new password' required></input>
+        </div>
+        <br>
         <div class='row'>
           <button type="submit" id='change-password-button' class='btn btn-primary btn-sm pull-right'>Confirm Password Change</button>
         </div>
