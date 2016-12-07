@@ -11,6 +11,8 @@ var config = require('../javascripts/config.js');
 var stripe = require('stripe');
 var API_KEY = process.env.STRIPE_API_KEY || config.stripeApiKey();
 var stripePlatform = stripe(API_KEY);
+var PUBLISHABLE_KEY = process.env.PUBLISHABLE_API_KEY || config.stripePublishableKey();
+var stripe = stripe(PUBLISHABLE_KEY);
 var authentication = require('../javascripts/authentication.js');
 
 // setup csurf middlewares 
@@ -27,39 +29,39 @@ router.get("/", authentication.isAuthenticated, function(req, res) {
     var stores = req.query.stores;
     var pickupLocations = req.query.pickupLocations;
     if (req.query.minRating) {
-    	var minRating = parseInt(req.query.minRating);
+        var minRating = parseInt(req.query.minRating);
     }
     var sortBy = req.query.sortBy;
     if (req.query.sortIncreasing) {
-    	var sortIncreasing = parseInt(req.query.sortIncreasing);
+        var sortIncreasing = parseInt(req.query.sortIncreasing);
     }
     Delivery.getRequests(user._id, now, stores, pickupLocations, minRating, [sortBy, sortIncreasing], function(err, requestItems) {
         if (err) {
-        	if (err.message = "User has been suspended from making deliveries") {
-        		res.render('suspended', {username: user.username,
-        			                     fullName: user.fullName,
-        		                         title: 'Suspended :(',
-        		                         suspendedUntil: err.suspendedUntil,
-        		                         csrfToken: req.csrfToken()
-        		                     });
-        	} else {
-	        	console.log(err);
-	            res.send({'success': false, 'message': err});
-        	}
+            if (err.message = "User has been suspended from making deliveries") {
+                res.render('suspended', {username: user.username,
+                                         fullName: user.fullName,
+                                         title: 'Suspended :(',
+                                         suspendedUntil: err.suspendedUntil,
+                                         csrfToken: req.csrfToken()
+                                     });
+            } else {
+                console.log(err);
+                res.send({'success': false, 'message': err});
+            }
         } else {
             res.render('deliver', {username: user.username,
                                    fullName: user.fullName,
-            	                   title: 'Request Feed',
-            	                   requestItems: utils.formatDate(requestItems),
-            	                   allPickupLocations: utils.allPickupLocations(),
-            	                   allStores: utils.allStores(),
-            	                   previousStores: stores,
-            	                   previousPickupLocations: pickupLocations,
-            	                   previousMinRating: minRating,
-            	                   previousSortBy: sortBy,
-            	                   previousSortIncreasing: sortIncreasing,
+                                   title: 'Request Feed',
+                                   requestItems: utils.formatDate(requestItems),
+                                   allPickupLocations: utils.allPickupLocations(),
+                                   allStores: utils.allStores(),
+                                   previousStores: stores,
+                                   previousPickupLocations: pickupLocations,
+                                   previousMinRating: minRating,
+                                   previousSortBy: sortBy,
+                                   previousSortIncreasing: sortIncreasing,
                                    csrfToken: req.csrfToken()
-            	               });
+                               });
         }
     });
 });
@@ -77,12 +79,12 @@ router.get("/username/:username", authentication.isAuthenticated, function(req, 
         } else {
             res.render('dashboard', {username: user.username,
                                      fullName: user.fullName,
-            	                     title: 'Dashboard',
-            	                     now: now,
-            	                     requestItems: utils.formatDate(requestItems),
-            	                     deliveryItems: utils.formatDate(deliveryItems),
+                                     title: 'Dashboard',
+                                     now: now,
+                                     requestItems: utils.formatDate(requestItems),
+                                     deliveryItems: utils.formatDate(deliveryItems),
                                      csrfToken: req.csrfToken()
-            	                 });
+                                 });
         }
     });
 });
@@ -96,7 +98,7 @@ router.get("/id/:id", authentication.isAuthenticated, function(req, res){
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id}).populate('shopper requester').lean().exec(function(err, current_delivery) {
         if (current_delivery === null) {
-        	err = new Error("cannot find specified request or delivery.");
+            err = new Error("cannot find specified request or delivery.");
         }
         if (err) {
             res.json({'success': false, 'message': err})
@@ -115,7 +117,7 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
     console.log(req.body);
     var stores = req.body['stores[]'];
     if (!stores) {
-    	stores = utils.allStores();
+        stores = utils.allStores();
     }
     var deadline = new Date(req.body.itemDue);
     var itemName = req.body.itemName;
@@ -151,47 +153,47 @@ router.post("/", authentication.isAuthenticated, parseForm, csrfProtection, func
 router.delete("/:id", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var userId = req.session.passport.user._id;
     Delivery.findOne({_id: req.params.id, requester: userId, status: "pending"}, function(err, current_delivery) { //verify that the current user is the one who requested it. Also,
-    	                                                                                                           //verify that the request has not been claimed
+                                                                                                                   //verify that the request has not been claimed
         if (current_delivery === null) {
-        	err = new Error("cannot find specified request. Request might have been claimed");
+            err = new Error("cannot find specified request. Request might have been claimed");
         }
         if (err) {
-        	console.log(err);
-        	res.json({success: false, message: err});
+            console.log(err);
+            res.json({success: false, message: err});
         } else {
-        	current_delivery.remove(function(err, data) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
-	                res.json({success: true});
-	            }
-        	});
+            current_delivery.remove(function(err, data) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    res.json({success: true});
+                }
+            });
         }
     });
 });
 
 /** Updates a request when the user closes an "expired" notification, indicated the user has seen that the request is expired **/
 router.put("/:id/seeExpired", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res) {
-	var user = req.session.passport.user;
-	Delivery.findOne({_id: req.params.id, requester: user._id}).exec(function(err, currentDelivery) { //verify that the current user is the one who requested it
-    	if (currentDelivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
-		if (err) {
-			console.log(err);
-			res.json({success: false, message: err});
-		} else {
-			currentDelivery.seeExpired(function(err) {
-				if (err) {
-					console.log(err);
-					res.json({success: false, message: err});
-				} else {
-					res.json({success: true});
-				}
-			});
-		}
-	});
+    var user = req.session.passport.user;
+    Delivery.findOne({_id: req.params.id, requester: user._id}).exec(function(err, currentDelivery) { //verify that the current user is the one who requested it
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.seeExpired(function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
+                    res.json({success: true});
+                }
+            });
+        }
+    });
 });
 
 /** Updates a Delivery when a user claims that delivery **/
@@ -199,27 +201,27 @@ router.put("/:id/claim", authentication.isAuthenticated, parseForm, csrfProtecti
     var user = req.session.passport.user;
     Delivery.findOne({_id: req.params.id}, function(err, currentDelivery) {
         console.log(currentDelivery);
-    	if (currentDelivery === null) {
-    		err = new Error("cannot find specified request")
-    	}
-    	if (err) {
-    		console.log(err);
-    		res.json({success: false, message: err});
-    	} else {
-	        currentDelivery.claim(user._id, function(err) {
-	            if (err) {
-	                console.log(err);
-	                res.json({success: false, message: err});
-	            } else {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        }
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            currentDelivery.claim(user._id, function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success: false, message: err});
+                } else {
                     Delivery.findOne({_id: req.params.id})
                         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
                         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
                             email.sendClaimEmail(currentDelivery);
-	                        res.json({success: true});
+                            res.json({success: true});
                        });
-	            }
-	        });
-    	}
+                }
+            });
+        }
     });
 });
 
@@ -232,7 +234,7 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
     Delivery.findOne({_id: req.params.id, shopper: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
-        	console.log(currentDelivery);
+            console.log(currentDelivery);
             if (currentDelivery === null) {
                 err = new Error("cannot find specified request")
             }
@@ -257,7 +259,6 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
 /** Updates a Delivery when a user accepts the delivery **/
 router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    var stripeUser = stripe(user.stripePublishableKey);
     Delivery.findOne({_id: req.params.id, requester: user._id})
         .populate('shopper', '-password -stripeId -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
         .populate('requester', '-password -stripeId -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
@@ -269,7 +270,7 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             res.json({success: false, message: err});
         } else {
             User.findById(currentDelivery.shopper, function(err, shopper){
-                stripeUser.tokens.create({
+                stripe.tokens.create({
                     card: {
                         'number': req.body.cardNumber,
                         'exp_month': req.body.expMonth,
@@ -360,4 +361,3 @@ router.put("/:id/rateRequester", authentication.isAuthenticated, parseForm, csrf
 });
 
 module.exports = router;
-

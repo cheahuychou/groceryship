@@ -158,12 +158,22 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                         } else {
                             authentication.createUserJSON(username, password, phoneNumber, dorm, mitData,
                                 function (err, userJSON) {
-                                    res.redirect(AUTHORIZE_URI + '?' + 
-                                             qs.stringify({ response_type: 'code',
+                                    if (req.devMode){
+                                        res.redirect(AUTHORIZE_URI + '?' + 
+                                             qs.stringify({ response_type: 'code',     
                                                             scope: 'read_write',
                                                             client_id: CLIENT_ID,
                                                             state: JSON.stringify(userJSON)
-                                    }));
+                                        }));
+                                    } else {
+                                        res.redirect(AUTHORIZE_URI + '?' + 
+                                             qs.stringify({ response_type: 'code',
+                                                            redirect: 'https://groceryship.herokuapp.com/oauth/callback',
+                                                            scope: 'read_write',
+                                                            client_id: CLIENT_ID,
+                                                            state: JSON.stringify(userJSON)
+                                        }));
+                                    }
                             });
                         };
                 });
