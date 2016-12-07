@@ -221,7 +221,7 @@ UserSchema.statics.sendVerficationEmail = function (username, devMode, callback)
                 } else {
                     callback({message: 'Your account has already been verified. You can now log in.'});
                 }
-            })
+            });
         }
     });
 }
@@ -242,7 +242,7 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
             callback({success: false, message: 'Database error'});
         } else if (count === 0) {
             that.create(userJSON, function(err, user){
-                Users.sendVerficationEmail(user.username, devMode, callback);
+                that.sendVerficationEmail(user.username, devMode, callback);
             });
         } else {
             callback({message: 'There is already an account with this kerberos'});
