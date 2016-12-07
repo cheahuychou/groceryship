@@ -10,7 +10,7 @@
         <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
           <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <div class='row'>
-            <div class='col-xs-8 col-md-5'>
+            <div class='col-xs-8 col-md-6'>
               <input id='kerberos-register-box' class='form-control signup-input' type='text' name='requestedKerberos' placeholder='kerberos' required></input>
               <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
               <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>

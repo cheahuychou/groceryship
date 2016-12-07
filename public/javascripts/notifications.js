@@ -2,17 +2,17 @@
 $(document).ready(function () {
     var csrf = $('#csrf').val();
 
-    // focus on first input box on modals
-    $('.accept-modal').on('shown.bs.modal', function() {
-        $('.card-number').focus();
-    });
-
-    $('.reject-modal').on('shown.bs.modal', function() {
-        $('.reason').focus();
-    });
-
-    $('.close-modal').on('shown.bs.modal', function() {
-        $('.deliver-rate-button').focus();
+    // focus on first input box on modals      
+    $('.accept-modal').on('shown.bs.modal', function() {       
+        $('.card-number').focus();     
+    });        
+       
+    $('.reject-modal').on('shown.bs.modal', function() {       
+        $('.reason').focus();      
+    });        
+       
+    $('.close-modal').on('shown.bs.modal', function() {        
+        $('.deliver-rate-button').focus();     
     });
 
     $('.notification-tile').click(function(e) {
@@ -33,7 +33,9 @@ $(document).ready(function () {
             url: '/deliveries/'+id+'/seeExpired',
             type: 'PUT',
             data: {_csrf: csrf},
-            success: function(data) {}, //do nothing
+            success: function(data) {
+                refreshAllCounts();
+            },
             error: function(err) {console.log(err);}
         });
     });
@@ -89,6 +91,8 @@ $(document).ready(function () {
                         $('#request-tile-container-' + id).remove();
                         $('#request-modal-' + id).remove();
 
+                        refreshAllCounts();
+
                         // update the average rating of the user being rated in the UI as well
                         // TODO: uncomment below once data.newAvgRating is added to the json the PUT request returns
                         // var userId = $('#rating-container-'+id).attr('data-user');
@@ -133,7 +137,8 @@ $(document).ready(function () {
                     // TODO: uncomment below once data.newAvgRating is added to the json the PUT request returns
                     // var userId = $('#rating-container-'+id).attr('data-user');
                     // updateStarRating(userId, data.newAvgRating, true);
-
+                    
+                    refreshAllCounts();
                 } else {
                     console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
@@ -146,7 +151,7 @@ $(document).ready(function () {
         });
     });
 
-	$('.deliver-rate-button').click(function() {
+    $('.deliver-rate-button').click(function() {
         var id = $(this).attr('data-id');
         var rating = $('#rating-container-'+id).find('.fa-star').length;
         $.ajax({
@@ -170,7 +175,8 @@ $(document).ready(function () {
                     // TODO: uncomment below once data.newAvgRating is added to the json the PUT request returns
                     // var userId = $('#rating-container-'+id).attr('data-user');
                     // updateStarRating(userId, data.newAvgRating, false);
-
+                    
+                    refreshAllCounts();
                 } else {
                     console.log(data.message);
                     addMessage('Rating failed. Please try again.', 'danger', true, true);

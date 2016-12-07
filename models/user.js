@@ -5,6 +5,7 @@ var bcrypt = require('bcrypt');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
 var email = require('../javascripts/email.js');
+var authentication = require('../javascripts/authentication.js');
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true}, // username must be kerberos
@@ -79,6 +80,76 @@ UserSchema.methods.verify = function (callback) {
 }
 
 /**
+* Changes the phone number to a new one.
+* @param {String} phoneNumber - the new phone number.
+* @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.changePhoneNumber = function(phoneNumber, callback){
+    this.phoneNumber = phoneNumber;
+    this.save(callback);
+}
+
+/**
+* Changes the dorm to a new one.
+* @param {String} dorm - the new dorm.
+* @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.changeDorm = function(dorm, callback){
+    this.dorm = dorm;
+    this.save(callback);
+}
+
+/**
+* Changes the hashed password to a new one.
+* @param {String} hash - the new hashed password.
+* @param {Function} callback - the function that gets called after.
+*/
+UserSchema.methods.changePassword = function(hash, callback){
+    this.password = hash;
+    this.save(callback);
+}
+
+/**
+ * Adds a delivery ID to the completed requests field. Updates the average request rating.  
+ * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
+ * @param {Number} rating - The rating of the new completed request. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
+    this.completedRequests.push(deliveryId);
+    var newLength = this.completedRequests.length;
+    this.avgRequestRating = (this.avgRequestRating * (newLength - 1) + rating) / newLength;
+    this.save(callback);
+};
+
+/**
+ * Adds a delivery ID to the completed shippings field. Updates the average shipping rating.  
+ * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
+ * @param {Number} rating - The rating of the new completed request. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
+    this.completedShippings.push(deliveryId);
+    var newLength = this.completedShippings.length;
+    var oldRating = this.avgShippingRating;
+    this.avgShippingRating = (this.avgShippingRating * (newLength - 1) + rating) / newLength;
+
+    //Suspend users for a period of time if they
+    //    1. previously had a good average rating but rating now fell below minimum allowed ship rating
+    //    2. currently have a bad average rating & receive another bad rating
+    if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
+        if ((oldRating >= utils.minAllowedShipRating() && this.avgShippingRating < utils.minAllowedShipRating())
+            || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
+            var now = Date.now();
+            this.suspendedUntil = new Date(now + utils.suspensionPeriod());
+        }
+    }
+    this.save(callback);
+};
+
+/**
 * Verifies the account so that user can start using it
 * @param {String} kerberos - kerberos of the account to verify
 * @param {String} token - the 32-digit verification token
@@ -150,7 +221,7 @@ UserSchema.statics.sendVerficationEmail = function (username, devMode, callback)
                 } else {
                     callback({message: 'Your account has already been verified. You can now log in.'});
                 }
-            })
+            });
         }
     });
 }
@@ -171,7 +242,7 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
             callback({success: false, message: 'Database error'});
         } else if (count === 0) {
             that.create(userJSON, function(err, user){
-                Users.sendVerficationEmail(user.username, devMode, callback);
+                that.sendVerficationEmail(user.username, devMode, callback);
             });
         } else {
             callback({message: 'There is already an account with this kerberos'});
@@ -180,45 +251,53 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
 }
 
 /**
- * Adds a delivery ID to the completed requests field. Updates the average request rating.  
- * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
- * @param {Number} rating - The rating of the new completed request. 
- * @param {Function} callback - The function to execute after the account is connected. Callback
+ * Edits the profile of a query user. 
+ * @param {String} username - The username of the query user. 
+ * @param {Number} newPhoneNumber - The new phone number of the user. 
+ * @param {String} newDorm - The new dorm of the user. 
+ * @param {Function} callback - The function to execute after the profile is editted. Callback
  * function takes 1 parameter: an error when the request is not properly claimed
  */
-UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
-    this.completedRequests.push(deliveryId);
-    var newLength = this.completedRequests.length;
-    this.avgRequestRating = (this.avgRequestRating * (newLength - 1) + rating) / newLength;
-    this.save(callback);
+UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, callback) {
+    this.findOne({'username': username}, function(err, user){
+        user.changePhoneNumber(newPhoneNumber, function(err){
+            if (err) {
+                callback(new Error("Invalid phone number."));
+            } else {
+                user.changeDorm(newDorm, function(err){
+                    if (err) {
+                        callback(new Error("Invalid dorm."));
+                    } else {
+                        callback(null);
+                    }
+                });
+            }
+        });
+    });
 };
 
 /**
- * Adds a delivery ID to the completed shippings field. Updates the average shipping rating.  
- * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
- * @param {Number} rating - The rating of the new completed request. 
- * @param {Function} callback - The function to execute after the account is connected. Callback
+ * Changes the password of a query user. 
+ * @param {String} username - The username of the query user. 
+ * @param {String} newPassword - The new password of the user. 
+ * @param {Function} callback - The function to execute after the password is changed. Callback
  * function takes 1 parameter: an error when the request is not properly claimed
  */
-UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
-    this.completedShippings.push(deliveryId);
-    var newLength = this.completedShippings.length;
-    var oldRating = this.avgShippingRating;
-    this.avgShippingRating = (this.avgShippingRating * (newLength - 1) + rating) / newLength;
-
-    //Suspend users for a period of time if they
-    //    1. previously had a good average rating but rating now fell below minimum allowed ship rating
-    //    2. currently have a bad average rating & receive another bad rating
-    if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
-        if ((oldRating >= utils.minAllowedShipRating() && this.avgShippingRating < utils.minAllowedShipRating())
-            || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
-            var now = Date.now();
-            this.suspendedUntil = new Date(now + utils.suspensionPeriod());
+UserSchema.statics.changePassword = function(username, newPassword, callback){
+    this.findOne({username: username}, function (err, user) {
+        if (err) {
+            callback(new Error("Invalid username."));
+        } else {
+            authentication.encryptPassword(newPassword, function(err, hash){
+                if (err){
+                    callback(new Error("The new password is invalid."));
+                } else {
+                    user.changePassword(hash, callback); 
+                }
+            });
         }
-    }
-
-    this.save(callback);
-};
+    });
+}
 
 var UserModel = mongoose.model("User", UserSchema);
 

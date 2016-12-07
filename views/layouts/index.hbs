@@ -37,7 +37,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-            {{#username}}
+            {{#fullName}}
             <!-- for when the navbar collapses when the window is small -->
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -46,13 +46,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {{/username}}
+            {{/fullName}}
             <a href="/" class="navbar-brand"><img class='navbar-logo' src='/images/icon.png'/>GroceryShip</a>
         </div>
         <div class="navbar-collapse collapse">
-        {{#username}}
+        {{#fullName}}
           {{> navbar_logged_in ../this}}
-        {{/username}}
+        {{/fullName}}
         </div>
       </div>
     </div>

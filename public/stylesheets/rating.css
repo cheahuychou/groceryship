@@ -33,7 +33,6 @@
   text-shadow: 0 1px #997000;
   display: block;
 }
-
-.clear-star-rating:before {
-  content: '';
+.star-rating.profile-stars {
+  width: 84px;
 }
