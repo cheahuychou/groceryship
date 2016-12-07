@@ -225,13 +225,14 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
                             console.log(err)
                             res.json({success: false, message: "Invalid transaction."});
                         } else {
-                            currentDelivery.accept(data.id, req.body.shopperRating, function(err) { //store in the database that the delivery is accepted only after transaction is successful
+                            //store in the database that the delivery is accepted only after transaction is successful
+                            currentDelivery.accept(data.id, req.body.shopperRating, function(err, newRating) {
                                 if (err) {
                                     console.log(err);
                                     res.json({success: false, message: err});
                                 } else {
                                     email.sendAcceptanceEmails(utils.formatDate([currentDelivery])[0]);
-                                    res.json({success: true});//Add newRating in res.json
+                                    res.json({success: true, newRating: newRating});
                                 }
                             });
                         }
@@ -248,13 +249,13 @@ request body fields: shopperRating, reason
 **/
 router.put("/:id/reject", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    Delivery.reject(req.params.id, user._id, req.body.reason, parseInt(req.body.shopperRating), function(err, currentDelivery) {
+    Delivery.reject(req.params.id, user._id, req.body.reason, parseInt(req.body.shopperRating), function(err, currentDelivery, newRating) {
         if (err) {
             console.log(err);
             res.json({success: false, message: err});
         } else {
             email.sendRejectionEmails(utils.formatDate([currentDelivery])[0]);
-            res.json({success: true});//Add newRating in res.json
+            res.json({success: true, newRating: newRating});
         }
     });
 });
@@ -265,12 +266,12 @@ request body fields: requesterRating
 **/
 router.put("/:id/rateRequester", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    Delivery.rateRequester(req.params.id, user._id, parseInt(req.body.requesterRating), function(err) {
+    Delivery.rateRequester(req.params.id, user._id, parseInt(req.body.requesterRating), function(err, newRating) {
         if (err) {
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            res.json({success: true});
+            res.json({success: true, newRating: newRating});
         }
     });
 });

@@ -203,13 +203,13 @@ DeliverySchema.statics.deliver = function(id, shopperID, pickupTime, actualPrice
  * @param {String} transactionId - The ID of the stripe transaction of this delivery
  * @param {Number} shopperRating - The rating that the requester gives the shopper, must be an integer between 1 to 5
  * @param {Function} callback - The function to execute after request is accepted. Callback
- * function takes 1 parameter: an error when the accept is not properly saved
+ * function takes 2 parameters: an error when the accept is not properly saved, and the new rating
  */
 DeliverySchema.methods.accept = function(transactionId, shopperRating, callback) {
     if (this.status !== "claimed") {
-        callback(new Error("request is either pending or is already accepted/rejected"));
+        callback(new Error("request is either pending or is already accepted/rejected"), null);
     } else if (this.actualPrice === null) {
-        callback(new Error ("price of good has not been set yet"))
+        callback(new Error ("price of good has not been set yet"), null)
     } else {
         this.status = "accepted";
         this.stripeTransactionId = transactionId;
@@ -218,7 +218,7 @@ DeliverySchema.methods.accept = function(transactionId, shopperRating, callback)
         var thisID = this._id;
         this.save(function(err) {
             if (err) {
-                callback(err);
+                callback(err, null);
             } else {
                 User.addCompletedShipping(shopperID, thisID, shopperRating, callback);
             }
@@ -233,7 +233,7 @@ DeliverySchema.methods.accept = function(transactionId, shopperRating, callback)
  * @param {String} reason - The requester's reason for rejecting the delivery
  * @param {Number} shopperRating - The rating that the requester gives to the shopper, must be an integer between 1 to 5
  * @param {Function} callback - The function to execute after request is rejected. Callback
- * function takes 2 parameters: an error when the reject is not properly saved, and the delivery object
+ * function takes 3 parameters: an error when the reject is not properly saved, the delivery object, and the new rating
  */
 DeliverySchema.statics.reject = function(id, requesterID, reason, shopperRating, callback) {
     this.findOne({_id: id, requester: requesterID, status: "claimed"})
@@ -254,8 +254,8 @@ DeliverySchema.statics.reject = function(id, requesterID, reason, shopperRating,
                 if (err) {
                     callback(err, null);
                 } else {
-                    User.addCompletedShipping(currentDelivery.shopper._id, id, shopperRating, function(err) {
-                        callback(err, currentDelivery);
+                    User.addCompletedShipping(currentDelivery.shopper._id, id, shopperRating, function(err, newRating) {
+                        callback(err, currentDelivery, newRating);
                     });
                 }
             });
@@ -269,7 +269,7 @@ DeliverySchema.statics.reject = function(id, requesterID, reason, shopperRating,
  * @param {ObjectId} shopperID - The id of the user delivering the good
  * @param {Number} requesterRating - The rating that the shopper gives to the requester, must be an integer between 1 to 5
  * @param {Function} callback - The function to execute after request is rejected. Callback
- * function takes 1 parameter: an error when the rating is not properly saved
+ * function takes 2 parameters: an error when the rating is not properly saved, and the new rating
  */
 DeliverySchema.statics.rateRequester = function(id, shopperID, requesterRating, callback) {
     this.findOne({_id: id, shopper: shopperID}, function(err, currentDelivery) {
@@ -279,12 +279,12 @@ DeliverySchema.statics.rateRequester = function(id, shopperID, requesterRating, 
             err = new Error("cannot rate the shopper without claiming his/her delivery");
         }
         if (err) {
-            callback(err);
+            callback(err, null);
         } else {
             currentDelivery.requesterRating = requesterRating;
             currentDelivery.save(function(err) {
                 if (err) {
-                    callback(err);
+                    callback(err, null);
                 } else {
                     User.addCompletedRequest(currentDelivery.requester, currentDelivery._id, requesterRating, callback);
                 }

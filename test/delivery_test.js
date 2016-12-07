@@ -524,7 +524,7 @@ describe("Models", function() {
     describe("Accept and Reject", function() {
       it("should allow requester to accept requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept("testTransactionID", 5, function(err) {
+            doc.accept("testTransactionID", 5, function(err, newRating) {
               assert.strictEqual(doc.status, "accepted");
               assert.strictEqual(doc.shopperRating, 5);
               done();
@@ -534,7 +534,7 @@ describe("Models", function() {
 
       it("should allow requester to reject requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-          Delivery.reject(doc._id, id2, 'Unsatsified with the quality', 2, function(err, currentDelivery) {
+          Delivery.reject(doc._id, id2, 'Unsatisfied with the quality', 2, function(err, currentDelivery, newRating) {
             assert.strictEqual(currentDelivery.status, "rejected");
             assert.strictEqual(currentDelivery.shopperRating, 2);
             done();
@@ -554,7 +554,7 @@ describe("Models", function() {
               pickupLocation: "New House",
               requester: id2,
               shopper: id1}, function(err, doc) {
-                doc.accept("testTransactionID", 5, function(err) {
+                doc.accept("testTransactionID", 5, function(err, newRating) {
                   assert.throws(function() {
                     assert.ifError(err);
                   });
@@ -565,7 +565,7 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be accepted", function(done) {
         Delivery.create(pending_delivery1, function(err, doc) {
-            doc.accept("testTransactionID", 4, function(err) {
+            doc.accept("testTransactionID", 4, function(err, newRating) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -576,7 +576,7 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be rejected", function(done) {
         Delivery.create(accepted_delivery1, function(err, doc) {
-          Delivery.reject(doc._id, id3, 'Wrong item', 1, function(err, currentDelivery) {
+          Delivery.reject(doc._id, id3, 'Wrong item', 1, function(err, currentDelivery, newRating) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -587,7 +587,7 @@ describe("Models", function() {
 
       it("should not allow empty reject reason", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-          Delivery.reject(doc._id, id2, '', 1, function(err, currentDelivery) {
+          Delivery.reject(doc._id, id2, '', 1, function(err, currentDelivery, newRating) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -598,7 +598,7 @@ describe("Models", function() {
 
       it("should not allow invalid shopper rating when rejecting", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-          Delivery.reject(doc._id, id2, 'Wrong item', 0, function(err, currentDelivery) {
+          Delivery.reject(doc._id, id2, 'Wrong item', 0, function(err, currentDelivery, newRating) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -609,7 +609,7 @@ describe("Models", function() {
 
       it("should not allow invalid shopper rating when accepting", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept("testTransactionID", 10, function(err) {
+            doc.accept("testTransactionID", 10, function(err, newRating) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -620,7 +620,7 @@ describe("Models", function() {
 
       it("should not allow other users besides the requester to reject requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-          Delivery.reject(doc._id, id3, 'Unsatsified with the quality', 2, function(err, currentDelivery) {
+          Delivery.reject(doc._id, id3, 'Unsatisfied with the quality', 2, function(err, currentDelivery, newRating) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -633,9 +633,9 @@ describe("Models", function() {
     describe("RateRequester", function() {
       it("should allow shopper to rate requester after the delivery is accepted", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept("testTransactionID", 3, function(err) {
+            doc.accept("testTransactionID", 3, function(err, newRating) {
               assert.isNull(err);
-              Delivery.rateRequester(doc._id, id1, 4, function (err) {
+              Delivery.rateRequester(doc._id, id1, 4, function (err, newRating) {
                 assert.isNull(err);
                 Delivery.findOne({itemName: "test-item-sausages"}, function(err, currentDelivery) {
                   assert.isNull(err);
@@ -650,9 +650,9 @@ describe("Models", function() {
 
       it("should allow shopper to rate requester after the delivery is rejected", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            Delivery.reject(doc._id, id2, 'Wrong item', 3, function(err, doc) {
+            Delivery.reject(doc._id, id2, 'Wrong item', 3, function(err, doc, newRating) {
                 assert.isNull(err);
-                Delivery.rateRequester(doc._id, id1, 2, function(err) {
+                Delivery.rateRequester(doc._id, id1, 2, function(err, newRating) {
                   assert.isNull(err);
                   Delivery.findOne({itemName: "test-item-sausages"}, function(err, currentDelivery) {
                     assert.isNull(err);
@@ -667,7 +667,7 @@ describe("Models", function() {
 
       it("should allow shopper to rate requester after the delivery is claimed", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-          Delivery.rateRequester(doc._id, id1, 1, function(err) {
+          Delivery.rateRequester(doc._id, id1, 1, function(err, newRating) {
             assert.isNull(err);
             Delivery.findOne({itemName: "test-item-sausages"}, function(err, currentDelivery) {
               assert.isNull(err);
@@ -680,7 +680,7 @@ describe("Models", function() {
 
       it("should not allow other users besides the shopper to rate requester", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-          Delivery.rateRequester(doc._id, id2, 1, function(err) {
+          Delivery.rateRequester(doc._id, id2, 1, function(err, newRating) {
             assert.throws(function() {
               assert.ifError(err);
             });
