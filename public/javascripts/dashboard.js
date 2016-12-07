@@ -2,6 +2,8 @@
 $(document).ready(function () {
     $('#deliveries-table').DataTable({
         "order": [],
+        "bPaginate": false,
+        "bInfo": false,
         "columnDefs": [{ "orderable": false, "targets": [0, 1, 2, 3, 4, 7, 8] }]
     });
 
