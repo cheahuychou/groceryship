@@ -59,7 +59,7 @@ var Authentication = function() {
     */
     that.createUserJSON = function (username, password, phoneNumber, dorm, mitData, callback) {
         if (password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
-            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.'"})
+            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character."})
         } else {
             that.encryptPassword(password, function (err, hash) {
                 if (err) {
