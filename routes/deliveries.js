@@ -194,7 +194,6 @@ request body fields: cardNumber, expMonth, expYear, cvc, shopperRating
 **/
 router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
-    var stripeUser = stripe(user.stripePublishableKey);
     
     //first, get the current delivery data along with the necessary information for stripe transaction
     Delivery.findOne({_id: req.params.id, requester: user._id, status: "claimed", actualPrice: {$ne: null}})
@@ -208,7 +207,7 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             console.log(err);
             res.json({success: false, message: err});
         } else {
-        	stripeUser.tokens.create({card: {'number': req.body.cardNumber, //create tokens from credit card details
+        	stripe.tokens.create({card: {'number': req.body.cardNumber, //create tokens from credit card details
 					                        'exp_month': req.body.expMonth,
 					                        'exp_year': req.body.expYear,
 					                        'cvc': req.body.cvc}
