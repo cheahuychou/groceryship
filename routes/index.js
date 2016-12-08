@@ -159,7 +159,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                             authentication.createUserJSON(username, password, phoneNumber, dorm, mitData,
                                 function (err, userJSON) {
                                     if (err) {
-                                        data.message = 'A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character,' + ' a number and one special character.';
+                                        data.message = err.message;
                                         res.render('home', data);
                                     }
                                     if (req.devMode){
