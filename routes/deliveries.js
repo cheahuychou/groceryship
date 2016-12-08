@@ -14,6 +14,7 @@ var stripePlatform = stripe(API_KEY);
 var PUBLISHABLE_KEY = process.env.PUBLISHABLE_API_KEY || config.stripePublishableKey();
 var stripe = stripe(PUBLISHABLE_KEY);
 var authentication = require('../javascripts/authentication.js');
+var dateFormat = require('dateformat');
 
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
@@ -40,8 +41,8 @@ router.get("/", authentication.isAuthenticated, function(req, res) {
             if (err.message = "User has been suspended from making deliveries") {
                 res.render('suspended', {username: user.username,
                                          fullName: user.fullName,
-                                         title: 'Suspended :(',
-                                         suspendedUntil: err.suspendedUntil,
+                                         title: 'Request Feed Not Available',
+                                         suspendedUntil: dateFormat(err.suspendedUntil, "mmm d, h:MM TT"),
                                          csrfToken: req.csrfToken()
                                      });
             } else {

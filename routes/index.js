@@ -158,6 +158,10 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                         } else {
                             authentication.createUserJSON(username, password, phoneNumber, dorm, mitData,
                                 function (err, userJSON) {
+                                    if (err) {
+                                        data.message = err.message;
+                                        res.render('home', data);
+                                    }
                                     if (req.devMode){
                                         res.redirect(AUTHORIZE_URI + '?' + 
                                              qs.stringify({ response_type: 'code',     
