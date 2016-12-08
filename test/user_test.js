@@ -268,7 +268,7 @@ describe("Models", function() {
 
     describe("signUp", function() {
       it("should create an account successfully", function(done) {
-        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+        authentication.createUserJSON('testUser', 'Iwantpizza3@', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
           assert.isNull(err);
           userJSON.stripeId = 'testStripeId';
           userJSON.stripePublishableKey = 'testUserStripePublishableKey';
@@ -284,7 +284,7 @@ describe("Models", function() {
       });
 
       it("should set a verification token", function(done) {
-        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+        authentication.createUserJSON('testUser', 'Iwantpizza3@', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
           assert.isNull(err);
           userJSON.stripeId = 'testStripeId';
           userJSON.stripePublishableKey = 'testUserStripePublishableKey';
@@ -303,7 +303,7 @@ describe("Models", function() {
 
     describe("authenticate", function() {
       it("should authenticate successfully when the username and password are valid and correct", function(done) {
-        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+        authentication.createUserJSON('testUser', 'Iwantpizza3@', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
           assert.isNull(err);
           userJSON.stripeId = 'testStripeId';
           userJSON.stripePublishableKey = 'testUserStripePublishableKey';
@@ -312,7 +312,7 @@ describe("Models", function() {
             User.findOne({username: user.username}, function (err, user) {
               assert.isNull(err);
               assert.isNotNull(user);
-              User.authenticate('testUser', 'testPassword', function (err, user) {
+              User.authenticate('testUser', 'Iwantpizza3@', function (err, user) {
                 assert.isNull(err);
                 done();
               });
@@ -322,7 +322,7 @@ describe("Models", function() {
       });
 
       it("should fail when the username is invalid", function(done) {
-        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+        authentication.createUserJSON('testUser', 'Iwantpizza3@', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
           assert.isNull(err);
           userJSON.stripeId = 'testStripeId';
           userJSON.stripePublishableKey = 'testUserStripePublishableKey';
@@ -331,7 +331,7 @@ describe("Models", function() {
             User.findOne({username: user.username}, function (err, user) {
               assert.isNull(err);
               assert.isNotNull(user);
-              User.authenticate('testUser1', 'testPassword', function (err, user) {
+              User.authenticate('testUser1', 'Iwantpizza3@', function (err, user) {
                 assert.isNotNull(err);
                 done();
               });
@@ -341,7 +341,7 @@ describe("Models", function() {
       });
 
       it("should fail when the password is wrong", function(done) {
-        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+        authentication.createUserJSON('testUser', 'Iwantpizza3@', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
           assert.isNull(err);
           userJSON.stripeId = 'testStripeId';
           userJSON.stripePublishableKey = 'testUserStripePublishableKey';
@@ -350,7 +350,7 @@ describe("Models", function() {
             User.findOne({username: user.username}, function (err, user) {
               assert.isNull(err);
               assert.isNotNull(user);
-              User.authenticate('testUser', 'testPassword1', function (err, user) {
+              User.authenticate('testUser', 'Iwantpizza3@1', function (err, user) {
                 assert.isNotNull(err);
                 done();
               });

@@ -58,20 +58,25 @@ var Authentication = function() {
     * @param  {Function} callback - the function that takes in an object and is called once this function is done
     */
     that.createUserJSON = function (username, password, phoneNumber, dorm, mitData, callback) {
-    	that.encryptPassword(password, function (err, hash) {
-    		if (err) {
-    			return callback(err);
-    		}
-            var firstName = mitData.person ? mitData.person.givenName : 'FirstNameTest';
-            var lastName = mitData.person ? mitData.person.familyName : 'LastNameTest';
-            var user = {username: username,
-                        password: hash,
-                        firstName: firstName,
-                        lastName: lastName,
-                        phoneNumber: phoneNumber,
-                        dorm: dorm};
-            callback(null, user);
-        });
+        if (password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
+            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.'"})
+        } else {
+            that.encryptPassword(password, function (err, hash) {
+                if (err) {
+                    return callback(err);
+                } else {
+                    var firstName = mitData.person ? mitData.person.givenName : 'FirstNameTest';
+                    var lastName = mitData.person ? mitData.person.familyName : 'LastNameTest';
+                    var user = {username: username,
+                            password: hash,
+                            firstName: firstName,
+                            lastName: lastName,
+                            phoneNumber: phoneNumber,
+                            dorm: dorm};
+                    callback(null, user);
+                }      
+            });
+        }
     }
 
     /**
