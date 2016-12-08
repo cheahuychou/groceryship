@@ -70,7 +70,7 @@ var Authentication = function() {
                         lastName: lastName,
                         phoneNumber: phoneNumber,
                         dorm: dorm};
-            callback(err, user);
+            callback(null, user);
         });
     }
 

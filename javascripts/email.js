@@ -83,7 +83,7 @@ var Email = function() {
    	* @return {Object} object - object.success is true if the email was sent
    								successfully, false otherwise
    	*/
-	that.sendVerficationEmail = function (user, developmentMode) {
+	that.sendVerficationEmail = function (user, developmentMode, callback) {
 		that.createVerificationToken(user, function (err, user) {
 			var subject = 'Confirm your GroceryShip Account, {}!'.format(user.username);
 			var link;
@@ -93,7 +93,8 @@ var Email = function() {
 				link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
 			}
 			var content = '{}<p>Hi {}!<br><br>Confirm your GroceryShip account by clicking on the confirm button below.<form action="{}"><input type="submit" value="Confirm" /></form>{}</p>'.format(that.welcomeMessage, user.firstName, link, that.signature);
-			return sendEmail(user.username, subject, content);
+			sendEmail(user.username, subject, content);
+			callback(null, user)
 		});
 	}
 

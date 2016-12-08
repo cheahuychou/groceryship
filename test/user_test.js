@@ -3,6 +3,7 @@
 var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require("../models/user");
+var authentication = require('../javascripts/authentication.js');
 
 describe("Models", function() {
   // The mongoose connection object.
@@ -69,6 +70,46 @@ describe("Models", function() {
         });
       });
 
+      it("should fail to create a user when stripeId is missing", function(done) {
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          assert.isNotNull(err);
+          done();
+        });
+      });
+
+      it("should fail to create a user when stripeEmail is missing", function(done) {
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          assert.isNotNull(err);
+          done();
+        });
+      });
+
+      it("should fail to create a user when stripePublishableKey is missing", function(done) {
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": firstName, "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          assert.isNotNull(err);
+          done();
+        });
+      });
+
+      it("should fail to create a user when first name is missing", function(done) {
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          assert.isNotNull(err);
+          done();
+        });
+      });
+
+      it("should fail to create a user when the dorm is missing", function(done) {
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName};
+        User.create(userJSON, function(err, user) {
+          assert.isNotNull(err);
+          done();
+        });
+      });
+
       it("should not allow empty usernames", function(done) {
         var userJSON = {"username": "   ", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
         User.create(userJSON, function(err, user) {
@@ -84,47 +125,6 @@ describe("Models", function() {
           done();
         });
       });
-
-      it("should fail to create a user when the password contain less than 8 characters", function(done) {
-        var userJSON = {"username": "testuser", "password": "Iwant", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
-        User.create(userJSON, function(err, user) {
-          assert.isNotNull(err);
-          done();
-        });
-      });
-
-      it("should fail to create a user when the password does not contain any uppercase letters", function(done) {
-        var userJSON = {"username": "testuser", "password": "iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
-        User.create(userJSON, function(err, user) {
-          assert.isNotNull(err);
-          done();
-        });
-      });
-
-      it("should fail to create a user when the password does not contain any lowercase letters", function(done) {
-        var userJSON = {"username": "testuser", "password": "IWANTPIZZA3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
-        User.create(userJSON, function(err, user) {
-          assert.isNotNull(err);
-          done();
-        });
-      });
-
-      it("should fail to create a user when the password does not contain any special characters", function(done) {
-        var userJSON = {"username": "testuser", "password": "Iwantpizza3", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
-        User.create(userJSON, function(err, user) {
-          assert.isNotNull(err);
-          done();
-        });
-      });
-
-      it("should fail to create a user when the password does not contains any numbers", function(done) {
-        var userJSON = {"username": "testuser", "password": "iwantpizza@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
-        User.create(userJSON, function(err, user) {
-          assert.isNotNull(err);
-          done();
-        });
-      });
-
 
       it("should not allow empty first names", function(done) {
         var userJSON = {"username": "testuser", "password": "1234567890", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": "   ", "lastName": lastName};
@@ -179,7 +179,7 @@ describe("Models", function() {
           User.findOne({"username": "testuser"}, function(err, user) {
             user.setVerificationToken(verificationToken, function (err, user) {
                 assert.isNull(err);
-                assert.isNotNull(user);
+                assert.isNotNull(user.verificationToken);
                 done();
             });
           });
@@ -199,6 +199,27 @@ describe("Models", function() {
                 user.verify(function (err, user) {
                     assert(user.verified);
                     done();
+                });
+            });
+          });
+        });
+      });
+
+      it("should not throw an error or unverified if is already verified", function(done) {
+        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
+        User.create(userJSON, function(err, user) {
+          assert.isNull(err);
+          User.findOne({"username": "testuser"}, function(err, user) {
+            user.setVerificationToken(verificationToken, function (err, user) {
+                assert.isNull(err);
+                assert.isNotNull(user);
+                user.verify(function (err, user) {
+                    assert(user.verified);
+                    user.verify(function (err, user) {
+                      assert.isNull(err);
+                      assert(user.verified);
+                      done();
+                    });
                 });
             });
           });
@@ -243,24 +264,100 @@ describe("Models", function() {
           });
         });
       });
+    });
 
-      it("should return an error when the username is invalid", function(done) {
-        var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName, "lastName": lastName};
-        User.create(userJSON, function(err, user) {
+    describe("signUp", function() {
+      it("should create an account successfully", function(done) {
+        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
           assert.isNull(err);
-          User.findOne({"username": "testuser"}, function(err, user) {
-            user.setVerificationToken(verificationToken, function (err, user) {
+          userJSON.stripeId = 'testStripeId';
+          userJSON.stripePublishableKey = 'testUserStripePublishableKey';
+          userJSON.stripeEmail = 'testStripeEmail';
+          User.signUp(userJSON, true, function (err, user) {
+            User.findOne({username: user.username}, function (err, user) {
+              assert.isNull(err);
+              assert.isNotNull(user);
+              done();
+            })
+          })
+        }); 
+      });
+
+      it("should set a verification token", function(done) {
+        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+          assert.isNull(err);
+          userJSON.stripeId = 'testStripeId';
+          userJSON.stripePublishableKey = 'testUserStripePublishableKey';
+          userJSON.stripeEmail = 'testStripeEmail';
+          User.signUp(userJSON, true, function (err, user) {
+            User.findOne({username: user.username}, function (err, user) {
+              assert.isNull(err);
+              assert.isNotNull(user);
+              assert.isNotNull(user.verificationToken);
+              done();
+            })
+          })
+        }); 
+      });    
+    });
+
+    describe("authenticate", function() {
+      it("should authenticate successfully when the username and password are valid and correct", function(done) {
+        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+          assert.isNull(err);
+          userJSON.stripeId = 'testStripeId';
+          userJSON.stripePublishableKey = 'testUserStripePublishableKey';
+          userJSON.stripeEmail = 'testStripeEmail';
+          User.signUp(userJSON, true, function (err, user) {
+            User.findOne({username: user.username}, function (err, user) {
+              assert.isNull(err);
+              assert.isNotNull(user);
+              User.authenticate('testUser', 'testPassword', function (err, user) {
                 assert.isNull(err);
-                assert.isNotNull(user);
-                assert(!user.verified);
-                User.verifyAccount('testuser1', verificationToken, function (err, user) {
-                    assert.isNotNull(err);
-                    done();
-                });
+                done();
+              });
+            })
+          })
+        }); 
+      });
+
+      it("should fail when the username is invalid", function(done) {
+        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+          assert.isNull(err);
+          userJSON.stripeId = 'testStripeId';
+          userJSON.stripePublishableKey = 'testUserStripePublishableKey';
+          userJSON.stripeEmail = 'testStripeEmail';
+          User.signUp(userJSON, true, function (err, user) {
+            User.findOne({username: user.username}, function (err, user) {
+              assert.isNull(err);
+              assert.isNotNull(user);
+              User.authenticate('testUser1', 'testPassword', function (err, user) {
+                assert.isNotNull(err);
+                done();
+              });
             });
           });
-        });
+        }); 
       });
+
+      it("should fail when the password is wrong", function(done) {
+        authentication.createUserJSON('testUser', 'testPassword', 1234567890, 'Maseeh', {person: {givenName: 'Jane', familyName: 'Doe'}}, function (err, userJSON) {
+          assert.isNull(err);
+          userJSON.stripeId = 'testStripeId';
+          userJSON.stripePublishableKey = 'testUserStripePublishableKey';
+          userJSON.stripeEmail = 'testStripeEmail';
+          User.signUp(userJSON, true, function (err, user) {
+            User.findOne({username: user.username}, function (err, user) {
+              assert.isNull(err);
+              assert.isNotNull(user);
+              User.authenticate('testUser', 'testPassword1', function (err, user) {
+                assert.isNotNull(err);
+                done();
+              });
+            });
+          });
+        }); 
+      });        
     });
 
     describe("editFields", function(){
