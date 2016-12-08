@@ -102,7 +102,7 @@ describe("Models", function() {
         });
       });
 
-      it("should fail to create a user when the dorm is missing", function(done) {
+      it("should fail to create a user when last name is missing", function(done) {
         var userJSON = {"username": "testuser", "password": "Iwantpizza3@", "phoneNumber": 1234567890, "dorm": "Maseeh", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": firstName};
         User.create(userJSON, function(err, user) {
           assert.isNotNull(err);

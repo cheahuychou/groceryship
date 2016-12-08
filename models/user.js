@@ -213,7 +213,7 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
             callback({success: false, message: 'Database error'});
         } else if (count === 0) {
             that.create(userJSON, function(err, user){
-                that.sendVerficationEmail(user.username, devMode, callback);
+                that.sendVerificationEmail(user.username, devMode, callback);
             });
         } else {
             callback({message: 'There is already an account with this kerberos'});
@@ -226,11 +226,11 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
 * If devMode is true, send a verification link with localhost prefix, otherwise send the
 * production URL prefix
 * @param {String} username - username of the user 
-* @param {Boolean} devMode - true if the app is in developer mode, false otherwise
+* @param {Boolean} devMode - true if the app is in development mode, false otherwise
 * @param {Function} callback - the function that gets called after the user is created, err argument
 *                              is null if the given the registration succeed, otherwise, err.message
 */
-UserSchema.statics.sendVerficationEmail = function (username, devMode, callback) {
+UserSchema.statics.sendVerificationEmail = function (username, devMode, callback) {
     that = this;
     that.count({ username: username }, function (err, count) {
         if (count === 0) {
@@ -240,7 +240,7 @@ UserSchema.statics.sendVerficationEmail = function (username, devMode, callback)
                 if (err) {
                     callback(err)
                 } else if (user && !user.isVerified) {
-                    email.sendVerficationEmail(user, devMode, callback);
+                    email.sendVerificationEmail(user, devMode, callback);
                 } else {
                     callback({message: 'Your account has already been verified. You can now log in.'});
                 }
