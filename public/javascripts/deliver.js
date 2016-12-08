@@ -63,7 +63,6 @@ var initializeClaimButtons = function(requestTable) {
 $(document).ready(function () {
     var requestTable = $('#request-table').DataTable({
         "ordering": false,
-        "language": {"emptyTable": "No requests from other users to claim yet."}
     });
     requestTable.on('draw', function() {
         console.log('drawing~');
