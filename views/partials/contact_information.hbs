@@ -1,10 +1,14 @@
 {{!-- Author: Joseph Kuan --}}
+{{#if user.avgShippingRating}}
 <div class='hide-from-view'>
-  <div class="contact-tooltip-{{user._id}}" id="contact-tooltip-{{user._id}}">
+  {{!-- tooltip for when contact is a shopper --}}
+  <div class="contact-tooltip-{{user._id}}" id="contact-shopper-tooltip-{{user._id}}">
     {{user.firstName}} {{user.lastName}}
-    <div class="user-phone">
-      <a href="tel:{{user.phoneNumber}}">{{formatPhone user.phoneNumber}}</a><br>
-    </div>
+    {{#if user.phoneNumber}}
+      <div class="user-phone">
+        <a href="tel:{{user.phoneNumber}}">{{formatPhone user.phoneNumber}}</a><br>
+      </div>
+    {{/if}}
     <div class="shipping-rating">
       {{#ifContains user.completedShippings.length 0}}
         <i>no ratings yet</i>
@@ -12,6 +16,20 @@
         <div class="star-rating tooltip-stars">{{user.avgShippingRating}}</div>
       {{/ifContains}}
     </div>
+  </div>
+</div>
+{{/if}}
+
+{{#if user.avgRequestRating}}
+<div class='hide-from-view'>
+  {{!-- tooltip for when contact is a requester --}}
+  <div class="contact-tooltip-{{user._id}}" id="contact-requester-tooltip-{{user._id}}">
+    {{user.firstName}} {{user.lastName}}
+    {{#if user.phoneNumber}}
+      <div class="user-phone">
+        <a href="tel:{{user.phoneNumber}}">{{formatPhone user.phoneNumber}}</a><br>
+      </div>
+    {{/if}}
     <div class="request-rating">
       {{#ifContains user.completedRequests.length 0}}
         <i>no ratings yet</i>
@@ -21,3 +39,4 @@
     </div>
   </div>
 </div>
+{{/if}}

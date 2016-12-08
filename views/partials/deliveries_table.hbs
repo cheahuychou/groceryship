@@ -12,13 +12,20 @@
     </thead>
     <tbody>
       {{#each deliveryItems}}
-      <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
-        {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
-        <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
-        {{> item_row this}}
-        <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></td>
-        <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}<input type='hidden' name='raw-pickup-time' value='{{rawPickupTime}}'>{{else}}N/A{{/if}}</td>
-      </tr>
+        {{!-- don't show items past the deadline and/or they've been rejected by the requester --}}
+        {{#ifIsPast rawDeadline ../now}}
+        {{else}}
+        {{#ifContains status "rejected"}}
+        {{else}}
+        <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
+          {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
+          <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
+          {{> item_row this}}
+          <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
+          <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}<input type='hidden' name='raw-pickup-time' value='{{rawPickupTime}}'>{{else}}N/A{{/if}}</td>
+        </tr>
+        {{/ifContains}}
+        {{/ifIsPast}}
       {{/each}}
     </tbody>
   </table>

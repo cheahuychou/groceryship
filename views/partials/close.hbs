@@ -11,28 +11,32 @@
       </div>
       <div class="modal-body">
         <div id="reimbursement">
-          <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
-          {{> cost_summary}}
-          <br>
-            {{#ifContains status "claimed"}}
-              <p><span class="text-warning"><b>WARNING:</b></span> The requester has not paid for the delivery yet! Make sure the requester pays before handing the good to him/her and closing this delivery.</p>
-            {{/ifContains}}
-            {{#ifContains status "accepted"}}
-              <p><span class="text-success"><b>All set!</b></span> {{requester.firstName}} {{requester.lastName}} has accepted and paid for your delivery.</p>
-            {{/ifContains}}
-            {{#ifContains status "rejected"}}
-              <center class="text-danger">
-              {{requester.firstName}} {{requester.lastName}} has rejected your delivery for the following reason:<br>
-              <i>{{rejectedReason}}</i>
-              </center>
-              <br>
-              <p>
-                <small><i>If you've bought the item/s, please get your good/s refunded from the supermarket.</i></small>
-              </p>
-            {{/ifContains}}
+          {{#ifContains status "claimed"}}
+            <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
+            {{> cost_summary}}
+            <br>
+            <p><span class="text-warning"><b>WARNING:</b></span> The requester has not paid for the delivery yet! Make sure the requester pays before handing the good to him/her and closing this delivery.</p>
+          {{/ifContains}}
+          {{#ifContains status "accepted"}}
+            <p>Below is a summary of your delivery for {{requester.firstName}} {{requester.lastName}}:</p>
+            {{> cost_summary}}
+            <br>
+            <p><span class="text-success"><b>All set!</b></span> {{requester.firstName}} {{requester.lastName}} has accepted and paid for your delivery.</p>
+          {{/ifContains}}
+          {{#ifContains status "rejected"}}
+            <br>
+            <center class="text-danger">
+            {{requester.firstName}} {{requester.lastName}} has rejected your delivery for the following reason:<br>
+            <i>{{rejectedReason}}</i>
+            </center>
+            <br>
+            <p>
+              <small><i>If you've bought the item/s, please get your good/s refunded from the supermarket.</i></small>
+            </p>
+          {{/ifContains}}
         </div>
         <hr>
-        <div id='rating-container-{{_id}}' data-rating-type='shipping' data-user='{{shopper._id}}'>
+        <div id='rating-container-{{_id}}' data-rating-type='request' data-user='{{requester._id}}'>
           {{> rating isRequest=false}}
         </div>
         <br class='hidden-ms hidden-sm hidden-md hidden-lg'>

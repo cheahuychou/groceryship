@@ -25,6 +25,32 @@ var checkIfNoDeliveries = function() {
     }
 };
 
+var checkIfNoMatches = function() {    
+    if ($('.deliveries-checkbox').length === 0) {
+        // header checkbox is disabled if no rows have checkboxes
+        $('.header-checkbox').prop('disabled', true);
+    } else {
+        $('.header-checkbox').prop('disabled', false);
+    }
+
+    if ($('.delivery-item-row').size() === 0) {
+        var noMatchesMessage = $('<div>', {
+            class: 'well well-lg no-matches-message',
+            text: 'No matches found.'
+        });
+        
+        if ($('.no-matches-message').size() === 0) {
+            $('#deliveries-table').after(noMatchesMessage);
+        }
+        
+        $('#deliver-items').prop('disabled', true);
+        // fixes small issue that tooltip remains shown when there are no matches
+        $('.tooltip').hide();
+    } else {
+        $('.no-matches-message').remove();
+    }
+}
+
 var countNotifs = function() {
     return $('.notification-tile').size();
 };

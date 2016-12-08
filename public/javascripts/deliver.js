@@ -1,5 +1,5 @@
 // Author: Czarina Lao
-<<<<<<< HEAD
+
 /**
  * Makes the pagination buttons use Flat UI styling
  * instead of the default provided by datatables.js,
@@ -9,7 +9,6 @@ var fixPaginationButtons = function () {
     $('li.previous').children().addClass('fui-arrow-left').text('');
     $('li.next').children().addClass('fui-arrow-right').text('');
 };
-=======
 
 /**
  * Checks if there are no requests in the table.
@@ -18,37 +17,19 @@ var fixPaginationButtons = function () {
  */
 var checkIfNoRequests = function () {
     if ($('.request-item-row').size() === 0) {
-        $('.empty-requests-table-message').removeClass('hide');
+        // not using this anymore for now because of the weird formatting
+        // with the new integration with datatable
+        // $('.empty-requests-table-message').removeClass('hide');
+        var noRequestsMessage = $('<div>', {
+            class: 'well well-lg message no-requests-message',
+            text: 'No requests from other users to claim yet.'
+        });
+        
+        $('#request-table').after(noRequestsMessage);
     }
 }
->>>>>>> master
 
-$(document).ready(function () {
-    $('#request-table').DataTable({
-        //"order": [],
-        "ordering": false
-    }).on('draw', function() {
-        fixPaginationButtons();
-    });
-
-    fixPaginationButtons();
-
-    $('#navbar-deliver').addClass('active');
-    checkIfNoRequests();
-
-    $('#filter-sort').click(function() {
-        var stores = $('#filter-stores').val();
-        var pickupLocations = $('#filter-pickup-location').val();
-        var minRating = $('#filter-rating').val();
-        if (minRating === "No minimum requester rating") {
-            minRating = 1;
-        }
-        var sortBy = $('#sort-by').val();
-        var sortIncreasing = $("#sort-direction input[type='radio']:checked").val();
-        var input = {stores: stores, pickupLocations: pickupLocations, minRating: minRating, sortBy: sortBy, sortIncreasing: sortIncreasing};
-        window.location.replace("/deliveries/?" + $.param(input));
-    });
-
+var initializeClaimButtons = function() {
     $('.claim-request').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         var csrf = $('#csrf').val();
@@ -72,4 +53,55 @@ $(document).ready(function () {
             }
         });
     });
+}
+
+
+$(document).ready(function () {
+    $('#request-table').DataTable({
+        //"order": [],
+        "ordering": false
+    }).on('draw', function() {
+        fixPaginationButtons();
+        initializeClaimButtons();
+        $('[data-toggle="tooltip"]').tooltip({
+            title: getContactTooltip,
+            container: 'body',
+            placement: 'bottom',
+            html: true
+        });
+        if ($('.request-item-row').size() === 0) {
+            // fixes small issue when there are now matches and tooltip remains shown
+            $('.tooltip').hide();
+            var noMatchesMessage = $('<div>', {
+                class: 'well well-lg no-matches-message',
+                text: 'No matches found.'
+            });
+            // don't show no matches message if the table was empty to begin with (marked by no requests to claim message)
+            if ($('.no-matches-message, .message').size() === 0) {
+                $('#request-table').after(noMatchesMessage);
+            }
+        } else {
+            $('.no-matches-message').remove();
+        }
+    });
+
+    fixPaginationButtons();
+
+    $('#navbar-deliver').addClass('active');
+    checkIfNoRequests();
+
+    $('#filter-sort').click(function() {
+        var stores = $('#filter-stores').val();
+        var pickupLocations = $('#filter-pickup-location').val();
+        var minRating = $('#filter-rating').val();
+        if (minRating === "No minimum requester rating") {
+            minRating = 1;
+        }
+        var sortBy = $('#sort-by').val();
+        var sortIncreasing = $("#sort-direction input[type='radio']:checked").val();
+        var input = {stores: stores, pickupLocations: pickupLocations, minRating: minRating, sortBy: sortBy, sortIncreasing: sortIncreasing};
+        window.location.replace("/deliveries/?" + $.param(input));
+    });
+
+    initializeClaimButtons();
 });
