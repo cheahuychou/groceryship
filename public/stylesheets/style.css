@@ -3,42 +3,6 @@ a {
   color: #00B7FF;
 }
 
-.notification-icon img {
-  height: 20px;
-  display: block;
-  margin: auto;
-}
-
-.tile-icon img {
-    height: 40px;
-    display: block;
-    margin: 0;
-    margin-right: 10px;
-    margin-bottom: 5px;
-}
-
-.badge {
-    margin-bottom: 23px;
-}
-
-.feature {
-    float: left;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.accept-reject-container {
-  /*width: 100%;*/
-  display: inline-block;
-}
-
-.feature img {
-	width: 80px;
-	height: 80px;
-    margin-bottom: 10px;
-    float: left;
-}
-
 .navbar-logo {
     width: 30px;
     display: inline !important;
@@ -50,23 +14,11 @@ a {
   margin-right:15px;
 }
 
-.feature-img-text {
-    margin-top: 20px;
-    margin-left: 90px;
-    display: block;
-}
 
 #about {
 	float: left;
 }
 
-#login-content {
-	float: right;
-}
-
-.login-column {
-    margin-top: 20px;
-}
 
 .fa-star-o, .fa-star {
   font-size: 150% !important;
@@ -188,18 +140,7 @@ h3 {
     }
 }
 
-.tile p {
-    margin-bottom: 15px;
-    word-wrap: break-word;
-    line-height: 1.25;
-}
 
-.tile-title, .tile-subtitle {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    /*word-wrap: break-word;*/
-}
 
 .modal-body table {
 /*    table-layout: fixed;
@@ -207,68 +148,6 @@ h3 {
     vertical-align: middle;
 }
 
-.tile {
-    text-align: left;
-    height: 165px;
-/*    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;*/
-}
-
-.tile-content {
-    line-height: 2.5ex;
-    height: 5ex;
-    vertical-align: center;
-}
-
-.notification-tile {
-    height: 165px;
-}
-
-#dashboard-notifications {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-#dashboard-requests {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.request-tile {
-    height: 150px;
-}
-
-.request-tile-content {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.tile:hover{
-    background-color: rgba(22, 160, 133,0.25);/*rgba(26, 188, 156,0.5)*//*#1abc9c;*//*#16a085;*/
-}
-
-#add-request-icon {
-    /* TODO: make this size depend on tile height? */
-    font-size: 55px;
-}
-
-.add-request-tile {
-    text-align: center;
-    height: 150px;
-    vertical-align: middle;
-}
-
-.title-toggle:hover {
-    color: #1abc9c;
-}
-
-.title-toggle .glyphicon {
-    font-size: 80%;
-}
 
 #make-request {
     margin-bottom: 40px;
@@ -343,17 +222,7 @@ td.deadline, td.pickup-time {
     white-space: nowrap;*/
 }
 
-.signup-input {
-    margin-bottom: 10px;
-}
 
-.welcome-container {
-    padding-top: 5%;
-}
-
-#register-button {
-    margin: 5px 10px 0 0;
-}
 
 #change-password-button, #edit-confirm-button {
     margin-right: 15px;

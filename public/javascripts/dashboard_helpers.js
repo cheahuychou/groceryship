@@ -25,18 +25,33 @@ var checkIfNoDeliveries = function() {
     }
 };
 
+/**
+ * Counts the number of notifications in the DOM
+ * @return {Integer} the number of notifications in the DOM
+ */
 var countNotifs = function() {
     return $('.notification-tile').size();
 };
 
+/**
+ * Counts the number of requests in the DOM
+ * @return {Integer} the number of requests in the DOM
+ */
 var countRequests = function() {
     return $('.request-tile').size();
 };
 
+/**
+ * Counts the number of deliveries in the DOM
+ * @return {Integer} the number of deliveries in the DOM
+ */
 var countDeliveries = function() {
     return $('.delivery-item-row').size();
 };
 
+/**
+ * Updates the displayed count for the number of notifications
+ */
 var refreshNotifsCount = function() {
     var count = countNotifs();
     // uncomment if you don't want 0 to display as a count
@@ -44,6 +59,9 @@ var refreshNotifsCount = function() {
     $('.notifs-count').text(count);
 };
 
+/**
+ * Updates the displayed count for the number of requests
+ */
 var refreshRequestsCount = function() {
     var count = countRequests();
     // uncomment if you don't want 0 to display as a count
@@ -51,6 +69,9 @@ var refreshRequestsCount = function() {
     $('.requests-count').text(count);
 };
 
+/**
+ * Updates the displayed count for the number of deliveries
+ */
 var refreshDeliveriesCount = function() {
     var count = countDeliveries();
     // uncomment if you don't want 0 to display as a count
@@ -58,6 +79,10 @@ var refreshDeliveriesCount = function() {
     $('.deliveries-count').text(count);
 };
 
+/**
+ * Updates all the displayed counts of the components on the dashboard:
+ * notifications, requests, and deliveries
+ */
 var refreshAllCounts = function() {
     refreshNotifsCount();
     refreshRequestsCount();

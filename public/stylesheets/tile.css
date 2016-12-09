@@ -1,0 +1,75 @@
+.notification-icon img {
+  height: 20px;
+  display: block;
+  margin: auto;
+}
+
+.tile-icon img {
+    height: 40px;
+    display: block;
+    margin: 0;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+
+.accept-reject-container {
+  /*width: 100%;*/
+  display: inline-block;
+}
+
+.tile p {
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    line-height: 1.25;
+}
+
+.tile-title, .tile-subtitle {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    /*word-wrap: break-word;*/
+}
+
+.tile {
+    text-align: left;
+    height: 165px;
+/*    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;*/
+}
+
+.tile-content {
+    line-height: 2.5ex;
+    height: 5ex;
+    vertical-align: center;
+}
+
+.notification-tile {
+    height: 165px;
+}
+
+.request-tile {
+    height: 150px;
+}
+
+.request-tile-content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.tile:hover{
+    background-color: rgba(22, 160, 133,0.25);/*rgba(26, 188, 156,0.5)*//*#1abc9c;*//*#16a085;*/
+}
+
+#add-request-icon {
+    /* TODO: make this size depend on tile height? */
+    font-size: 55px;
+}
+
+.add-request-tile {
+    text-align: center;
+    height: 150px;
+    vertical-align: middle;
+}
