@@ -10,7 +10,7 @@ describe("Models", function() {
   var con;
 
   // ids of the default test users
-  var id1, id2, id3;
+  var id1, id2, id3, id_suspended, id_rating_2, id_rating_5;
 
   // Some default deliveries
   var pending_delivery1, claimed_delivery1, rejected_delivery1, accepted_delivery1;
@@ -56,7 +56,48 @@ describe("Models", function() {
           "stripeEmail": "testuserStripeEmail"
         });
 
-        User.create([testUser1, testUser2, testUser3], function(err, users) {
+        var now = Date.now();
+        var future = new Date(now + 60*60*24*7*1000); //one week after now
+        var testSuspendedUser = new User({
+          "username": "username4",
+          "password": "Iwantpizza4@",
+          "firstName": "firstName4",
+          "lastName": "lastName4",
+          "phoneNumber": 4567890123,
+          "dorm": "Random",
+          "stripeId":"testuserStripeId",
+          "stripeEmail": "testuserStripeEmail",
+          "avgShippingRating": 2.5,
+          "suspendedUntil": future
+        });
+
+        var testRating2User = new User({
+          "username": "username5",
+          "password": "Iwantpizza5@",
+          "firstName": "firstName5",
+          "lastName": "lastName5",
+          "phoneNumber": 5678901234,
+          "dorm": "Simmons",
+          "stripeId":"testuserStripeId",
+          "stripeEmail": "testuserStripeEmail",
+          "avgShippingRating": 2,
+          "avgRequestRating": 2
+        });
+
+        var testRating5User = new User({
+          "username": "username6",
+          "password": "Iwantpizza6@",
+          "firstName": "firstName6",
+          "lastName": "lastName6",
+          "phoneNumber": 6789012345,
+          "dorm": "Random",
+          "stripeId":"testuserStripeId",
+          "stripeEmail": "testuserStripeEmail",
+          "avgShippingRating": 5,
+          "avgRequestRating": 5
+        });
+
+        User.create([testUser1, testUser2, testUser3, testSuspendedUser, testRating2User, testRating5User], function(err, users) {
           if (err) {
             console.log("Default users not created");
             console.log(err.message);
@@ -65,18 +106,19 @@ describe("Models", function() {
           id1 = users[0]._id;
           id2 = users[1]._id;
           id3 = users[2]._id;
+          id_suspended = users[3]._id;
+          id_rating_2 = users[4]._id;
+          id_rating_5 = users[5]._id;
 
           pending_delivery1 = {stores: ["HMart", "Star Market"],
               status: "pending",
               deadline: new Date('2016-11-21T23:59:59'),
               itemName: "test-item-beer",
-              itemDescription: "test-description-bluegirl",
               itemQuantity: "test-quantity-6",
               estimatedPrice: 3.5,
               tips: 0.5,
               pickupLocation: "Baker",
-              requester: id1,
-              seenExpired: false};
+              requester: id1};
 
           rejected_delivery1 = {stores: ["Whole Foods", "Trader Joe's", "Star Market", "HMart"],
               status: "rejected",
@@ -94,7 +136,9 @@ describe("Models", function() {
               requesterRating: 2,
               shopperRating: 3,
               rejectedReason: "items not fresh",
-              seenExpired: false};
+              seenExpired: false,
+              stripeTransactionId: "someTransactionID",
+              minShippingRating: 3};
 
           accepted_delivery1 = {stores: ["Whole Foods", "Trader Joe's"],
               status: "accepted",
@@ -141,7 +185,7 @@ describe("Models", function() {
       it("should have minimum required fields of a delivery", function(done) {
         Delivery.create(pending_delivery1, function() {
           Delivery.findOne({"itemName": "test-item-beer"}, function(err, doc) {
-            assert.strictEqual(doc.itemDescription, "test-description-bluegirl");
+            assert.strictEqual(doc.requester.toString(), id1.toString());
             assert.strictEqual(doc.estimatedPrice, 3.5);
             assert.strictEqual(doc.itemQuantity, "test-quantity-6");
             done();
@@ -163,16 +207,9 @@ describe("Models", function() {
       });
 
       it("should reject grocery stores not covered under our project", function(done) {
-        Delivery.create({stores: ["HMart", "laVerdes", "Star Market"],
-          status: "pending",
-          deadline: new Date('2016-11-21T23:59:59'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1}, function(err, doc) {
+        var pending_delivery_fail = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_fail.stores = ["HMart", "laVerdes", "Star Market"];
+        Delivery.create(pending_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -181,16 +218,9 @@ describe("Models", function() {
       });
 
       it("should reject statuses not covered under our project", function(done) {
-        Delivery.create({stores: ["HMart", "Star Market"],
-          status: "other",
-          deadline: new Date('2016-11-21T11:59:59'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1}, function(err, doc) {
+        var claimed_delivery_fail = JSON.parse(JSON.stringify(claimed_delivery1)); // deep copy
+        claimed_delivery_fail.status = "other";
+        Delivery.create(claimed_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -199,41 +229,20 @@ describe("Models", function() {
       });
 
       it("should not allow requester and shopper to be the same", function(done) {
-        User.findOne({username: "username1"}, '_id', function(err, user1) {
-          Delivery.create({stores: ["Star Market"],
-            status: "claimed",
-            deadline: new Date('2016-11-21T11:59:59'),
-            itemName: "test-item",
-            itemDescription: "test-description",
-            itemQuantity: "test-quantity",
-            estimatedPrice: 10,
-            tips: 0.75,
-            pickupLocation: "Baker",
-            requester: id1,
-            shopper: user1._id, 
-            actualPrice: 11.5}, function(err, doc) {
-              assert.throws(function() {
-                assert.ifError(err);
-              });
-              done();
+        var claimed_delivery_fail = JSON.parse(JSON.stringify(claimed_delivery1)); // deep copy
+        claimed_delivery_fail.shopper = id2;
+        Delivery.create(claimed_delivery_fail, function(err, doc) {
+            assert.throws(function() {
+              assert.ifError(err);
             });
-        });
+            done();
+          });
       });
 
       it("should not allow pickup time to be after the deadline", function(done) {
-        Delivery.create({stores: ["Whole Foods"],
-          status: "accepted",
-          deadline: new Date('2016-11-21T11:59:59'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1,
-          shopper: id2, 
-          actualPrice: 11.5,
-          pickupTime: new Date('2016-11-21T12:30:00')}, function(err, doc) {
+        var accepted_delivery_fail = JSON.parse(JSON.stringify(accepted_delivery1)); // deep copy
+        accepted_delivery_fail.pickupTime = new Date('2016-11-24T11:00:30');
+        Delivery.create(accepted_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -242,16 +251,9 @@ describe("Models", function() {
       });
 
       it("should not let estimatedPrice be negative", function(done) {
-        Delivery.create({stores: ["HMart", "Star Market"],
-          status: "accepted",
-          deadline: new Date('2016-11-22T23:59:59'),
-          itemName: "cheese",
-          itemDescription: "cheddar",
-          itemQuantity: "100g",
-          estimatedPrice: -15,
-          tips: 2,
-          pickupLocation: "Student Center",
-          requester: id1}, function(err, doc) {
+        var pending_delivery_fail = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_fail.estimatedPrice = -10;
+        Delivery.create(pending_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -260,16 +262,9 @@ describe("Models", function() {
       });
 
       it("should not let tips be negative", function(done) {
-        Delivery.create({stores: ["HMart", "Star Market"],
-          status: "accepted",
-          deadline: new Date('2016-11-22T23:59:59'),
-          itemName: "cheese",
-          itemDescription: "cheddar",
-          itemQuantity: "100g",
-          estimatedPrice: 15,
-          tips: -2,
-          pickupLocation: "Student Center",
-          requester: id1}, function(err, doc) {
+        var rejected_delivery_fail = JSON.parse(JSON.stringify(rejected_delivery1)); // deep copy
+        rejected_delivery_fail.tips = -2;
+        Delivery.create(rejected_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -278,19 +273,9 @@ describe("Models", function() {
       });
 
       it("should not let actualPrice be negative", function(done) {
-        Delivery.create({stores: ["Whole Foods"],
-          status: "accepted",
-          deadline: new Date('2016-11-22T12:00:00'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1,
-          shopper: id2, 
-          actualPrice: -11.5,
-          pickupTime: new Date('2016-11-21T11:00:00')}, function(err, doc) {
+        var accepted_delivery_fail = JSON.parse(JSON.stringify(accepted_delivery1)); // deep copy
+        accepted_delivery_fail.actualPrice = -15.5;
+        Delivery.create(accepted_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -299,16 +284,9 @@ describe("Models", function() {
       });
 
       it("should reject pickup locations not covered under our project", function(done) {
-        Delivery.create({stores: ["HMart", "Star Market"],
-          status: "accepted",
-          deadline: new Date('2016-11-22T23:59:59'),
-          itemName: "cheese",
-          itemDescription: "cheddar",
-          itemQuantity: "100g",
-          estimatedPrice: 15,
-          tips: 2,
-          pickupLocation: "Student Center",
-          requester: id1}, function(err, doc) {
+        var rejected_delivery_fail = JSON.parse(JSON.stringify(rejected_delivery1)); // deep copy
+        rejected_delivery_fail.pickupLocation = "Student Center";
+        Delivery.create(rejected_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -317,20 +295,9 @@ describe("Models", function() {
       });
 
       it("should have an integer requesterRating ranged from 1-5 (or null)", function(done) {
-        Delivery.create({stores: ["Whole Foods"],
-          status: "accepted",
-          deadline: new Date('2016-11-22T12:00:00'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1,
-          shopper: id2, 
-          actualPrice: 11.5,
-          pickupTime: new Date('2016-11-21T11:00:00'),
-          requesterRating: 6}, function(err, doc) {
+        var rejected_delivery_fail = JSON.parse(JSON.stringify(rejected_delivery1)); // deep copy
+        rejected_delivery_fail.requesterRating = 6;
+        Delivery.create(rejected_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -339,20 +306,9 @@ describe("Models", function() {
       });
 
       it("should have an integer shopperRating ranged from 1-5 (or null)", function(done) {
-        Delivery.create({stores: ["Whole Foods"],
-          status: "accepted",
-          deadline: new Date('2016-11-22T12:00:00'),
-          itemName: "test-item",
-          itemDescription: "test-description",
-          itemQuantity: "test-quantity",
-          estimatedPrice: 10,
-          tips: 0.75,
-          pickupLocation: "Baker",
-          requester: id1,
-          shopper: id2, 
-          actualPrice: 11.5,
-          pickupTime: new Date('2016-11-21T11:00:00'),
-          requesterRating: 4.5}, function(err, doc) {
+        var rejected_delivery_fail = JSON.parse(JSON.stringify(rejected_delivery1)); // deep copy
+        rejected_delivery_fail.shopperRating = 4.5;
+        Delivery.create(rejected_delivery_fail, function(err, doc) {
             assert.throws(function() {
               assert.ifError(err);
             });
@@ -362,105 +318,207 @@ describe("Models", function() {
 
     }); //End Describe Basic Model and Validation
 
-    describe("SeenExpired", function() {
-      it("should allow users to mark expired pending requests as seen", function(done) {
-        var now = Date.now();
-        var pastDeadline = new Date(now - 60*60*24*7*1000); //one week before now
-        Delivery.create({stores: ["HMart", "Star Market"],
-              status: "pending",
-              deadline: pastDeadline,
-              itemName: "test-item-beer",
-              itemDescription: "test-description-bluegirl",
-              itemQuantity: "test-quantity-6",
-              estimatedPrice: 3.5,
-              tips: 0.5,
-              pickupLocation: "Baker",
-              requester: id1,
-              seenExpired: false}, function(err, doc) {
-            doc.seeExpired(function(err) {
-              assert.strictEqual(doc.seenExpired, true);
+    describe("Cancel", function() {
+      it("should allow users to cancel pending requests", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+          Delivery.cancel(doc._id, id1, function(err) {
+            assert.isNull(err);
+            Delivery.find({itemName: "test-item-beer"}, function(err, deliveries) {
+              assert.strictEqual(deliveries.length, 0);
               done();
             });
           });
+        });
+      });
+
+      it("should not allow users to cancel claimed requests", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+          Delivery.cancel(doc._id, id2, function(err) {
+            Delivery.find({itemName: "test-item-sausages"}, function(err, deliveries) {
+              assert.strictEqual(deliveries.length, 1);
+              done();
+            });
+          });
+        });
+      });
+
+      it("should not allow other users besides requester to cancel pending requests", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+          Delivery.cancel(doc._id, id2, function(err) {
+            Delivery.find({itemName: "test-item-beer"}, function(err, deliveries) {
+              assert.strictEqual(deliveries.length, 1);
+              done();
+            });
+          });
+        });
+      });
+    }); //End Describe Cancel function
+
+    describe("SeeExpired", function() {
+      it("should allow users to mark expired pending requests as seen", function(done) {
+        var now = Date.now();
+        var pastDeadline = new Date(now - 60*60*24*7*1000); //one week before now
+        var pending_delivery_expired = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_expired.deadline = pastDeadline;
+        Delivery.create(pending_delivery_expired, function(err, doc) {
+          Delivery.seeExpired(doc._id, id1, function(err) {
+            Delivery.findOne({itemName: "test-item-beer"}, function(err, current_delivery) {
+              assert.strictEqual(current_delivery.seenExpired, true);
+              done();
+            });
+          });
+        });
       });
 
       it("should not allow users to mark non-expired pending requests as seen", function(done) {
         var now = Date.now();
         var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
-        Delivery.create({stores: ["HMart", "Star Market"],
-              status: "pending",
-              deadline: futureDeadline,
-              itemName: "test-item-beer",
-              itemDescription: "test-description-bluegirl",
-              itemQuantity: "test-quantity-6",
-              estimatedPrice: 3.5,
-              tips: 0.5,
-              pickupLocation: "Baker",
-              requester: id1,
-              seenExpired: false}, function(err, doc) {
-            doc.seeExpired(function(err) {
-              assert.throws(function() {
-                assert.ifError(err);
-              });
-              assert.strictEqual(doc.seenExpired, false);
+        var pending_delivery_fail = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_fail.deadline = futureDeadline;
+        Delivery.create(pending_delivery_fail, function(err, doc) {
+          Delivery.seeExpired(doc._id, id1, function(err) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            Delivery.findOne({itemName: "test-item-beer"}, function(err, current_delivery) {
+              assert.strictEqual(current_delivery.seenExpired, false);
               done();
             });
           });
+        });
       });
-    }); //End Describe Deliver function
+    }); //End Describe SeeExpired function
 
     describe("Claim", function() {
       it("should allow shoppers to claim requests", function(done) {
-        Delivery.create(pending_delivery1, function(err, doc) {
-            doc.claim(id2, function(err) {
-              assert.strictEqual(doc.shopper.toString(), id2.toString());
-              assert.strictEqual(doc.status, "claimed");
-              done();
-            })
+        var now = Date.now();
+        var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
+        var pending_delivery_future = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_future.deadline = futureDeadline;
+        Delivery.create(pending_delivery_future, function(err, doc) {
+          Delivery.claim(doc._id, id2, function(err, current_delivery) {
+            assert.strictEqual(current_delivery.shopper.username, "username2");
+            assert.strictEqual(current_delivery.status, "claimed");
+            done();
           });
+        });
       });
 
       it("should not allow the requester to claim his own delivery", function(done) {
-        User.findOne({username: "username1"}, '_id', function(err, user1) {
-          Delivery.create(pending_delivery1, function(err, doc) {
-              doc.claim(user1._id, function(err) {
-                assert.throws(function() {
-                  assert.ifError(err);
-                });
-                done();
-              });
+        var now = Date.now();
+        var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
+        var pending_delivery_future = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_future.deadline = futureDeadline;
+        Delivery.create(pending_delivery_future, function(err, doc) {
+          Delivery.claim(doc._id, id1, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
             });
+            done();
+          });
         });
       });
 
       it("should not allow a claimed delivery to be claimed again", function(done) {
-        Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.claim(id1, function(err) {
-              assert.throws(function() {
-                assert.ifError(err);
-              });
-              done();
+        var now = Date.now();
+        var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
+        var claimed_delivery_future = JSON.parse(JSON.stringify(claimed_delivery1)); // deep copy
+        claimed_delivery_future.deadline = futureDeadline;
+        Delivery.create(claimed_delivery_future, function(err, doc) {
+          Delivery.claim(doc._id, id1, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
             });
+            done();
           });
+        });
+      });
+
+      it("should not allow an expired delivery to be claimed", function(done) {
+        var now = Date.now();
+        var pastDeadline = new Date(now - 60*60*24*7*1000); //one week before now
+        var pending_delivery_past = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_past.deadline = pastDeadline;
+        Delivery.create(pending_delivery_past, function(err, doc) {
+          Delivery.claim(doc._id, id2, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
+      });
+
+      it("should not allow shoppers with a rating below minShippingRating to claim the request", function(done) {
+        var now = Date.now();
+        var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
+        var pending_delivery_future = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_future.deadline = futureDeadline;
+        pending_delivery_future.minShippingRating = 3;
+        Delivery.create(pending_delivery_future, function(err, doc) {
+          Delivery.claim(doc._id, id_rating_2, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
+      });
+
+      it("should not allow suspended shoppers to claim the request", function(done) {
+        var now = Date.now();
+        var futureDeadline = new Date(now + 60*60*24*7*1000); //one week after now
+        var pending_delivery_future = JSON.parse(JSON.stringify(pending_delivery1)); // deep copy
+        pending_delivery_future.deadline = futureDeadline;
+        Delivery.create(pending_delivery_future, function(err, doc) {
+          Delivery.claim(doc._id, id_suspended, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
       });
     }); //End Describe Claim function
 
     describe("Deliver", function() {
       it("should allow shoppers to deliver requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.deliver(new Date('2016-11-22T14:30:00'), 11, function(err) {
-              assert.strictEqual(doc.pickupTime.getTime(), new Date('2016-11-22T14:30:00').getTime());
-              assert.strictEqual(doc.actualPrice, 11);
-              done();
-            });
+          Delivery.deliver(doc._id, id1, new Date('2016-11-22T09:30:00'), 11, function(err, current_delivery) {
+            assert.strictEqual(current_delivery.pickupTime.getTime(), new Date('2016-11-22T09:30:00').getTime());
+            assert.strictEqual(current_delivery.actualPrice, 11);
+            done();
           });
+        });
+      });
+
+      it("should not allow shoppers to set pickup time after the deadline when delivering", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+          Delivery.deliver(doc._id, id1, new Date('2016-11-22T15:30:00'), 11, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
+      });
+
+      it("should not allow shoppers to set a negative actual price when delivering", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+          Delivery.deliver(doc._id, id1, new Date('2016-11-22T09:30:00'), -11, function(err, current_delivery) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
       });
     }); //End Describe Deliver function
 
     describe("Accept and Reject", function() {
       it("should allow requester to accept requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept("testTransactionId", 5, function(err) {
+            doc.accept("testTransactionID", 5, function(err, newRating) {
               assert.strictEqual(doc.status, "accepted");
               assert.strictEqual(doc.shopperRating, 5);
               done();
@@ -470,12 +528,12 @@ describe("Models", function() {
 
       it("should allow requester to reject requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.reject('Unsatsified with the quality', 2, function(err) {
-              assert.strictEqual(doc.status, "rejected");
-              assert.strictEqual(doc.shopperRating, 2);
-              done();
-            });
+          Delivery.reject(doc._id, id2, 'Unsatisfied with the quality', 2, function(err, currentDelivery, newRating) {
+            assert.strictEqual(currentDelivery.status, "rejected");
+            assert.strictEqual(currentDelivery.shopperRating, 2);
+            done();
           });
+        });
       });
 
       it("should not allow requester to accept requests where actualPrice has not been set", function(done) {
@@ -490,7 +548,7 @@ describe("Models", function() {
               pickupLocation: "New House",
               requester: id2,
               shopper: id1}, function(err, doc) {
-                doc.accept("testTransactionId", 5, function(err) {
+                doc.accept("testTransactionID", 5, function(err, newRating) {
                   assert.throws(function() {
                     assert.ifError(err);
                   });
@@ -501,7 +559,7 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be accepted", function(done) {
         Delivery.create(pending_delivery1, function(err, doc) {
-            doc.accept("testTransactionId", 4, function(err) {
+            doc.accept("testTransactionID", 4, function(err, newRating) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -512,7 +570,40 @@ describe("Models", function() {
 
       it("should not allow requests not in the 'claimed' stage to be rejected", function(done) {
         Delivery.create(accepted_delivery1, function(err, doc) {
-            doc.reject('Wrong item', 1, function(err) {
+          Delivery.reject(doc._id, id3, 'Wrong item', 1, function(err, currentDelivery, newRating) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
+      });
+
+      it("should not allow empty reject reason", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+          Delivery.reject(doc._id, id2, '', 1, function(err, currentDelivery, newRating) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
+      });
+
+      it("should not allow invalid shopper rating when rejecting", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+          Delivery.reject(doc._id, id2, 'Wrong item', 0, function(err, currentDelivery, newRating) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
+          });
+        });
+      });
+
+      it("should not allow invalid shopper rating when accepting", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+            doc.accept("testTransactionID", 10, function(err, newRating) {
               assert.throws(function() {
                 assert.ifError(err);
               });
@@ -521,82 +612,75 @@ describe("Models", function() {
           });
       });
 
-      it("should not allow empty reject reason", function(done) {
+      it("should not allow other users besides the requester to reject requests", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.reject('', 1, function(err) {
-              assert.isNotNull(err);
-              done();
+          Delivery.reject(doc._id, id3, 'Unsatisfied with the quality', 2, function(err, currentDelivery, newRating) {
+            assert.throws(function() {
+              assert.ifError(err);
             });
+            done();
           });
+        });
       });
-
     }); //End Describe Accept and Reject functions
 
     describe("RateRequester", function() {
-      it("should not allow invalid shopper rating", function(done) {
-        Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.reject('Wrong item', -1, function(err) {
-              assert.isNotNull(err);
-              done();
-            });
-          });
-      });
-
-      it("should not allow invalid requester rating", function(done) {
-        Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept("testTransactionId", 10, function(err) {
-              assert.isNotNull(err);
-              done();
-            });
-          });
-      });
-
       it("should allow shopper to rate requester after the delivery is accepted", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.accept("testTransactionId", 4, function(err) {
+            doc.accept("testTransactionID", 3, function(err, newRating) {
               assert.isNull(err);
-              doc.rateRequester(4, function (err) {
+              Delivery.rateRequester(doc._id, id1, 4, function (err, newRating) {
                 assert.isNull(err);
-                assert.strictEqual(doc.requesterRating, 4);
-                done();
-              })
+                Delivery.findOne({itemName: "test-item-sausages"}, function(err, currentDelivery) {
+                  assert.isNull(err);
+                  assert.strictEqual(currentDelivery.requesterRating, 4);
+                  assert.strictEqual(currentDelivery.shopperRating, 3);
+                  done();
+                });
+              });
             });
-          });
+        });
       });
 
       it("should allow shopper to rate requester after the delivery is rejected", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.reject('Wrong item', 3, function(err) {
+            Delivery.reject(doc._id, id2, 'Wrong item', 3, function(err, doc, newRating) {
                 assert.isNull(err);
-                doc.rateRequester(2, function (err) {
+                Delivery.rateRequester(doc._id, id1, 2, function(err, newRating) {
+                  assert.isNull(err);
+                  Delivery.findOne({itemName: "test-item-sausages"}, function(err, currentDelivery) {
                     assert.isNull(err);
-                    assert.strictEqual(doc.requesterRating, 2);
+                    assert.strictEqual(currentDelivery.requesterRating, 2);
+                    assert.strictEqual(currentDelivery.shopperRating, 3);
                     done();
-                })
+                  });
+                });
             });
-          });
+        });
       });
 
       it("should allow shopper to rate requester after the delivery is claimed", function(done) {
         Delivery.create(claimed_delivery1, function(err, doc) {
-            doc.reject('Wrong item', 3, function(err) {
+          Delivery.rateRequester(doc._id, id1, 1, function(err, newRating) {
+            assert.isNull(err);
+            Delivery.findOne({itemName: "test-item-sausages"}, function(err, currentDelivery) {
               assert.isNull(err);
-              doc.rateRequester(2, function (err) {
-                assert.isNull(err);
-                assert.strictEqual(doc.requesterRating, 2);
-                done();
-              })
+              assert.strictEqual(currentDelivery.requesterRating, 1);
+              done();
             });
           });
+        });
       });
 
-      it("should not allow shopper to rate requester without claiming the delivery", function(done) {
-        Delivery.create(pending_delivery1, function(err, doc) {
-            doc.rateRequester(2, function (err) {
-                assert.isNotNull(err);
-                done();
-            })
+      it("should not allow other users besides the shopper to rate requester", function(done) {
+        Delivery.create(claimed_delivery1, function(err, doc) {
+          Delivery.rateRequester(doc._id, id2, 1, function(err, newRating) {
+            assert.throws(function() {
+              assert.ifError(err);
+            });
+            done();
           });
+        });
       });
 
     }); //End Describe RateRequester functions
@@ -703,21 +787,20 @@ describe("Models", function() {
 
     describe("getRequests", function() {
       it("should populate pending requests that are not requested by the current user", function(done) {
-        Delivery.create([pending_delivery1,
-                          {stores: ["Star Market", "Whole Foods"],
-          status: "pending",
-          deadline: new Date('2016-11-23T23:59:59'),
-          itemName: "test-item-yoghurt",
-          itemDescription: "test-description-yummy",
-          itemQuantity: "test-quantity-many",
-          estimatedPrice: 6,
-          tips: 0.2,
-          pickupLocation: "Baker",
-          requester: id2}], function(err, doc) {
-            Delivery.getRequests(id1, new Date('2016-11-23T15:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], null, null, null, function(err, requestItems) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            Delivery.getRequests(id2, new Date('2016-11-20T15:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], null, null, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 1);
-              assert.strictEqual(requestItems[0].itemName, "test-item-yoghurt");
-              assert.strictEqual(requestItems[0].requester.phoneNumber, 2345678901);
+              assert.strictEqual(requestItems[0].itemName, "test-item-beer");
+              assert.strictEqual(requestItems[0].requester.username, "username1");
+              done();
+            });
+          });
+      });
+
+      it("should not populate pending requests that are requested by the current user", function(done) {
+        Delivery.create(pending_delivery1, function(err, doc) {
+            Delivery.getRequests(id1, new Date('2016-11-20T15:00:00'), ["HMart", "Trader Joe's", "Whole Foods"], null, null, null, function(err, requestItems) {
+              assert.strictEqual(requestItems.length, 0);
               done();
             });
           });
@@ -760,7 +843,16 @@ describe("Models", function() {
       });
 
       it("should not populate requests where requester's avgRequestRating is below the minRating", function(done) {
-        Delivery.create([pending_delivery1,
+        Delivery.create([{stores: ["Star Market", "Whole Foods"],
+          status: "pending",
+          deadline: new Date('2016-11-23T23:59:59'),
+          itemName: "test-item-chips",
+          itemDescription: "test-description-crunchy",
+          itemQuantity: "test-quantity-many",
+          estimatedPrice: 5,
+          tips: 0.25,
+          pickupLocation: "MacGregor",
+          requester: id_rating_5},
                           {stores: ["Star Market", "Whole Foods"],
           status: "pending",
           deadline: new Date('2016-11-23T23:59:59'),
@@ -770,10 +862,10 @@ describe("Models", function() {
           estimatedPrice: 6,
           tips: 0.2,
           pickupLocation: "Baker",
-          requester: id2}], function(err, doc) {
+          requester: id_rating_2}], function(err, doc) {
             Delivery.getRequests(id3, new Date('2016-11-21T12:00:00'), null, null, 4, null, function(err, requestItems) {
               assert.strictEqual(requestItems.length, 1);
-              assert.strictEqual(requestItems[0].itemName, "test-item-beer");
+              assert.strictEqual(requestItems[0].itemName, "test-item-chips");
               done();
             });
           });

@@ -22,8 +22,8 @@ var DeliverySchema = mongoose.Schema({
     shopperRating: {type: Number, default: null}, // The rating that the requester gives the shopper
     rejectedReason: {type: String, required: false},
     seenExpired: {type: Boolean, default: false}, // Denotes whether the requester has seen that an unclaimed request is past the deadline. Used in populating notifications.
-    stripeTransactionId: {type: String, default: false},
-    minShippingRating: {type: Number, default: null} // Only shoppers with a shipping rating above this value are allowed to deliver this item
+    stripeTransactionId: {type: String, required: false},
+    minShippingRating: {type: Number, default: 1} // Only shoppers with a shipping rating above this value are allowed to deliver this item
 }); 
 
 DeliverySchema.path("stores").validate(function(stores) {
@@ -69,67 +69,147 @@ DeliverySchema.path("shopperRating").validate(function(rating) {
 }, "A shopper rating should be ranged from 1 to 5.");
 
 /**
- * Marks an expired pending request as seen that it is expired.
- * @param {Function} callback - The function to execute after request is marked as seenExpired = true. Callback
+ * Deletes a pending request when the requester cancels
+ * @param {ObjectId} id - The ID of the delivery to be deleted
+ * @param {ObjectId} requesterId - The ID of the requester of the delivery
+ * @param {Function} callback - The function to execute after request is deleted. Callback
  * function takes 1 parameter: an error when the operation is not properly executed
  */
-DeliverySchema.methods.seeExpired = function(callback) {
-    var now = Date.now();
-    if (this.deadline > now) {
-        callback(new Error("request has not expired yet"));
-    } else {
-        this.seenExpired = true;
-        this.save(callback);
-    }
+DeliverySchema.statics.cancel = function(id, requesterId, callback) {
+    this.findOne({_id: id, requester: requesterId, status: "pending"}, function(err, current_delivery) { //verify that the current user is the one who requested it. Also,
+                                                                                                         //verify that the request has not been claimed
+        if (current_delivery === null) {
+            err = new Error("cannot find specified request. Request might have been claimed");
+        }
+        if (err) {
+            callback(err);
+        } else {
+            current_delivery.remove(function(err, data) {
+                callback(err);
+            });
+        }
+    });
 };
 
 /**
- * Claims a pending request. Feeds an error into the callback if the request has already been claimed, shopper shipping rating is too low, or shopper is suspended
- * @param {ObjectId} shopperID - The id of the shopper that is claiming the request
- * @param {Function} callback - The function to execute after request is claimed. Callback
- * function takes 1 parameter: an error when the request is not properly claimed
+ * Marks an expired pending request as seen that it is expired.
+ * @param {ObjectId} id - The ID of the delivery to be marked as seenExpired = true
+ * @param {ObjectId} requesterId - The ID of the requester of the delivery
+ * @param {Function} callback - The function to execute after request is marked as seenExpired = true. Callback
+ * function takes 1 parameter: an error when the operation is not properly executed
  */
-DeliverySchema.methods.claim = function(shopperID, callback) {
-    var now = Date.now();
-    var currentDelivery = this;
-    User.findOne({_id: shopperID}, function(err, currentUser) {
-        if (currentDelivery.status !== "pending") {
-            callback(new Error("request has already been claimed"));
-        } else if (currentUser.avgShippingRating < currentDelivery.minShippingRating) {
-            callback(new Error("shopper shipping rating is too low"));
-        } else if (currentUser.suspendedUntil > now) {
-            callback(new Error("shopper is suspended"));
+DeliverySchema.statics.seeExpired = function(id, requesterId, callback) {
+    var now = new Date();
+    this.findOne({_id: id, requester: requesterId}).exec(function(err, currentDelivery) { //verify that the correct user is the one who requested it
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request");
+        } else if (currentDelivery.deadline > now) {
+            err = new Error("request has not expired yet");
+        }
+        if (err) {
+            callback(err);
         } else {
-            currentDelivery.status = "claimed";
-            currentDelivery.shopper = shopperID;
+            currentDelivery.seenExpired = true;
             currentDelivery.save(callback);
         }
     });
 };
 
 /**
+ * Claims a pending request. Feeds an error into the callback if the request has already been claimed, shopper shipping rating is too low, shopper is suspended, or request has expired
+ * @param {ObjectId} id - The ID of the delivery to be claimed
+ * @param {ObjectId} shopperID - The id of the shopper that is claiming the request
+ * @param {Function} callback - The function to execute after request is claimed. Callback
+ * function takes 2 parameters: an error when the request is not properly claimed, and the claimed delivery object
+ */
+DeliverySchema.statics.claim = function(id, shopperID, callback) {
+    var now = Date.now();
+    var Delivery = this;
+    this.findOne({_id: id}, function(err, currentDelivery) {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request");
+        } else if (currentDelivery.status !== "pending") {
+            err = new Error("request has already been claimed");
+        } else if (currentDelivery.deadline < now) {
+            err = new Error("request deadline has already past");
+        }
+        if (err) {
+            callback(err, null);
+        } else {
+            User.findOne({_id: shopperID}, function(err, currentUser) {
+                if (currentUser.avgShippingRating < currentDelivery.minShippingRating) {
+                    err = new Error("shopper shipping rating is too low");
+                } else if (currentUser.suspendedUntil > now) {
+                    err = new Error("shopper is suspended");
+                }
+                if (err) {
+                    callback(err, null);
+                } else {
+                    currentDelivery.status = "claimed";
+                    currentDelivery.shopper = shopperID;
+                    currentDelivery.save(function(err) {
+                        if (err) {
+                            callback(err, null);
+                        } else {
+                            Delivery.populate(currentDelivery,
+                                              {path:"shopper requester", select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm'}, //exclude sensitive information from populate
+                                              function(err, currentDelivery) {
+                                callback(err, currentDelivery);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+};
+
+
+
+/**
  * "Delivers" a claimed request, assigning the delivery a pickupTime and an actualPrice
+ * @param {ObjectId} id - The ID of the delivery
+ * @param {ObjectId} shopperID - The id of the shopper that is delivering the good
  * @param {Date} pickupTime - The pickup time of the delivery
  * @param {Number} actualPrice - The actual price of the good
  * @param {Function} callback - The function to execute after request is delivered. Callback
- * function takes 1 parameter: an error when the delivery is not properly saved
+ * function takes 2 parameters: an error when the request is not properly claimed, and the delivery object
  */
-DeliverySchema.methods.deliver = function(pickupTime, actualPrice, callback) {
-    this.pickupTime = pickupTime;
-    this.actualPrice = actualPrice;
-    this.save(callback);
+DeliverySchema.statics.deliver = function(id, shopperID, pickupTime, actualPrice, callback) {
+    this.findOne({_id: id, shopper: shopperID})
+        .populate('shopper', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+            if (currentDelivery === null) {
+                err = new Error("cannot find specified request")
+            }
+            if (err) {
+                callback(err, null);
+            } else {
+                currentDelivery.pickupTime = pickupTime;
+                currentDelivery.actualPrice = actualPrice;
+                currentDelivery.save(function(err) {
+                    if (err) {
+                        callback(err, null);
+                    } else {
+                        callback(err, currentDelivery);
+                    }
+                });
+            }
+        });
 };
 
 /**
  * Accepts a claimed request. Feeds an error into the callback if the request is not in claimed stage
+ * @param {String} transactionId - The ID of the stripe transaction of this delivery
+ * @param {Number} shopperRating - The rating that the requester gives the shopper, must be an integer between 1 to 5
  * @param {Function} callback - The function to execute after request is accepted. Callback
- * function takes 1 parameter: an error when the accept is not properly saved
+ * function takes 2 parameters: an error when the accept is not properly saved, and the new rating
  */
 DeliverySchema.methods.accept = function(transactionId, shopperRating, callback) {
     if (this.status !== "claimed") {
-        callback(new Error("request is either pending or is already accepted/rejected"));
+        callback(new Error("request is either pending or is already accepted/rejected"), null);
     } else if (this.actualPrice === null) {
-        callback(new Error ("price of good has not been set yet"))
+        callback(new Error ("price of good has not been set yet"), null)
     } else {
         this.status = "accepted";
         this.stripeTransactionId = transactionId;
@@ -138,11 +218,9 @@ DeliverySchema.methods.accept = function(transactionId, shopperRating, callback)
         var thisID = this._id;
         this.save(function(err) {
             if (err) {
-                callback(err);
+                callback(err, null);
             } else {
-                User.findOne({_id: shopperID}, function(err, currentUser) {
-                    currentUser.addCompletedShipping(thisID, shopperRating, callback);
-                });
+                User.addCompletedShipping(shopperID, thisID, shopperRating, callback);
             }
         });
     }
@@ -150,64 +228,76 @@ DeliverySchema.methods.accept = function(transactionId, shopperRating, callback)
 
 /**
  * Rejects a claimed request. Feeds an error into the callback if the request is not in claimed stage
+ * @param {ObjectId} id - The ID of the delivery
+ * @param {ObjectId} requesterID - The id of the user requesting the good
  * @param {String} reason - The requester's reason for rejecting the delivery
- * @param {Integer} shopperRating - The rating that the requester gives to the shopper, must be between 1 to 5
+ * @param {Number} shopperRating - The rating that the requester gives to the shopper, must be an integer between 1 to 5
  * @param {Function} callback - The function to execute after request is rejected. Callback
- * function takes 1 parameter: an error when the reject is not properly saved
+ * function takes 3 parameters: an error when the reject is not properly saved, the delivery object, and the new rating
  */
-DeliverySchema.methods.reject = function(reason, shopperRating, callback) {
-    if (this.status !== "claimed") {
-        callback(new Error("request is either pending or is already accepted/rejected"));
-    } else if (reason.length == 0) {
-        callback(new Error("reason cannot be empty"));
-    } else {
-        this.status = "rejected";
-        this.rejectedReason = reason;
-        this.shopperRating = shopperRating;
-        var shopperID = this.shopper;
-        var thisID = this._id;
-        this.save(function(err) {
-            if (err) {
-                callback(err);
-            } else {
-                User.findOne({_id: shopperID}, function(err, currentUser) {
-                    currentUser.addCompletedShipping(thisID, shopperRating, callback);
-                });
-            }
-        });
-    }
+DeliverySchema.statics.reject = function(id, requesterID, reason, shopperRating, callback) {
+    this.findOne({_id: id, requester: requesterID, status: "claimed"})
+        .populate('shopper', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm') //exclude sensitive information from populate
+        .populate('requester', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm').exec(function(err, currentDelivery) {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request")
+        } else if (reason.length == 0) {
+            err = new Error("reason cannot be empty");
+        }
+        if (err) {
+            callback(err, null);
+        } else {
+            currentDelivery.status = "rejected";
+            currentDelivery.rejectedReason = reason;
+            currentDelivery.shopperRating = shopperRating;
+            currentDelivery.save(function(err) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    User.addCompletedShipping(currentDelivery.shopper._id, id, shopperRating, function(err, newRating) {
+                        callback(err, currentDelivery, newRating);
+                    });
+                }
+            });
+        }
+    });
 };
 
 /**
  * Rejects a claimed request. Feeds an error into the callback if the request is not in claimed stage
- * @param {Integer} requesterRating - The rating that the shopper gives to the requester, must be between 1 to 5
+ * @param {ObjectId} id - The ID of the delivery
+ * @param {ObjectId} shopperID - The id of the user delivering the good
+ * @param {Number} requesterRating - The rating that the shopper gives to the requester, must be an integer between 1 to 5
  * @param {Function} callback - The function to execute after request is rejected. Callback
- * function takes 1 parameter: an error when the reject is not properly saved
+ * function takes 2 parameters: an error when the rating is not properly saved, and the new rating
  */
-DeliverySchema.methods.rateRequester = function(requesterRating, callback) {
-    if (this.status === "pending") {
-        callback(new Error("cannot rate the shopper without claiming his/her delivery"));
-    } else {
-        this.requesterRating = requesterRating;
-        var requesterID = this.requester;
-        var thisID = this._id;
-        this.save(function(err) {
-            if (err) {
-                callback(err);
-            } else {
-                User.findOne({_id: requesterID}, function(err, currentUser) {
-                    currentUser.addCompletedRequest(thisID, requesterRating, callback);
-                });
-            }
-        });
-    }
+DeliverySchema.statics.rateRequester = function(id, shopperID, requesterRating, callback) {
+    this.findOne({_id: id, shopper: shopperID}, function(err, currentDelivery) {
+        if (currentDelivery === null) {
+            err = new Error("cannot find specified request");
+        } else if (currentDelivery.status === "pending") {
+            err = new Error("cannot rate the shopper without claiming his/her delivery");
+        }
+        if (err) {
+            callback(err, null);
+        } else {
+            currentDelivery.requesterRating = requesterRating;
+            currentDelivery.save(function(err) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    User.addCompletedRequest(currentDelivery.requester, currentDelivery._id, requesterRating, callback);
+                }
+            });
+        }
+    });
 };
 
 /**
  * Searches for a user's relevant requests and deliveries to be displayed on dashboard, and returns it.
  * Returned requests of user include:
  *    - requests that are pending, except those where seenExpired = true (where user already knows they are expired)
- *    - all claimed requests
+ *    - all claimed requests (does not include accepted/rejected requests)
  * Returned deliveries of user include:
  *    - all deliveries except those where the user has already rated the requester
  * @param {ObjectId} userID - The id of the relevant user
@@ -216,21 +306,25 @@ DeliverySchema.methods.rateRequester = function(requesterRating, callback) {
 DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
     this.find({requester: userID, status: "claimed"})
         .sort({pickupTime: 1})
-        .populate('shopper').lean().exec(function(err, requestItemsClaimed) {
+        .populate('shopper', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -avgRequestRating') //exclude sensitive information
+        .lean().exec(function(err, requestItemsClaimed) {
             if (err) {
                 callback(err, requestItemsClaimed, null);
             } else {
                 mongoose.model('Delivery', DeliverySchema)
                     .find({requester: userID, status: "pending", seenExpired: false})
                     .sort({deadline: 1})
-                    .populate('shopper').lean().exec(function(err, requestItemsPending) {
+                    .populate('shopper', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -avgRequestRating') //exclude sensitive information
+                    .lean().exec(function(err, requestItemsPending) {
                         if (err) {
                             callback(err, requestItemsClaimed, null);
                         } else {
                             var requestItems = requestItemsClaimed.concat(requestItemsPending);
                             mongoose.model('Delivery', DeliverySchema)
                                 .find({shopper: userID, requesterRating: null})
-                                .populate('requester').lean().exec(function(err, deliveryItems) {
+                                .sort({pickupTime: 1, deadline: 1})
+                                .populate('requester', '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -avgShippingRating') //exclude sensitive information
+                                .lean().exec(function(err, deliveryItems) {
                                     callback(err, requestItems, deliveryItems);
                                 });
                         }
@@ -252,7 +346,7 @@ DeliverySchema.statics.getRequestsAndDeliveries = function(userID, callback) {
  * @param {Function} callback - The callback to execute after the lists are returned. Executed as callback(err, requestItems)
  */
 DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pickupLocationList, minRating, sortBy, callback) {
-    var now = Date.now();
+    var now = new Date();
     var Model = this;
     User.findOne({_id: userID}, function(err, currentUser) {
         if (currentUser === null) {
@@ -274,36 +368,42 @@ DeliverySchema.statics.getRequests = function(userID, dueAfter, storesList, pick
             if (!minRating) {
                 minRating = 1;
             }
-            if (sortBy instanceof Array && sortBy[0] && sortBy[1]) {
+            if (sortBy instanceof Array && sortBy[0] && sortBy[1]) { //If all sortBy fields are properly defined, sorts requests accordingly
                 Model.find({requester: {$ne: userID},
                            status: "pending",
                            deadline: {$gt: dueAfter},
                            stores: {$in: storesList},
                            pickupLocation: {$in: pickupLocationList},
-                           $or: [{minShippingRating: {$lte: userShippingRating}}, {minShippingRating: null}]})
+                           minShippingRating: {$lte: userShippingRating}})
                     .sort({[sortBy[0]]: sortBy[1]})
-                    .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
+                    .limit(400) //limit total number of returned requests
+                    .populate({path: 'requester',
+                               match: {avgRequestRating: {$gte: minRating}}, //populates requester info only if the requester has an average requester rating above the minimum
+                               select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -phoneNumber -avgShippingRating'}) //exclude sensitive information
                     .lean().exec(function(err, requestItems) {
-                        requestItems = requestItems.filter(function(item) {
+                        requestItems = requestItems.filter(function(item) { //filter out those requests where requester info was not populated
                             return item.requester;
                         });
                         callback(err, requestItems);
                     });  
-                } else {
+            } else { //otherwise no need to sort requests
                 Model.find({requester: {$ne: userID},
                            status: "pending",
                            deadline: {$gt: dueAfter},
                            stores: {$in: storesList},
                            pickupLocation: {$in: pickupLocationList},
-                           $or: [{minShippingRating: {$lte: userShippingRating}}, {minShippingRating: null}]})
-                    .populate({path: 'requester', match: {avgRequestRating: {$gte: minRating}}})
+                           minShippingRating: {$lte: userShippingRating}})
+                    .populate({path: 'requester',
+                               match: {avgRequestRating: {$gte: minRating}}, //populates requester info only if the requester has an average requester rating above the minimum
+                               select: '-password -stripeId -stripePublishableKey -stripeEmail -verificationToken -dorm -phoneNumber -avgShippingRating'}) //exclude sensitive information
+                    .limit(400) //limit total number of returned requests
                     .lean().exec(function(err, requestItems) {
-                        requestItems = requestItems.filter(function(item) {
+                        requestItems = requestItems.filter(function(item) { //filter out those requests where requester info was not populated
                             return item.requester;
                         });
                         callback(err, requestItems);
                     });
-                }
+            }
         }
     });
 };

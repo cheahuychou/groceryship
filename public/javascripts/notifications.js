@@ -95,9 +95,8 @@ $(document).ready(function () {
                         refreshAllCounts();
 
                         // update the average rating of the user being rated in the UI as well
-                        // TODO: uncomment below once data.newAvgRating is added to the json the PUT request returns
-                        // var userId = $('#rating-container-'+id).attr('data-user');
-                        // updateStarRating(userId, data.newAvgRating, true);
+                        var userId = $('#rating-container-'+id).attr('data-user');
+                        updateStarRating(userId, data.newRating, true);
 
                     } else {
                         console.log(data.message);
@@ -133,11 +132,13 @@ $(document).ready(function () {
                     // remove corresponding request tile and modal if it exists
                     $('#request-tile-container-' + id).remove();
                     $('#request-modal-' + id).remove();
+                    // remove corresponding row in To Deliver table
+                    $('.delivery-item-row[data-id='+id+']').remove();
+                    checkIfNoDeliveries();
                     
                     // update the average rating of the user being rated in the UI as well
-                    // TODO: uncomment below once data.newAvgRating is added to the json the PUT request returns
-                    // var userId = $('#rating-container-'+id).attr('data-user');
-                    // updateStarRating(userId, data.newAvgRating, true);
+                    var userId = $('#rating-container-'+id).attr('data-user');
+                    updateStarRating(userId, data.newRating, true);
                     
                     refreshAllCounts();
                 } else {
@@ -173,9 +174,8 @@ $(document).ready(function () {
                     checkIfNoDeliveries();
 
                     // update the average rating of the user being rated in the UI as well
-                    // TODO: uncomment below once data.newAvgRating is added to the json the PUT request returns
-                    // var userId = $('#rating-container-'+id).attr('data-user');
-                    // updateStarRating(userId, data.newAvgRating, false);
+                    var userId = $('#rating-container-'+id).attr('data-user');
+                    updateStarRating(userId, data.newRating, false);
                     
                     refreshAllCounts();
                 } else {

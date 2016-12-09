@@ -238,6 +238,73 @@ UserSchema.statics.sendVerificationEmail = function (username, devMode, callback
 }
 
 /**
+ * Adds a delivery ID to the completed requests field. Updates the average request rating.
+ * @param {ObjectId} id - The id of the requester
+ * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
+ * @param {Number} rating - The rating of the new completed request. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 2 parameters: an error when the change is not properly saved, and the new rating
+ */
+UserSchema.statics.addCompletedRequest = function(id, deliveryId, rating, callback) {
+    this.findOne({_id: id}, function(err, currentUser) {
+        if (err) {
+            callback(err, null);
+        } else {
+            currentUser.completedRequests.push(deliveryId);
+            var newLength = currentUser.completedRequests.length;
+            currentUser.avgRequestRating = (currentUser.avgRequestRating * (newLength - 1) + rating) / newLength;
+            currentUser.save(function(err) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, currentUser.avgRequestRating);
+                }
+            });
+        }
+    });
+}
+
+/**
+ * Adds a delivery ID to the completed shippings field. Updates the average shipping rating.
+ * @param {ObjectId} id - The id of the shopper
+ * @param {ObjectId} deliveryId - The delivery id of the new completed shipping. 
+ * @param {Number} rating - The rating of the new completed shipping. 
+ * @param {Function} callback - The function to execute after the account is connected. Callback
+ * function takes 2 parameters: an error when the change is not properly saved, and the new rating
+ */
+UserSchema.statics.addCompletedShipping = function(id, deliveryId, rating, callback) {
+    this.findOne({_id: id}, function(err, currentUser) {
+        if (err) {
+            callback(err, null);
+        } else {
+            currentUser.completedShippings.push(deliveryId);
+            var newLength = currentUser.completedShippings.length;
+            var oldRating = currentUser.avgShippingRating;
+            currentUser.avgShippingRating = (currentUser.avgShippingRating * (newLength - 1) + rating) / newLength; //calculate the new average shipping rating
+
+            //Suspend users for a period of time if they
+            //    1. previously had a good average rating but rating now fell below minimum allowed ship rating
+            //    2. currently have a bad average rating & receive another bad rating
+            if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
+                if ((oldRating >= utils.minAllowedShipRating() && currentUser.avgShippingRating < utils.minAllowedShipRating())
+                    || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
+                    var now = Date.now();
+                    currentUser.suspendedUntil = new Date(now + utils.suspensionPeriod());
+                }
+            }
+
+            currentUser.save(function(err) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, currentUser.avgShippingRating);
+                }
+            });
+        }
+    });
+}
+
+/*
  * Edits the profile of a query user. 
  * @param {String} username - The username of the query user. 
  * @param {Number} newPhoneNumber - The new phone number of the user. 
@@ -261,9 +328,9 @@ UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, cal
             }
         });
     });
-};
+}
 
-/**
+/*
  * Changes the password of a query user. 
  * @param {String} username - The username of the query user. 
  * @param {String} newPassword - The new password of the user. 

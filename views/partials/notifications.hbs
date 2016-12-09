@@ -9,7 +9,7 @@
         <div class='tile notification-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
+          <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
           <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving:{{/ifIsPast}} <br>{{pickupTime}}</p>
 
           <div class="accept-reject-container">
@@ -23,7 +23,7 @@
         <div class='tile notification-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/watch.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Claimed by: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
+          <p class='tile-subtitle'>Claimed by: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
           <p class='tile-content'><i>Contact the shopper and<br class='hidden-ms hidden-md'> set a pickup time!</i></p>
 
           <div class="accept-reject-container">
@@ -57,7 +57,7 @@
         <div class='tile notification-tile' data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></p>
+          <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></p>
           <p class='tile-content'>Deliver on: <br>{{pickupTime}}</p>
 
           {{!--  TODO: make these buttons work and stop the modal from popping up --}}
@@ -70,7 +70,7 @@
       <div class='tile notification-tile' data-id='{{_id}}'>
         <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
         <h4 class='tile-title'>{{itemName}}</h4>
-        <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></p>
+        <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></p>
         <p class='tile-content'><i>{{status}} by requester</i></p>
 
         {{!--  TODO: make these buttons work and stop the modal from popping up --}}

@@ -3,26 +3,6 @@
 var getContactTooltip = function() {
     var targetElement = $(this).attr('data-target');
 
-    // only show the relevant rating: either the shipping or the request rating
-    var viewType = $(this).attr('data-view');
-    switch (viewType) {
-        case 'shopper':
-            $(targetElement + ' .shipping-rating').prop('hidden', false);
-            $(targetElement + ' .request-rating').prop('hidden', true);
-            break;
-        case 'request-feed':
-            $(targetElement + ' .shipping-rating').prop('hidden', true);
-            $(targetElement + ' .request-rating').prop('hidden', false);
-            $(targetElement + ' .user-phone').prop('hidden', true);
-            break;
-        case 'requester':
-            $(targetElement + ' .shipping-rating').prop('hidden', true);
-            $(targetElement + ' .request-rating').prop('hidden', false);
-            break;
-        default:
-            break;
-    }
-
     return $(targetElement).html();
 };
 
@@ -66,10 +46,11 @@ var createStarRating = function(rating) {
  */        
 var updateStarRating = function(userId, newRating, isShipping) {       
     var starRatingDiv = createStarRating(newRating);       
-    var ratingTypeSelector = isShipping ? '.shipping-rating' : '.request-rating';      
-    var userRatingSelector = '.contact-tooltip-'+userId;       
+    var ratingTypeSelector = isShipping ? '.shipping-rating' : '.request-rating';
+    var viewType = isShipping ? 'shopper' : 'requester';
+    var userRatingSelector = '#contact-'+viewType+'-tooltip-'+userId;       
        
-    $(userRatingSelector+' '+ratingTypeSelector).empty().append(starRatingDiv);        
+    $(userRatingSelector+' '+ratingTypeSelector).empty().append(starRatingDiv);  
     fillStars(userRatingSelector+' .star-rating', true);       
 };
 
