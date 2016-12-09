@@ -28,9 +28,9 @@ describe("Utils", function() {
         // Before running any test, connect to the database.
         before(function(done) {
             con = mongoose.connect("mongodb://localhost/grocery-utils-test", function() {
-                var userJSON1 = {"username": "testUser1", "password": "Iwantpizza3@", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Baker", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": "testFirstName1", "lastName": "testLastName1"};
+                var userJSON1 = {"username": "testUser1", "password": "Iwantpizza3@", "mitId": 123456789, "phoneNumber": 1234567890, "dorm": "Baker", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName1", "lastName": "testLastName1"};
 
-                var userJSON2 = {"username": "testUser2", "password": "Iwantpizza3@", "mitId": 234567890, "phoneNumber": 2345678901, "dorm": "MacGregor", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "stripePublishableKey": "testuserStripePublishableKey", "firstName": "testFirstName2", "lastName": "testLastName2"};
+                var userJSON2 = {"username": "testUser2", "password": "Iwantpizza3@", "mitId": 234567890, "phoneNumber": 2345678901, "dorm": "MacGregor", "stripeId":"testuserStripeId", "stripeEmail": "testuserStripeEmail", "firstName": "testFirstName2", "lastName": "testLastName2"};
 
                 User.create([userJSON1, userJSON2], function(err, users) {
                     if (err) {

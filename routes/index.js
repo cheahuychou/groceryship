@@ -212,7 +212,6 @@ router.get('/oauth/callback', function(req, res) {
             var authResponse = JSON.parse(body);
             var stripeId = authResponse.stripe_user_id;
             user['stripeId'] = stripeId;
-            user['stripePublishableKey'] = authResponse.stripe_publishable_key;
             stripe.accounts.retrieve(stripeId,
                 function(err, account){
                     if (err) {
