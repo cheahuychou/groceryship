@@ -1,6 +1,6 @@
 {{!-- Author: Czarina Lao --}}
-<div id="deliveries-table">
-  <table class="table table-hover">
+<div id="deliveries-table-div">
+  <table id="deliveries-table" class="table table-hover">
     <thead>
       <tr>
         {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
@@ -8,23 +8,34 @@
         {{> item_headings}}
         <th>Requester</th>
         <th>Pickup Time</th>
+        <th>Raw Deadline</th> {{!-- not visible, used to sort deadline --}}
+        <th>Raw Pickup Time</th> {{!-- not visible, used to sort pickup time --}}
       </tr>
     </thead>
     <tbody>
       {{#each deliveryItems}}
-      <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
-        {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
-        <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
-        {{> item_row this}}
-        <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-tooltip-{{requester._id}}">{{requester.username}}</a></td>
-        <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}<input type='hidden' name='raw-pickup-time' value='{{rawPickupTime}}'>{{else}}N/A{{/if}}</td>
-      </tr>
+        {{!-- don't show items past the deadline and/or they've been rejected by the requester --}}
+        {{#ifIsPast rawDeadline ../now}}
+        {{else}}
+        {{#ifContains status "rejected"}}
+        {{else}}
+        <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
+          {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
+          <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
+          {{> item_row this}}
+          <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
+          <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}<input type='hidden' name='raw-pickup-time' value='{{rawPickupTime}}'>{{else}}N/A{{/if}}</td>
+          <td class='raw-deadline'>{{rawDeadline}}</td>
+          <td class='raw-pickup-time'>{{rawPickupTime}}</td>
+        </tr>
+        {{/ifContains}}
+        {{/ifIsPast}}
       {{/each}}
     </tbody>
   </table>
   {{!-- show this message when there are no deliveryItems --}}
   {{!-- {{#unless deliveryItems}} --}}
-    <div class="well well-lg empty-delivery-table {{#if deliveryItems}}hide{{/if}}">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
+    <div class="well well-lg empty-delivery-table hide">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
   {{!-- {{/unless}} --}}
   <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#set-pickup-modal' style='float: right' disabled>Set Pickup Time</button>
   {{> set_pickup}}

@@ -1,11 +1,25 @@
 // Author: Czarina Lao
 
 $(document).ready(function () {
+    var deliveriesDatatable = $('#deliveries-table').DataTable({
+        'order': [],
+        'bPaginate': false,
+        'bInfo': false,
+        'columnDefs': [{ 'orderable': false, 'targets': [0, 1, 2, 3, 4, 7, 8] },
+                       { 'orderData':[11], 'targets': [5] }, //sort deadline by raw deadline
+                       { 'orderData': [12], 'targets': [10] }, //sort pickup time by raw pickup time
+                       { 'targets': [11, 12], 'visible': false, 'searchable': false}]
+    });
+    deliveriesDatatable.on('draw', function() {
+        checkIfNoMatches();
+    });
+
     $('#navbar-dashboard').addClass('active');
     refreshAllCounts();
 
     // by default empty message is hidden to remove logic from hbs
     checkIfNoNotifs();
+    checkIfNoDeliveries();
 
     // delete all modal messages when modal gets closed
     $('.modal').on('hidden.bs.modal', function() {
@@ -90,8 +104,18 @@ $(document).ready(function () {
         // disable set pickup time button if no checkboxes are checked
         if ($('.deliveries-checkbox:checked').size() === 0) {
             $('#deliver-items').prop('disabled', true);
+            $('.header-checkbox').prop('checked', false);
         } else {
             $('#deliver-items').prop('disabled', false);
+        }
+
+        // uncheck header checkbox if not all items are selected anymore
+        if ($('.deliveries-checkbox:checked').size() != $('.deliveries-checkbox').size()) {
+            $('.header-checkbox').prop('checked', false);
+        // else they're equal meaning all possible checkboxes are checked
+        // check the header checkbox if there are boxes checked
+        } else if ($('.deliveries-checkbox').size() > 0) {
+            $('.header-checkbox').prop('checked', true);
         }
     });
 
@@ -127,7 +151,7 @@ $(document).ready(function () {
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
                 var deadline = originalRow.children('.deadline').text();
-                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
+                var rawDeadline = new Date(parseInt(originalRow.children('.deadline').children('[name=raw-deadline]').val()));
 
                 var inputPickupTime = $('<input>', {
                     class: 'form-control flatpickr',
@@ -154,7 +178,7 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#set-pickup-modal tbody').append(row);
-
+                console.log(rawDeadline);
                 // initialize flatpickr with restrictions based on time now and deadline
                 flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]', {
                     enableTime: true,
@@ -234,11 +258,13 @@ $(document).ready(function () {
                 var id = $(this).attr('data-id');
                 var pickupTime = $(this).find('input[name=pickup-time]').val();
                 var price = $(this).find('input[name=price]').val();
+
+                var pickupTimeWithTimezone = new Date(pickupTime+getFormattedTimezoneOffset());
                 return $.ajax({
                     url: '/deliveries/'+id+'/deliver',
                     type: 'PUT',
                     data: {
-                        pickupTime: new Date(pickupTime+getFormattedTimezoneOffset()),
+                        pickupTime: pickupTimeWithTimezone,
                         actualPrice: price,
                         _csrf: csrf
                     },
@@ -250,9 +276,12 @@ $(document).ready(function () {
                             // remove checkbox because pickup time has been set
                             originalRow.children('.checkbox-cell').empty();
                             // update pickup time
-                            originalRow.children('.pickup-time').text(data.item.pickupTime);
+                            originalRow.children('.pickup-time').text(moment(pickupTimeWithTimezone).format('MMM D, h:mm A'));
+                            deliveriesDatatable.cell('.delivery-item-row[data-id='+id+']', 12).data(pickupTimeWithTimezone.getTime());
                             // remove item and associated flatpickr from modal
                             flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]').destroy();
+
+                            // remove item from modal
                             currentItem.remove();
                         } else {
                             hasError = true;
@@ -275,17 +304,21 @@ $(document).ready(function () {
                 } else if ($('.deliveries-checkbox:checked').size() === 0) {
                     // disable deliver now button if no checkboxes are checked
                     $('#deliver-items').prop('disabled', true);
+                    $('.header-checkbox').prop('checked', false);
                 }
 
                 if (hasError) {
                     addMessage('The request to deliver some items failed. Please try again. Make sure that the pickup time is before the deadline!', 'danger', true, true);
                 } else {
                     addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
+                    addMessage('Sending your delivery item to your notifications...', 'success', false, false);
                     // only close the modal if all items were successfully updated
                     $('#set-pickup-modal').modal('toggle');
                     // refresh to get new notifications from newly set pickup times
-                    window.location.reload(true);
-                    addMessage('The requester/s have been notified. Make sure to promptly deliver the items with the receipt at the set pickup time!', 'success', false, true);
+                    // make refresh wait for a while so that user can read the success messages
+                    setTimeout(function(){
+                        window.location.reload(true);
+                    }, 2000);   
                 }
             });
         }
