@@ -21,7 +21,8 @@ describe("Ratings", function() {
 	// Before running any test, connect to the database.
 	beforeEach(function(done) {
 		con = mongoose.connect("mongodb://localhost/grocery-rating-test", function() {
-			con.connection.db.dropDatabase( function() { 
+	    });
+	    			con.connection.db.dropDatabase( function() { 
 	    	var user1 = new User({
 			    "username": "test-user1",
 				"password": "Iwantpizza3@",
@@ -71,7 +72,6 @@ describe("Ratings", function() {
 			    }
 				done(); 
 			});
-	    });
 		});
 	});
 
