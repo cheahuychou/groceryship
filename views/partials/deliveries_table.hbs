@@ -8,6 +8,8 @@
         {{> item_headings}}
         <th>Requester</th>
         <th>Pickup Time</th>
+        <th>Raw Deadline</th> {{!-- not visible, used to sort deadline --}}
+        <th>Raw Pickup Time</th> {{!-- not visible, used to sort pickup time --}}
       </tr>
     </thead>
     <tbody>
@@ -23,6 +25,8 @@
           {{> item_row this}}
           <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
           <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}<input type='hidden' name='raw-pickup-time' value='{{rawPickupTime}}'>{{else}}N/A{{/if}}</td>
+          <td class='raw-deadline'>{{rawDeadline}}</td>
+          <td class='raw-pickup-time'>{{rawPickupTime}}</td>
         </tr>
         {{/ifContains}}
         {{/ifIsPast}}
