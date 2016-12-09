@@ -1,4 +1,5 @@
 // Author: Cheahuychou Mao
+
 $(document).ready(function () {
     var csrf = $('#csrf').val();
 

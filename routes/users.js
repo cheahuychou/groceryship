@@ -1,3 +1,5 @@
+// Author: Chien-Hsun Chang
+
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcrypt');

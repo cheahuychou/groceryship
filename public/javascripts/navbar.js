@@ -1,4 +1,5 @@
 // Author: Czarina Lao
+
 $(document).ready(function() {
     $('.logout-button').click(function() {
     	var csrf = $(this).parent().parent().find('#csrf').val();

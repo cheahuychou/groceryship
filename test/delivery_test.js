@@ -1,4 +1,5 @@
 //Author: Joseph Kuan
+
 var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require('../models/user');
@@ -29,7 +30,6 @@ describe("Models", function() {
           "dorm": "Baker",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgRequestRating": 4
         });
 
@@ -42,7 +42,6 @@ describe("Models", function() {
           "dorm": "MacGregor",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgRequestRating": 3.5
         });
 
@@ -54,8 +53,7 @@ describe("Models", function() {
           "phoneNumber": 3456789012,
           "dorm": "New House",
           "stripeId":"testuserStripeId",
-          "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
+          "stripeEmail": "testuserStripeEmail"
         });
 
         User.create([testUser1, testUser2, testUser3], function(err, users) {

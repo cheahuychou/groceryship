@@ -1,3 +1,5 @@
+// Author: Chien-Hsun Chang
+
 var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require("../models/user");
@@ -29,8 +31,7 @@ describe("Ratings", function() {
 				"phoneNumber": 1234567890,
 				"dorm": "Baker",
 				"stripeId":"testuserStripeId", 
-				"stripeEmail": "testuserStripeEmail",
-				"stripePublishableKey": "testuserStripePublishableKey"
+				"stripeEmail": "testuserStripeEmail"
 			});
 
 			var user2 = new User({
@@ -41,8 +42,7 @@ describe("Ratings", function() {
 				"phoneNumber": 2345678900,
 				"dorm": "Random",
 				"stripeId":"testuserStripeId", 
-				"stripeEmail": "testuserStripeEmail",
-				"stripePublishableKey": "testuserStripePublishableKey"
+				"stripeEmail": "testuserStripeEmail"
 			});
 
 			User.create([user1, user2], function(err, users) {

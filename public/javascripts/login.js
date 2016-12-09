@@ -1,3 +1,5 @@
+// Author: Joseph Kuan
+
 /**
 * Checks that the kerberos and password for the login form are
 * non-empty strings and do not contain html elements, alert

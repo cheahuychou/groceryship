@@ -1,3 +1,5 @@
+// Author: Cheahuychou Mao
+
 var HbsHelpers = function() {
 	var that = Object.create(HbsHelpers.prototype);
 

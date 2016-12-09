@@ -15,7 +15,6 @@ var UserSchema = mongoose.Schema({
     phoneNumber: {type: Number, required: true},
     dorm: {type: String, required: true},
     stripeId: {type: String, required: true},
-    stripePublishableKey: {type: String, required: true},
     stripeEmail: {type: String, required: true},
     completedRequests: {type: [{type: ObjectId, ref: "delivery"}], default: []},
     avgRequestRating: {type: Number, default: 5},
@@ -100,16 +99,6 @@ UserSchema.methods.changeDorm = function(dorm, callback){
 }
 
 /**
-* Changes the hashed password to a new one.
-* @param {String} hash - the new hashed password.
-* @param {Function} callback - the function that gets called after.
-*/
-UserSchema.methods.changePassword = function(hash, callback){
-    this.password = hash;
-    this.save(callback);
-}
-
-/**
  * Adds a delivery ID to the completed requests field. Updates the average request rating.  
  * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
  * @param {Number} rating - The rating of the new completed request. 
@@ -187,8 +176,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                     callback(null, {username: username,
                                     _id: user._id,
                                     verified: user.verified,
-                                    fullName: user.firstName + ' ' + user.lastName,
-                                    stripePublishableKey: user.stripePublishableKey});
+                                    fullName: user.firstName + ' ' + user.lastName});
                 } else {
                     callback({message:'Please enter a correct password'});
                 }
@@ -291,7 +279,8 @@ UserSchema.statics.changePassword = function(username, newPassword, callback){
                 if (err){
                     callback(new Error("The new password is invalid."));
                 } else {
-                    user.changePassword(hash, callback); 
+                    user.password = hash;
+                    user.save(callback); 
                 }
             });
         }

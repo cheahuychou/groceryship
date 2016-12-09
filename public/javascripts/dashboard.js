@@ -1,4 +1,5 @@
 // Author: Czarina Lao
+
 $(document).ready(function () {
     $('#navbar-dashboard').addClass('active');
     refreshAllCounts();

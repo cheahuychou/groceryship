@@ -1,3 +1,5 @@
+// Author: Chien-Hsun Chang
+
 $(document).ready(function () {
 	$('#navbar-user').addClass('active');
 
