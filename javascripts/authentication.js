@@ -1,3 +1,5 @@
+// Author: Cheahuychou Mao
+
 var request = require('request');
 var config = require('./config.js');
 var bcrypt = require('bcrypt');

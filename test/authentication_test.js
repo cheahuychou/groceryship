@@ -1,3 +1,5 @@
+// Author: Cheahuychou Mao
+
 var assert = require('chai').assert;
 var authentication = require('../javascripts/authentication.js');
 var mongoose = require("mongoose");

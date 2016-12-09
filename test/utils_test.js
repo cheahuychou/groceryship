@@ -1,4 +1,4 @@
-// Author: Cheahuychou Mao
+// Author: Czarina Lao
 
 var assert = require("assert");
 var utils = require('../javascripts/utils.js');
