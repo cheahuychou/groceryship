@@ -13,7 +13,10 @@ $(document).ready(function () {
     });
 
     // remove all added items on set pickup time modal
-    $('#set-pickup-modal').on('hidden.bs.modal', function() {
+    $('#set-pickup-modal').on('hide.bs.modal', function() {
+        $(flatpickr('#set-pickup-modal .flatpickr')).each(function() {
+            this.destroy();
+        });
         $('#set-pickup-modal tbody').empty();
     });
 
