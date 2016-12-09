@@ -1,10 +1,13 @@
 // Author: Czarina Lao
 $(document).ready(function () {
     $('#deliveries-table').DataTable({
-        "order": [],
-        "bPaginate": false,
-        "bInfo": false,
-        "columnDefs": [{ "orderable": false, "targets": [0, 1, 2, 3, 4, 7, 8] }]
+        'order': [],
+        'bPaginate': false,
+        'bInfo': false,
+        'columnDefs': [{ 'orderable': false, 'targets': [0, 1, 2, 3, 4, 7, 8] },
+                       { 'orderData':[11], 'targets': [5] }, //sort deadline by raw deadline
+                       { 'orderData': [12], 'targets': [10] }, //sort pickup time by raw pickup time
+                       { 'targets': [11, 12], 'visible': false, 'searchable': false}]
     }).on('draw', function() {
         checkIfNoMatches();
     });
@@ -143,7 +146,7 @@ $(document).ready(function () {
                 var itemName = originalRow.children('.item-name').text();
                 var pickupPoint = originalRow.children('.pickup-location').text();
                 var deadline = originalRow.children('.deadline').text();
-                var rawDeadline = originalRow.children('.deadline').children('[name=raw-deadline]').val();
+                var rawDeadline = new Date(parseInt(originalRow.children('.deadline').children('[name=raw-deadline]').val()));
 
                 var inputPickupTime = $('<input>', {
                     class: 'form-control flatpickr',

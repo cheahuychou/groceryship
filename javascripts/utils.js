@@ -81,10 +81,10 @@ var Utils = function() {
     that.formatDate = function (deliveries) {
         var deliveries = JSON.parse(JSON.stringify(deliveries)); // deep copy
         return deliveries.map(function (delivery) {
-	        delivery.rawDeadline = new Date(delivery.deadline);
+	        delivery.rawDeadline = (new Date(delivery.deadline)).getTime();
             delivery.deadline = dateFormat(delivery.deadline, "mmm d, h:MM TT");
             if (delivery.pickupTime) {
-                delivery.rawPickupTime = new Date(delivery.pickupTime);
+                delivery.rawPickupTime = (new Date(delivery.pickupTime)).getTime();
                 delivery.pickupTime = dateFormat(delivery.pickupTime, "mmm d, h:MM TT");
             }
             return delivery;
