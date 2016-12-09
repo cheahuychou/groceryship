@@ -53,8 +53,8 @@ var Email = function() {
 		    html: htmlContent // html body
 		};
 		// send mail with defined transport object
-		that.transporter.sendMail(mailOptions, function(error, info){
-		    if(error){
+		that.transporter.sendMail(mailOptions, function(err, info){
+		    if(err){
 		        return {success: false};
 		    }
 		    return {success: true}
@@ -79,11 +79,10 @@ var Email = function() {
 	/**
    	* Sends verfication email to user with the confirm button that links to verify request
    	* @param {Object} user - the user object for while the verification token is for
-   	* @param {Function} callback - the function to call after the token has been created
-   	* @return {Object} object - object.success is true if the email was sent
-   								successfully, false otherwise
+   	* @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
+   	* @param {Function} callback - the function to call after the email has been sent
    	*/
-	that.sendVerficationEmail = function (user, developmentMode) {
+	that.sendVerificationEmail = function (user, developmentMode, callback) {
 		that.createVerificationToken(user, function (err, user) {
 			var subject = 'Confirm your GroceryShip Account, {}!'.format(user.username);
 			var link;
@@ -93,7 +92,8 @@ var Email = function() {
 				link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
 			}
 			var content = '{}<p>Hi {}!<br><br>Confirm your GroceryShip account by clicking on the confirm button below.<form action="{}"><input type="submit" value="Confirm" /></form>{}</p>'.format(that.welcomeMessage, user.firstName, link, that.signature);
-			return sendEmail(user.username, subject, content);
+			sendEmail(user.username, subject, content);
+			callback(null, user);
 		});
 	}
 

@@ -1,4 +1,5 @@
 // Author: Czarina Lao
+
 $(document).ready(function() {
     flatpickr("input[name=item-due]", {
         enableTime: true,

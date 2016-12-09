@@ -1,4 +1,5 @@
 //Author: Joseph Kuan
+
 var assert = require('chai').assert;
 var mongoose = require("mongoose");
 var User = require('../models/user');
@@ -29,7 +30,6 @@ describe("Models", function() {
           "dorm": "Baker",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgRequestRating": 4
         });
 
@@ -42,7 +42,6 @@ describe("Models", function() {
           "dorm": "MacGregor",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgRequestRating": 3.5
         });
 
@@ -54,9 +53,7 @@ describe("Models", function() {
           "phoneNumber": 3456789012,
           "dorm": "New House",
           "stripeId":"testuserStripeId",
-          "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
-          "avgShippingRating": 2.8
+          "stripeEmail": "testuserStripeEmail"
         });
 
         var now = Date.now();
@@ -70,7 +67,6 @@ describe("Models", function() {
           "dorm": "Random",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgShippingRating": 2.5,
           "suspendedUntil": future
         });
@@ -84,7 +80,6 @@ describe("Models", function() {
           "dorm": "Simmons",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgShippingRating": 2,
           "avgRequestRating": 2
         });
@@ -98,7 +93,6 @@ describe("Models", function() {
           "dorm": "Random",
           "stripeId":"testuserStripeId",
           "stripeEmail": "testuserStripeEmail",
-          "stripePublishableKey": "testuserStripePublishableKey",
           "avgShippingRating": 5,
           "avgRequestRating": 5
         });

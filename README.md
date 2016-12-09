@@ -20,50 +20,84 @@ Existing solutions include the delivery services of each grocery store (if it ex
 
 ## Authorship
 ### Design Document
-- Project Overview (Czarina)
-- Motivation (Czarina)
-- Definitions (Czarina)
-- Concepts (Czarina)
-- Anticipated Misfits (Czarina)
-- Data Model (Joseph)
-- Security Concerns (Czarina)
-- APIs (Czarina)
-- User Interface (Chou)
-- Design Risks (Vincent)
-- Design Choices (Chou)
+- Project Overview (Czarina Lao)
+- Motivation (Czarina Lao)
+- Definitions (Czarina Lao)
+- Concepts (Czarina Lao)
+- Anticipated Misfits (Czarina Lao)
+- Data Model (Joseph Kuan)
+- Security Concerns (Czarina Lao)
+- APIs (Czarina Lao)
+- User Interface (Cheahuychou Mao)
+- Design Risks (Chien-Hsun Chang)
+- Design Choices (Cheahuychou Mao)
 
 ### Code
+- javascripts
+    - authentication.js (Cheahuychou Mao)
+    - email.js (Cheahuychou Mao)
+    - hbs_helpers.js (Cheahuychou Mao)
+    - utils.js (Cheahuychou Mao)
 - models
-    - delivery.js
-    - user.js
+    - delivery.js (Joseph Kuan)
+    - user.js (Cheahuychou Mao)
 - public
     - javascript
-        - dashboard.js
-        - deliver.js
-        - index.js
-        - request.js
-        - utils.js
+        - dashboard.js (Czarina Lao)
+        - dashboard_helpers.js (Czarina Lao)
+        - deliver.js (Czarina Lao)
+        - index.js (Czarina Lao)
+        - login.js (Joseph Kuan)
+        - navbar.js (Czarina Lao)
+        - notifications.js (Cheahuychou Mao)
+        - profile.js (Chien-Hsun Chang)
+        - rating.js (Cheahuychou Mao)
+        - request.js (Czarina Lao)
+        - user_info.js (Czarina Lao)
     - stylesheets
-        - style.css
+        - style.css (Czarina Lao)
 - routes
-    - deliveries.js
-    - index.js
-    - users.js
+    - deliveries.js (Joseph Kuan)
+    - index.js (Cheahuychou Mao)
+    - users.js (Chien-Hsun Chang)
+- test
+    - authentication_test.js (Cheahuychou Mao)
+    - delivery_test.js (Joseph Kuan)
+    - email_test.js (Cheahuychou Mao)
+    - rating_test.js (Chien-Hsun Chang)
+    - user_test.js (Cheahuychou Mao)
+    - utils_test.js (Czarina Lao)
 - views
     - layouts
-        - index.hbs
+        - index.hbs (Czarina Lao)
     - partials
-        - deliveries_table.hbs
-        - item_headings.hbs
-        - item_row.hbs
-        - login_register.hbs
-        - navbar_logged_in.hbs
-        - request_form.hbs
-        - request_item_form.hbs
-        - requests_table.hbs
-    - dashboard.hbs
-    - deliver.hbs
-    - error.hbs
-    - home.hbs
-    - request.hbs
-- app.js
+        - accept.hbs (Cheahuychou Mao)
+        - card_input.hbs (Chien-Hsun Chang)
+        - close.hbs (Cheahuychou Mao)
+        - contact_information.hbs (Joseph Kuan)
+        - cost_summary.hbs (Czarina Lao)
+        - deliveries_table.hbs (Czarina Lao)
+        - filters.hbs (Joseph Kuan)
+        - item_headings.hbs (Czarina Lao)
+        - item_row.hbs (Czarina Lao)
+        - login_register.hbs (Cheahuychou Mao)
+        - navbar_logged_in.hbs (Czarina Lao)
+        - notification_item.hbs (Joseph Kuan)
+        - notifications.hbs (Joseph Kuan)
+        - rating.hbs (Cheahuychou Mao)
+        - reject.hbs (Cheahuychou Mao)
+        - request_form.hbs (Czarina Lao)
+        - request_item.hbs (Czarina Lao)
+        - request_item_form.hbs (Czarina Lao)
+        - requests.hbs (Czarina Lao)
+        - requests_table.hbs (Czarina Lao)
+        - set_pickup.hbs (Czarina Lao)
+        - signup.hbs (Chien-Hsun Chang)
+    - dashboard.hbs (Czarina Lao)
+    - deliver.hbs (Czarina Lao)
+    - error.hbs (Cheahuychou Mao)
+    - home.hbs (Czarina Lao)
+    - profile.hbs (Chien-Hsun Chang)
+    - request.hbs (Czarina Lao)
+    - suspended.hbs (Joseph Kuan)
+- app.js (Cheahuychou Mao)
