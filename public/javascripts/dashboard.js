@@ -14,6 +14,7 @@ $(document).ready(function () {
 
     // by default empty message is hidden to remove logic from hbs
     checkIfNoNotifs();
+    checkIfNoDeliveries();
 
     // delete all modal messages when modal gets closed
     $('.modal').on('hidden.bs.modal', function() {
