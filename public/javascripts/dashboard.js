@@ -313,7 +313,7 @@ $(document).ready(function () {
                     // refresh to get new notifications from newly set pickup times
                     // make refresh wait for a while so that user can read the success messages
                     setTimeout(function(){
-                        //window.location.reload(true);
+                        window.location.reload(true);
                     }, 2000);   
                 }
             });
