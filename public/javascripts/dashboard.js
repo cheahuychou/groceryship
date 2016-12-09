@@ -1,6 +1,6 @@
 // Author: Czarina Lao
 $(document).ready(function () {
-    $('#deliveries-table').DataTable({
+    var deliveriesDatatable = $('#deliveries-table').DataTable({
         'order': [],
         'bPaginate': false,
         'bInfo': false,
@@ -8,7 +8,8 @@ $(document).ready(function () {
                        { 'orderData':[11], 'targets': [5] }, //sort deadline by raw deadline
                        { 'orderData': [12], 'targets': [10] }, //sort pickup time by raw pickup time
                        { 'targets': [11, 12], 'visible': false, 'searchable': false}]
-    }).on('draw', function() {
+    });
+    deliveriesDatatable.on('draw', function() {
         checkIfNoMatches();
     });
 
@@ -271,8 +272,8 @@ $(document).ready(function () {
                             // remove checkbox because pickup time has been set
                             originalRow.children('.checkbox-cell').empty();
                             // update pickup time
-
-                            originalRow.children('.pickup-time').text(moment(pickupTimeWithTimezone).format('lll'));
+                            originalRow.children('.pickup-time').text(moment(pickupTimeWithTimezone).format('MMM D, h:mm A'));
+                            deliveriesDatatable.cell('.delivery-item-row[data-id='+id+']', 12).data(pickupTimeWithTimezone.getTime());
                             // remove item and associated flatpickr from modal
                             flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]').destroy();
 
@@ -312,7 +313,7 @@ $(document).ready(function () {
                     // refresh to get new notifications from newly set pickup times
                     // make refresh wait for a while so that user can read the success messages
                     setTimeout(function(){
-                        window.location.reload(true);
+                        //window.location.reload(true);
                     }, 2000);   
                 }
             });
