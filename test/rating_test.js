@@ -20,9 +20,13 @@ describe("Ratings", function() {
 
 	// Before running any test, connect to the database.
 	before(function(done) {
-		con = mongoose.connect("mongodb://localhost/grocery-rating-test", function() {
+		con = mongoose.connect("mongodb://localhost/grocery-user-test", function() {
+		  done();
 		});
-		con.connection.db.dropDatabase(function() { 
+  	});
+
+	beforeEach(function(done) {
+		con.connection.db.dropDatabase( function() { 
 	    	var user1 = new User({
 			    "username": "test-user1",
 				"password": "Iwantpizza3@",
@@ -72,15 +76,6 @@ describe("Ratings", function() {
 			    }
 				done(); 
 			});
-	    });
-	});
-
-	// Delete the deliveries collection before each test.
-	beforeEach(function(done) {
-		con.connection.db.dropCollection("deliveries", function() { 
-			con.connection.db.dropCollection("users", function() {
-				done(); 
-			});
 		});
 	});
 
@@ -115,23 +110,34 @@ describe("Ratings", function() {
 
 		it("can add a completed request to the user model and update the average rating", function(done){
 			testDeliveryJSON["requesterRating"] = 4;
-  			Delivery.create(testDeliveryJSON, function(err, delivery){
-  				testUser1.addCompletedRequest(delivery._id, delivery.requesterRating);
-  				assert.strictEqual(testUser1.completedRequests.length, 1);
-  				assert.strictEqual(testUser1.avgRequestRating, 4);
-  				done();
+  			Delivery.create(testDeliveryJSON, function(err, delivery) {
+  				User.addCompletedRequest(id1, delivery._id, delivery.requesterRating, function (err, newRating) {
+  					assert.isNull(err);
+  					assert.strictEqual(newRating, 4);
+  					User.findOne({_id: id1}, function(err, user) {
+  						assert.strictEqual(user.completedRequests.length, 1);
+  						assert.strictEqual(user.avgRequestRating, 4);
+  						done();
+  					});
+  				});
   			});
 		});
 
 		it("can add a completed shipping to the user model and update the average rating", function(done){
 			testDeliveryJSON["shopperRating"] = 5;
   			Delivery.create(testDeliveryJSON, function(err, delivery){
-  				testUser1.addCompletedShipping(delivery._id, delivery.shopperRating);
-  				delivery["shopperRating"] = 4;
-  				testUser1.addCompletedShipping(delivery._id, delivery.shopperRating);
-  				assert.strictEqual(testUser1.completedShippings.length, 2);
-  				assert.strictEqual(testUser1.avgShippingRating, 4.5);
-  				done();
+  				User.addCompletedShipping(id1, delivery._id, delivery.shopperRating, function (err) {
+  					delivery["shopperRating"] = 4;
+  					User.addCompletedShipping(id1, delivery._id, delivery.shopperRating, function (err, newRating) {
+  						assert.isNull(err);
+  						assert.strictEqual(newRating, 4.5);
+  						User.findOne({_id: id1}, function(err, user) {
+  							assert.strictEqual(user.completedShippings.length, 2);
+  							assert.strictEqual(user.avgShippingRating, 4.5);
+  							done();
+  						});
+  					});
+  				});	
   			});
 		});
 	});

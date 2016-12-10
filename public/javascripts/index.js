@@ -104,3 +104,11 @@ var getFormattedTimezoneOffset = function() {
     return sign + numberToJsTimeFormat(hoursOffset) + ':' + numberToJsTimeFormat(modMinutesOffset);
 };
 
+/* Removes spaces, dashes and parentheses from the number string
+ * @param {String} num_string - number string to clean up
+ * @return {String} formatted number string which can be parsed to integer type
+*/
+var formatNumberString = function (num_string) {
+    return num_string.replace(/-|\s|\(|\)/g, '')
+} 
+

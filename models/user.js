@@ -99,46 +99,6 @@ UserSchema.methods.changeDorm = function(dorm, callback){
 }
 
 /**
- * Adds a delivery ID to the completed requests field. Updates the average request rating.  
- * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
- * @param {Number} rating - The rating of the new completed request. 
- * @param {Function} callback - The function to execute after the account is connected. Callback
- * function takes 1 parameter: an error when the request is not properly claimed
- */
-UserSchema.methods.addCompletedRequest = function(deliveryId, rating, callback) {
-    this.completedRequests.push(deliveryId);
-    var newLength = this.completedRequests.length;
-    this.avgRequestRating = (this.avgRequestRating * (newLength - 1) + rating) / newLength;
-    this.save(callback);
-};
-
-/**
- * Adds a delivery ID to the completed shippings field. Updates the average shipping rating.  
- * @param {ObjectId} deliveryId - The delivery id of the new completed request. 
- * @param {Number} rating - The rating of the new completed request. 
- * @param {Function} callback - The function to execute after the account is connected. Callback
- * function takes 1 parameter: an error when the request is not properly claimed
- */
-UserSchema.methods.addCompletedShipping = function(deliveryId, rating, callback) {
-    this.completedShippings.push(deliveryId);
-    var newLength = this.completedShippings.length;
-    var oldRating = this.avgShippingRating;
-    this.avgShippingRating = (this.avgShippingRating * (newLength - 1) + rating) / newLength;
-
-    //Suspend users for a period of time if they
-    //    1. previously had a good average rating but rating now fell below minimum allowed ship rating
-    //    2. currently have a bad average rating & receive another bad rating
-    if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
-        if ((oldRating >= utils.minAllowedShipRating() && this.avgShippingRating < utils.minAllowedShipRating())
-            || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
-            var now = Date.now();
-            this.suspendedUntil = new Date(now + utils.suspensionPeriod());
-        }
-    }
-    this.save(callback);
-};
-
-/**
 * Verifies the account so that user can start using it
 * @param {String} kerberos - kerberos of the account to verify
 * @param {String} token - the 32-digit verification token
