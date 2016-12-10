@@ -10,11 +10,11 @@
 var checkLogInForm = function () {
     var kerberos = $('#kerberos-box').val().trim();
     var password = $('#password-box').val().trim();
-    if (kerberos.length === 0 || /<[a-z][\s\S]*>/i.test(kerberos)) {
+    if (kerberos.length === 0 || findScriptingTags(kerberos)) {
         addMessage('Please enter a valid kerberos.', 'danger', false, true);
         return false; 
     }
-    if (password.length === 0 || /<[a-z][\s\S]*>/i.test(password)) {
+    if (password.length === 0 || findScriptingTags(password)) {
         addMessage('Please enter a valid password.', 'danger', false, true);
         return false; 
     }
@@ -62,7 +62,7 @@ $(document).ready(function () {
         var username = $('#username').val();
         var verificationToken = $('#verificationToken').val();
         var csrf = $('#csrf').val();
-        console.log(username, verificationToken, csrf);
+
         $.ajax({
             url: '/verify/'+username+'/'+verificationToken,
             type: 'PUT',
@@ -80,7 +80,6 @@ $(document).ready(function () {
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });

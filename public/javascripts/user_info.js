@@ -1,4 +1,5 @@
 // Author: Czarina Lao
+// js for showing user information with ratings and tooltips
 
 /**
  * Helper function called by .tooltip
@@ -17,7 +18,7 @@ var getContactTooltip = function() {
  * Fills in the stars in the element/s given by selector
  * based on the indicated number of stars from the text in each element.
  * That is, if the text says x, x filled stars will be displayed.
- * @param  {[type]}  selector  the selector for the element/s that will contain the stars
+ * @param  {String}  selector  the selector for the element/s that will contain the stars
  *                                and that contains the number of stars to be filled
  * @param  {Boolean} isTooltip whether the selector is for (an) element/s in a tooltip
  */

@@ -20,9 +20,7 @@ $(document).ready(function() {
 
     $('input[name=item-due]').change(function() {
         if (new Date($(this).val()+getFormattedTimezoneOffset()) < Date.now()) {
-            if (!$(this).parent().hasClass('has-error')) {
-                $(this).parent().addClass('has-error');
-            }
+            showError(this);
         } else {
             $(this).parent().removeClass('has-error');
         }
@@ -35,9 +33,7 @@ $(document).ready(function() {
             // check that all inputs are nonempty
             // if empty, alert the user of the error and show where it is
             if ($(this).attr('required') && (!$(this).val() || $(this).val().trim()=='')) {
-                if (!$(this).parent().hasClass('has-error')) {
-                    $(this).parent().addClass('has-error');
-                }
+                showError(this);
                 hasError = true;
                 addMessage('All fields except More Info are required.', 'danger', false, true);
                 return false;
@@ -70,9 +66,6 @@ $(document).ready(function() {
             var minShopperRating = $('select[name=minimum-shopper-rating').val();
             var description = $('input[name=item-description]').val();
             var csrf = $('#csrf').val();
-            console.log(csrf);
-
-            console.log(name, quantity, priceEstimate, stores, deadline, pickupLocation, tips, description);
 
             $.post('/deliveries', {
                 itemName: name,
@@ -87,7 +80,6 @@ $(document).ready(function() {
                 _csrf: csrf
             }, function(data) {
                 if (!data.success) {
-                    console.log(data.message);
                     addMessage('Request submission failed. Please try again.', 'danger', false, true);
                 } else {
                     // clear form after submitting successfully

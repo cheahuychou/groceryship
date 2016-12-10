@@ -65,19 +65,15 @@ $(document).ready(function () {
             type: 'DELETE',
             data: {_csrf: csrf},
             success: function(data) {
-                console.log(data);
                 if (data.success) {
                     $('.request-tile[data-id='+id+']').parent().remove();
                     refreshAllCounts();
-                    // TODO: ask for the reason of cancellation?
                     addMessage('Request canceled.', 'success', false, true);
                 } else {
-                    console.log(data.message);
                     addMessage('The request could not be canceled. Note that you can\'t cancel claimed requests.', 'danger', false, true);
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
@@ -218,11 +214,8 @@ $(document).ready(function () {
             // check that all inputs are nonempty
             // if empty, alert the user of the error and show where it is
             if (!$(this).val() || $(this).val().trim()=='') {
-                if (!$(this).parent().hasClass('has-error')) {
-                    $(this).parent().addClass('has-error');
-                }
+                showError(this);
                 hasError = true;
-                console.log(this);
                 addMessage('All fields must be filled out.', 'danger', true, true);
                 return false;
             } else if ($(this).hasClass('price')
@@ -240,9 +233,7 @@ $(document).ready(function () {
                 // TODO: attach this validator to .change of datetime pickers instead
                 var pickupTime = new Date($(this).val()+getFormattedTimezoneOffset());
                 if (pickupTime < Date.now() || pickupTime > new Date($(this).attr('data-deadline'))) {
-                    if (!$(this).parent().hasClass('has-error')) {
-                        $(this).parent().addClass('has-error');
-                    }
+                    showError(this);
                     hasError = true;
                     addMessage('Please enter a date and time in the future and before the deadline.', 'danger', true, true);
                     return false;

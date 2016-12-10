@@ -29,9 +29,7 @@ $(document).ready(function () {
         // check that all inputs are nonempty
         // if empty, alert the user of the error and show where it is
         if (!phoneNumber || !phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10 || !dorm || dorm.trim()=='') {
-            if (!$('#phone-number-register-box').parent().hasClass('has-error')) {
-                $('#phone-number-register-box').parent().addClass('has-error');
-            }
+            showError('#phone-number-register-box');
             hasError = true;
             if (phoneNumber.trim() != ''){
             	addMessage('US phone numbers must have exactly 10 digits.', 'danger', false, true);
@@ -56,12 +54,10 @@ $(document).ready(function () {
 	                    addMessage('Profile updated!', 'success', false, true);
 	                    window.location.reload(false); 
 	                } else {
-	                    console.log(data.message);
 	                    addMessage('Profile update failed', 'danger', false, true);
 	                }
 	            },
 	            error: function(err) {
-	                console.log(err);
 	                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
 	            }
 	        });
@@ -75,10 +71,8 @@ $(document).ready(function () {
 		var csrf = $('#csrf').val();
 		var hasError = false;
 		
-		if (currentPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(currentPassword)) {
-			if (!$('#current-password-box').parent().hasClass('has-error')) {
-                $('#current-password-box').parent().addClass('has-error');
-            }
+		if (currentPassword.trim().length === 0 || findScriptingTags(currentPassword)) {
+			showError('#current-password-box');
             hasError = true;
 	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
 	        $('#current-password-box').focus();
@@ -86,10 +80,8 @@ $(document).ready(function () {
 		} else {
 			$('#current-password-box').parent().removeClass('has-error');
 		}
-		if (newPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(newPassword)) {
-			if (!$('#new-password-box').parent().hasClass('has-error')) {
-                $('#new-password-box').parent().addClass('has-error');
-            }
+		if (newPassword.trim().length === 0 || findScriptingTags(newPassword)) {
+			showError('#new-password-box');
             hasError = true;
 	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
 	        $('#new-password-box').focus();
@@ -97,10 +89,8 @@ $(document).ready(function () {
 		} else {
 			$('#new-password-box').parent().removeClass('has-error');
 		}
-		if (confirmedPassword.trim().length === 0 || /<[a-z][\s\S]*>/i.test(confirmedPassword)) {
-			if (!$('#confirmed-new-password-box').parent().hasClass('has-error')) {
-                $('#confirmed-new-password-box').parent().addClass('has-error');
-            }
+		if (confirmedPassword.trim().length === 0 || findScriptingTags(confirmedPassword)) {
+			showError('#confirmed-new-password-box');
             hasError = true;
 	        addMessage('Please enter a non-empty and valid confirmation of your new password.', 'danger', true, true);
 	        $('#confirmed-new-password-box').focus();
@@ -108,11 +98,8 @@ $(document).ready(function () {
 		} else {
 			$('#confirmed-new-password-box').parent().removeClass('has-error');
 		}
-		if (newPassword.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(newPassword)) {
-	        // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
-	        if (!$('#new-password-box').parent().hasClass('has-error')) {
-                $('#new-password-box').parent().addClass('has-error');
-            }
+		if (! testPasswordStrength(newPassword)) {
+	        showError('#new-password-box');
             hasError = true;
 	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character,' 
 	        	+ ' one lowercase character, a number and one special character.', 'danger', true, true);
@@ -122,12 +109,7 @@ $(document).ready(function () {
 			$('#new-password-box').parent().removeClass('has-error');
 		}
 		if (confirmedPassword !== newPassword) {
-			if (!$('#new-password-box').parent().hasClass('has-error')) {
-                $('#new-password-box').parent().addClass('has-error');
-            }
-            if (!$('#confirmed-new-password-box').parent().hasClass('has-error')) {
-                $('#confirmed-new-password-box').parent().addClass('has-error');
-            }
+			showError('#new-password-box, #confirmed-new-password-box');
             hasError = true;
 	        addMessage('The new passwords you entered did not match. Please try again.', 'danger', true, true);
 	        $('#new-password-box').focus();

@@ -20,6 +20,16 @@ var addMessage = function(message, type, isModal, clearOld) {
 };
 
 /**
+ * Shows an error on the element/s given by selector.
+ * @param  {String} selector used to select elements that have an error
+ */
+var showError = function(selector) {
+    if (!$(selector).parent().hasClass('has-error')) {
+        $(selector).parent().addClass('has-error');
+    }
+}
+
+/**
  * Check that the price given by priceString is valid.
  * Accepts prices with more than 2 decimal points but rounds it to 2.
  * @param  {String}  priceString the price being checked
@@ -46,8 +56,8 @@ var showPriceFormatErrors = function(element, isZeroOk) {
     if (price) {
         $(element).val(price);
         $(element).parent().removeClass('has-error');
-    } else if (!$(element).parent().hasClass('has-error')) {
-        $(element).parent().addClass('has-error');
+    } else {
+        showError(element);
     }
 }
 
@@ -75,7 +85,6 @@ var setMinMaxDateTime = function (deadline) {
 }
 
 // Adapted from: http://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript
-
 /**
  * Returns number as a rounded positive 2-digit string.
  * If number is 1-digit then a 0 is prepended

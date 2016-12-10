@@ -1,4 +1,5 @@
 // Author: Cheahuychou Mao
+// js for rating other users
 
 $(document).ready(function () { 
     var setRating = function() {

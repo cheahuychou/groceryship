@@ -3,7 +3,6 @@
   <table id="deliveries-table" class="table table-hover">
     <thead>
       <tr>
-        {{!-- TODO: when checkbox is selected, all checkboxes should get selected --}}
         <th><input class='header-checkbox' type='checkbox'></th>
         {{> item_headings}}
         <th>Requester</th>
@@ -14,13 +13,12 @@
     </thead>
     <tbody>
       {{#each deliveryItems}}
-        {{!-- don't show items past the deadline and/or they've been rejected by the requester --}}
+        {{!-- don't render items past the deadline and/or they've been rejected by the requester --}}
         {{#ifIsPast rawDeadline ../now}}
         {{else}}
         {{#ifContains status "rejected"}}
         {{else}}
         <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
-          {{!-- TODO: checkbox shouldn't appear if deliver now has been done on item --}}
           <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
           {{> item_row this}}
           <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
@@ -34,9 +32,8 @@
     </tbody>
   </table>
   {{!-- show this message when there are no deliveryItems --}}
-  {{!-- {{#unless deliveryItems}} --}}
-    <div class="well well-lg empty-delivery-table hide">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
-  {{!-- {{/unless}} --}}
+  <div class="well well-lg empty-delivery-table hide">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
+
   <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#set-pickup-modal' style='float: right' disabled>Set Pickup Time</button>
   {{> set_pickup}}
 </div>
