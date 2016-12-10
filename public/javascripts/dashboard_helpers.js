@@ -25,6 +25,14 @@ var checkIfNoDeliveries = function() {
     }
 };
 
+/**
+ * Checks if there are no deliveries on display in To Deliver
+ * because there were no matches in the search.
+ * If there are none, displays the no matches message
+ * and appropriately updates other components
+ * such as disabling/enabling checkboxes and the Set Pickup Time button.
+ * @return {void}
+ */
 var checkIfNoMatches = function() {    
     if ($('.deliveries-checkbox').length === 0) {
         // header checkbox is disabled if no rows have checkboxes
