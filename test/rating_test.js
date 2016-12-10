@@ -19,10 +19,14 @@ describe("Ratings", function() {
 	var testDeliveryJSON;
 
 	// Before running any test, connect to the database.
+	before(function(done) {
+		con = mongoose.connect("mongodb://localhost/grocery-user-test", function() {
+		  done();
+		});
+  	});
+
 	beforeEach(function(done) {
-		con = mongoose.connect("mongodb://localhost/grocery-rating-test", function() {
-	    });
-	    			con.connection.db.dropDatabase( function() { 
+		con.connection.db.dropDatabase( function() { 
 	    	var user1 = new User({
 			    "username": "test-user1",
 				"password": "Iwantpizza3@",
@@ -107,8 +111,9 @@ describe("Ratings", function() {
 		it("can add a completed request to the user model and update the average rating", function(done){
 			testDeliveryJSON["requesterRating"] = 4;
   			Delivery.create(testDeliveryJSON, function(err, delivery) {
-  				User.addCompletedRequest(id1, delivery._id, delivery.requesterRating, function (err) {
+  				User.addCompletedRequest(id1, delivery._id, delivery.requesterRating, function (err, newRating) {
   					assert.isNull(err);
+  					assert.strictEqual(newRating, 4);
   					User.findOne({_id: id1}, function(err, user) {
   						assert.strictEqual(user.completedRequests.length, 1);
   						assert.strictEqual(user.avgRequestRating, 4);
@@ -123,8 +128,9 @@ describe("Ratings", function() {
   			Delivery.create(testDeliveryJSON, function(err, delivery){
   				User.addCompletedShipping(id1, delivery._id, delivery.shopperRating, function (err) {
   					delivery["shopperRating"] = 4;
-  					User.addCompletedShipping(id1, delivery._id, delivery.shopperRating, function (err) {
+  					User.addCompletedShipping(id1, delivery._id, delivery.shopperRating, function (err, newRating) {
   						assert.isNull(err);
+  						assert.strictEqual(newRating, 4.5);
   						User.findOne({_id: id1}, function(err, user) {
   							assert.strictEqual(user.completedShippings.length, 2);
   							assert.strictEqual(user.avgShippingRating, 4.5);
