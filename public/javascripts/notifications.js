@@ -46,7 +46,6 @@ $(document).ready(function () {
         var hasError = false;
         // TODO: add more validation to inputs
         // e.g. expiry is this month,year or later
-        // remove space between numbers in credit card and do parseInt, same for CVC
         $('#accept-modal-'+id+' input').each(function() {
             if ($(this).attr('required') && (!$(this).val() || $(this).val().trim()=='')) {
                 if (!$(this).parent().hasClass('has-error')) {
@@ -61,10 +60,10 @@ $(document).ready(function () {
         if (hasError) {
             addMessage('All fields are required.', 'danger', true, true);
         } else {
-            var cardNumber = $('#card-number-'+id).val();
+            var cardNumber = formatNumberString($('#card-number-'+id).val());
             var expMonth = $('#expiry-month-'+id).val();
             var expYear = $('#expiry-year-'+id).val();
-            var cvc = $('#cvc-'+id).val();
+            var cvc = formatNumberString($('#cvc-'+id).val());
             var rating = $('#rating-container-'+id).find('.fa-star').length;
 
             $.ajax({

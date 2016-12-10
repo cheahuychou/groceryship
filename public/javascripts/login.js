@@ -32,7 +32,7 @@ var checkSignUpForm = function () {
     var kerberos = $('#kerberos-register-box').val().trim();
     var password = $('#password-register-box').val().trim();
     var confirmPassword = $('#confirm-password-register-box').val().trim();
-    var phoneNumber = $('#phone-number-register-box').val().trim();
+    var phoneNumber = formatNumberString($('#phone-number-register-box').val());
     var dorm = $('.dorm :selected').text().trim();
     if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || /<[a-z][\s\S]*>/i.test(kerberos)) {
         addMessage('Please enter a non-empty and valid kerberos.', 'danger', true, true);
