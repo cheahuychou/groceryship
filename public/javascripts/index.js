@@ -110,5 +110,27 @@ var getFormattedTimezoneOffset = function() {
 */
 var formatNumberString = function (num_string) {
     return num_string.replace(/-|\s|\(|\)/g, '')
-} 
+};
 
+/**
+ * Looks for scripting tags from text.
+ * This can be used to prevent XSS
+ * @param  {String} text  the text to be tested
+ * @return {Boolean}      true if scripting tags exist in text; false otherwise
+ */
+var findScriptingTags = function(text) {
+    return /<[a-z][\s\S]*>/i.test(text);
+};
+
+/**
+ * Tests the strength of password.
+ * A strong password contains 8 or more characters,
+ * has at least 1 lowercase character, 1 uppercase character,
+ * 1 digit and 1 special symbol from !,@,#,$,%,^,&,*.
+ * @param  {String} password  the password to be tested
+ * @return {Boolean}          true if the password is strong enough; false otherwise
+ */
+var testPasswordStrength = function(password) {
+    // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
+    return password.length >= 8 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password);
+};
