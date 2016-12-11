@@ -118,7 +118,7 @@ var Utils = function() {
         var minRating = 1;
         var maxRating = 5;
         return rating === null || isFromToInt(rating, minRating, maxRating);
-    }
+    };
 
     Object.freeze(that);
     return that;

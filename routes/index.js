@@ -238,5 +238,13 @@ router.get('/oauth/callback', function(req, res) {
     });
 });
 
+router.get('/faq', authentication.isAuthenticated, function (req, res) {
+    var user = req.session.passport.user;
+    res.render('faq', { title: 'FAQ',
+                        username: user.username,
+                        fullName: user.fullName,
+                        csrfToken: req.csrfToken()});
+});
+
 module.exports = router;
 
