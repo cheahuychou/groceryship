@@ -20,7 +20,6 @@ var checkLogInForm = function () {
     }
 }
 
-
 /**
 * Checks that the fields in the signup form are non-empty strings,
 * valid and do not contain html elements, alert the user if

@@ -33,14 +33,14 @@
   {{#if own}}
   <tr>
     <th>Shopper</th>
-    <td>{{#if shopper}}<a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a>
+    <td>{{#if shopper}}<a href="#" onClick="return false;" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a>
         {{else}}N/A{{/if}}
     </td>
   </tr>
   {{else}}
   <tr>
     <th>Requester</th>
-    <td><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
+    <td><a href="#" onClick="return false;" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
   </tr>
   {{/if}}
   <tr>

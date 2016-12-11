@@ -2,7 +2,7 @@
 (function() {
     mocha.setup("bdd");
     var assert = chai.assert;
-    describe("Time Format", function() {
+    describe("Format", function() {
         describe("JS Time", function() {
             it("should return the positive 2-digit number back as a string", function() {
                 assert.equal(54, numberToJsTimeFormat(54));
@@ -37,7 +37,7 @@
             });
 
         });
-        
+
         describe("Phone and Credit Card Numbers", function() {
             it("should return the same string", function() {
                 assert.equal('1234567890', formatNumberString('1234567890'));

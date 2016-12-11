@@ -35,6 +35,11 @@ $(document).ready(function() {
                 hasError = true;
                 addMessage('All fields except More Info are required.', 'danger', false, true);
                 return false;
+            } else if (findScriptingTags($(this).val())) {
+                showError(this);
+                hasError = true;
+                addMessage('Please enter valid input.', 'danger', false, true);
+                return false;
             } else if ($(this).hasClass('price')
                 && $(this).parent().hasClass('has-error')) {
                 // check if valid prices are entered

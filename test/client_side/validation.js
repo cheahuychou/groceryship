@@ -88,6 +88,72 @@
             });
         });
 
+        describe("Phone Number", function() {
+            it("should return false for empty phone numbers", function() {
+                assert.isFalse(isValidPhoneNumber(''));
+            });
+
+            it("should return false for phone numbers that is only whitespace", function() {
+                assert.isFalse(isValidPhoneNumber('   '));
+            });
+
+            it("should return false for phone numbers with characters that are not numbers only", function() {
+                assert.isFalse(isValidPhoneNumber('abc123!@#'));
+            });
+
+            it("should return false for phone numbers with characters that are not numbers and exactly 10 digits", function() {
+                assert.isFalse(isValidPhoneNumber('6172531000a'));
+            });
+
+            it("should return false for phone numbers with less than 10 digits", function() {
+                assert.isFalse(isValidPhoneNumber('617253100'));
+            });
+
+            it("should return false for phone numbers with more than 10 digits", function() {
+                assert.isFalse(isValidPhoneNumber('61725310000'));
+            });
+
+            it("should return true for phone numbers with exactly 10 digits", function() {
+                assert.isTrue(isValidPhoneNumber('6172531000'));
+            });
+        });
+
+        describe("Kerberos", function() {
+            it("should return false for an empty kerberos", function() {
+                assert.isFalse(isValidKerberos(''));
+            });
+
+            it("should return false for a kerberos that is only whitespace", function() {
+                assert.isFalse(isValidKerberos('     '));
+            });
+
+            it("should return false for a kerberos with scripting tags", function() {
+                assert.isFalse(isValidKerberos('<script>kerberos</script>'));
+            });
+
+            it("should return true for a valid kerberos", function() {
+                assert.isTrue(isValidKerberos('kerberos'));
+            });
+        });
+
+        describe("Password", function() {
+            it("should return false for an empty password", function() {
+                assert.isFalse(isValidPassword(''));
+            });
+
+            it("should return false for a password that is only whitespace", function() {
+                assert.isFalse(isValidPassword('      '));
+            });
+
+            it("should return false for a password with scripting tags", function() {
+                assert.isFalse(isValidPassword('<script>password</script>'));
+            });
+
+            it("should return true for a valid password (not counting strength)", function() {
+                assert.isTrue(isValidPassword('password123'));
+            });
+        });
+
         describe("Password Strength", function() {
             it("should return false for text less than 8 characters", function() {
                 assert.isFalse(testPasswordStrength('aB1@'));
@@ -123,5 +189,4 @@
         });
     });
 
-    // mocha.run();
 })();
