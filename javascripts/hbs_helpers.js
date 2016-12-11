@@ -1,7 +1,7 @@
 // Author: Cheahuychou Mao
 
 var HbsHelpers = function() {
-	var that = Object.create(HbsHelpers.prototype);
+    var that = Object.create(HbsHelpers.prototype);
 
     /**
      * Measures if a certain time A has already passed another time B
@@ -9,7 +9,7 @@ var HbsHelpers = function() {
      * @param {Date} timeB - The second time B
      * @param {Object} options - The handlebars options hash
      */
-	that.ifIsPast = function(timeA, timeB, options) {
+    that.ifIsPast = function(timeA, timeB, options) {
         if (timeB >= timeA) {
             return options.fn(this);
         }
@@ -68,7 +68,7 @@ var HbsHelpers = function() {
         return phoneString.substr(0,3) + '-' + phoneString.substr(3,3) + '-' + phoneString.substr(6,4);
     }
 
-	Object.freeze(that);
+    Object.freeze(that);
     return that;
 };
 

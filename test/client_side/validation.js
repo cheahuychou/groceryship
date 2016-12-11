@@ -145,10 +145,6 @@
                 assert.isFalse(isValidPassword('      '));
             });
 
-            it("should return false for a password with scripting tags", function() {
-                assert.isFalse(isValidPassword('<script>password</script>'));
-            });
-
             it("should return true for a valid password (not counting strength)", function() {
                 assert.isTrue(isValidPassword('password123'));
             });

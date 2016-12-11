@@ -80,7 +80,7 @@ var isValidPhoneNumber = function(phoneNumber) {
  * @return {Boolean}          true if it is valid; false otherwise
  */
 var isValidKerberos = function(kerberos) {
-    return kerberos.trim().length !== 0 && kerberos.toLowerCase() === kerberos && !findScriptingTags(kerberos);
+    return kerberos.trim().length !== 0 && !findScriptingTags(kerberos);
 };
 
 /**
@@ -89,5 +89,5 @@ var isValidKerberos = function(kerberos) {
  * @return {Boolean}          true if it is valid; false otherwise
  */
 var isValidPassword = function(password) {
-    return password.trim().length !== 0 && !findScriptingTags(password);
+    return password.trim().length !== 0;
 };

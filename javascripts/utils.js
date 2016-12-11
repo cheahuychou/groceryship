@@ -33,14 +33,14 @@ var Utils = function() {
     * @return {Number} The minimum allowed average shipping rating for users, below which the user will be suspended for a period of time
     */
     that.minAllowedShipRating = function() {
-    	return 3;
+        return 3;
     };
 
     /**
     * @return {Integer} The length of time (in milliseconds) that a user will be suspended for, if he falls below the minimum rating
     */
     that.suspensionPeriod = function() {
-    	return 1000*60*60*24*30; //30 days
+        return 1000*60*60*24*30; //30 days
     };
 
     /**
@@ -88,7 +88,7 @@ var Utils = function() {
     that.formatDate = function (deliveries) {
         var deliveries = JSON.parse(JSON.stringify(deliveries)); // deep copy
         return deliveries.map(function (delivery) {
-	        delivery.rawDeadline = (new Date(delivery.deadline)).getTime();
+            delivery.rawDeadline = (new Date(delivery.deadline)).getTime();
             delivery.deadline = dateFormat(delivery.deadline, "mmm d, h:MM TT");
             if (delivery.pickupTime) {
                 delivery.rawPickupTime = (new Date(delivery.pickupTime)).getTime();

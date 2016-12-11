@@ -6,24 +6,24 @@
 <div class='profile-table-container'>
   <table class="table table-hover">
     <tbody>
-    	<tr>
-    	  <th>Kerberos</th>
-    	  <td id='kerberos'>{{user.username}}</td>
-    	</tr>
+      <tr>
+        <th>Kerberos</th>
+        <td id='kerberos'>{{user.username}}</td>
+      </tr>
       <tr>
         <th>Full Name</th>
         <td>{{user.firstName}} {{user.lastName}}</td>
       </tr>
-    	  <th>Phone Number</th>
-    	  <td>{{user.phoneNumber}}</td>
-    	<tr>
-    	  <th>Dorm</th>
-    	  <td>{{user.dorm}}</td>
-    	</tr>
-    	<tr>
-    	  <th>Stripe Account</th>
-    	  <td>{{user.stripeEmail}}</td>
-    	</tr>
+        <th>Phone Number</th>
+        <td>{{formatPhone user.phoneNumber}}</td>
+      <tr>
+        <th>Dorm</th>
+        <td>{{user.dorm}}</td>
+      </tr>
+      <tr>
+        <th>Stripe Account</th>
+        <td>{{user.stripeEmail}}</td>
+      </tr>
       <tr>
         <th>Request Rating</th>
         <td>
@@ -65,7 +65,7 @@
             <div class="row">
               <div class="col-xs-6">
               </div>
-                <input id='phone-number-register-box' class='form-control edit-profile-input' type='text' name='newPhoneNumber' placeholder='phone number' required value={{user.phoneNumber}}></input><br>
+                <input id='phone-number-register-box' class='form-control edit-profile-input' type='text' name='newPhoneNumber' placeholder='phone number' required value={{formatPhone user.phoneNumber}}></input><br>
             </div>
           </div>
           <label class="col-sm-3 control-label"><b>Dorm</b></label>

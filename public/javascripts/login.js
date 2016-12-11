@@ -34,11 +34,11 @@ var checkSignUpForm = function () {
     var phoneNumber = formatNumberString($('#phone-number-register-box').val());
     var dorm = $('.dorm :selected').text().trim();
     if (!isValidKerberos(kerberos)) {
-        addMessage('Please enter a non-empty and valid kerberos.', 'danger', true, true);
+        addMessage('Please enter a non-empty and valid kerberos. Note that spaces at the ends are trimmed.', 'danger', true, true);
         return false; 
     }
     if (!isValidPassword(password)) {
-        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
+        addMessage('Please enter a non-empty and valid password. Note that spaces at the ends are trimmed.', 'danger', true, true);
         return false; 
     }
     if (!testPasswordStrength(password)) {
@@ -71,7 +71,7 @@ $(document).ready(function () {
                     addMessage('Verification succeeded! Redirecting you to the homepage...', 'success', false, true);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
-                            window.location = data.redirect
+                            window.location = data.redirect;
                         }, 1000);   
                     }
                 } else {

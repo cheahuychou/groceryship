@@ -139,35 +139,35 @@ router.delete("/:id", authentication.isAuthenticated, parseForm, csrfProtection,
             console.log(err);
             res.json({success: false, message: err});
         } else {
-        	res.json({success: true});
+            res.json({success: true});
         }
     });
 });
 
 /** Updates a request when the user closes an "expired" notification, indicated the user has seen that the request is expired **/
 router.put("/:id/seeExpired", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res) {
-	var user = req.session.passport.user;
-	Delivery.seeExpired(req.params.id, user._id, function(err) {
-		if (err) {
-			console.log(err);
-			res.json({success: false, message: err});
-		} else {
-			res.json({success: true});
-		}
-	});
+    var user = req.session.passport.user;
+    Delivery.seeExpired(req.params.id, user._id, function(err) {
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            res.json({success: true});
+        }
+    });
 });
 
 /** Updates a Delivery when a user claims that delivery **/
 router.put("/:id/claim", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
     var user = req.session.passport.user;
     Delivery.claim(req.params.id, user._id, function(err, claimedDelivery) {
-    	if (err) {
-    		console.log(err);
-    		res.json({success: false, message: err});
-    	} else {
-    		email.sendClaimEmail(claimedDelivery);
-    		res.json({success: true});
-    	}
+        if (err) {
+            console.log(err);
+            res.json({success: false, message: err});
+        } else {
+            email.sendClaimEmail(claimedDelivery);
+            res.json({success: true});
+        }
     });
 });
 
@@ -182,7 +182,7 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
             console.log(err);
             res.json({success: false, message: err});
         } else {
-        	console.log(currentDelivery);
+            console.log(currentDelivery);
             var formattedDelivery = utils.formatDate([currentDelivery])[0];
             email.sendDeliveryEmail(formattedDelivery);
             res.json({success: true});
@@ -209,22 +209,22 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
             console.log(err);
             res.json({success: false, message: err});
         } else {
-        	stripe.tokens.create({card: {'number': req.body.cardNumber, //create tokens from credit card details
-					                        'exp_month': req.body.expMonth,
-					                        'exp_year': req.body.expYear,
-					                        'cvc': req.body.cvc}
-        	}, function(err, token) {
-        		if (err) {
+            stripe.tokens.create({card: {'number': req.body.cardNumber, //create tokens from credit card details
+                                            'exp_month': req.body.expMonth,
+                                            'exp_year': req.body.expYear,
+                                            'cvc': req.body.cvc}
+            }, function(err, token) {
+                if (err) {
                     console.log(err);
                     res.json({success: false, message: "Invalid card."});
-        		} else {
+                } else {
                     stripePlatform.charges.create({ //process the transaction
                         amount: (currentDelivery.actualPrice + currentDelivery.tips) * 100,
                         currency: 'usd',
                         source: token.id,
                         destination: currentDelivery.shopper.stripeId
                     }, function(err, data) {
-                    	if (err) {
+                        if (err) {
                             console.log(err)
                             res.json({success: false, message: "Invalid transaction."});
                         } else {
@@ -240,8 +240,8 @@ router.put("/:id/accept", authentication.isAuthenticated, parseForm, csrfProtect
                             });
                         }
                     });
-        		}
-        	});
+                }
+            });
         }
     });
 });

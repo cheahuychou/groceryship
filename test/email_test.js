@@ -7,7 +7,7 @@ var utils = require('../javascripts/utils.js');
 var email = require('../javascripts/email.js');
 
 describe("Email", function() {
-  describe("createVerificationToken", function() {
+    describe("createVerificationToken", function() {
         // The mongoose connection object.
         var con;
         // Before running any test, connect to the database.
@@ -51,5 +51,5 @@ describe("Email", function() {
                 });
             });
         });
-  });
+    });
 });
