@@ -18,10 +18,10 @@
         {{else}}
         {{#ifContains status "rejected"}}
         {{else}}
-        <tr class='delivery-item-row' data-id='{{_id}}' data-requester='{{requester.username}}'>
+        <tr class='delivery-item-row' name="delivery-{{_id}}" data-id='{{_id}}' data-requester='{{requester.username}}'>
           <td class='checkbox-cell'>{{#unless pickupTime}}<input class='deliveries-checkbox' type='checkbox'>{{/unless}}</td>
           {{> item_row this}}
-          <td class='requester'><a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
+          <td class='requester'><a href="#delivery-{{_id}}" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></td>
           <td class='pickup-time'>{{#if pickupTime}}{{pickupTime}}<input type='hidden' name='raw-pickup-time' value='{{rawPickupTime}}'>{{else}}N/A{{/if}}</td>
           <td class='raw-deadline'>{{rawDeadline}}</td>
           <td class='raw-pickup-time'>{{rawPickupTime}}</td>
@@ -33,7 +33,8 @@
   </table>
   {{!-- show this message when there are no deliveryItems --}}
   <div class="well well-lg empty-delivery-table hide">No requests claimed from the <a href="/deliveries">Deliver tab</a> yet.</div>
-
-  <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#set-pickup-modal' style='float: right' disabled>Set Pickup Time</button>
+  <div class="row">
+    <button id='deliver-items' class='btn btn-primary' data-toggle="modal" data-target='#set-pickup-modal' style='float: right' disabled>Set Pickup Time</button>
+  </div>
   {{> set_pickup}}
 </div>

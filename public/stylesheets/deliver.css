@@ -1,0 +1,37 @@
+/* Author: Czarina Lao */
+
+@media screen and (max-width: 480px) {
+    #sort-direction {
+        margin-top: 0px;
+    }
+
+    #sort-direction .radio {
+        padding-left: 10px;
+    }
+}
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    #sort-direction {
+        margin-top: 0px;
+    }
+
+    #sort-direction .radio {
+        padding-left: 10px;
+    }
+}
+@media screen and (min-width: 768px) {
+    #sort-direction {
+        margin-top: -35px;
+    }
+
+    #sort-direction .radio {
+        padding-left: 5px;
+    }
+
+    #filter-sort {
+        float: right;
+    }
+}
+
+#xs-sort-by, #request-feed {
+    margin-top: 15px;
+}

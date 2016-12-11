@@ -4,13 +4,7 @@
     margin-bottom: 23px;
 }
 
-#dashboard-notifications {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-#dashboard-requests {
+#dashboard-notifications, #dashboard-requests {
     max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -22,4 +16,35 @@
 
 .title-toggle .glyphicon {
     font-size: 80%;
+}
+
+#set-pickup-modal .pickup-time {
+    /* make input box big enough for whole date */
+    width: 190px;
+}
+
+#set-pickup-modal th.price {
+    /* temporary fix for price column size so that it's not too small */
+    width: 100px;
+}
+
+.cost-summary, .card-input {
+    padding-left: 8%;
+}
+
+.card-input .form-group {
+    margin-bottom: 10px;
+}
+
+.card-input .col-expiry-month {
+    padding-right: 0;
+}
+
+.fa-star-o, .fa-star {
+    font-size: 150% !important;
+    color:  #FFD700;
+}
+
+#deliver-items {
+    margin-top: 20px;
 }

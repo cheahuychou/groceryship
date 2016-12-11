@@ -143,3 +143,20 @@ var testPasswordStrength = function(password) {
     // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
     return password.length >= 8 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password);
 };
+
+/**
+ * Checks if phoneNumber is a valid US phone number.
+ * @param  {String}  phoneNumber the phone number to be checked
+ * @return {Boolean}             true if phoneNumber is valid; false otherwise
+ */
+var isValidPhoneNumber = function(phoneNumber) {
+    return phoneNumber.match(/^\d+$/) && parseInt(phoneNumber).toString().length == 10;
+};
+
+var isValidKerberos = function(kerberos) {
+    return kerberos.length !== 0 && kerberos.toLowerCase() === kerberos && !findScriptingTags(kerberos);
+};
+
+var isValidPassword = function(password) {
+    return password.length !== 0 && !findScriptingTags(password);
+};

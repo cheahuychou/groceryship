@@ -10,11 +10,11 @@
 var checkLogInForm = function () {
     var kerberos = $('#kerberos-box').val().trim();
     var password = $('#password-box').val().trim();
-    if (kerberos.length === 0 || findScriptingTags(kerberos)) {
+    if (!isValidKerberos(kerberos)) {
         addMessage('Please enter a valid kerberos.', 'danger', false, true);
         return false; 
     }
-    if (password.length === 0 || findScriptingTags(password)) {
+    if (!isValidPassword(password)) {
         addMessage('Please enter a valid password.', 'danger', false, true);
         return false; 
     }
@@ -34,15 +34,15 @@ var checkSignUpForm = function () {
     var confirmPassword = $('#confirm-password-register-box').val().trim();
     var phoneNumber = formatNumberString($('#phone-number-register-box').val());
     var dorm = $('.dorm :selected').text().trim();
-    if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || findScriptingTags(kerberos)) {
+    if (!isValidKerberos(kerberos)) {
         addMessage('Please enter a non-empty and valid kerberos.', 'danger', true, true);
         return false; 
     }
-    if (password.length === 0 || findScriptingTags(password)) {
+    if (!isValidPassword(password)) {
         addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
         return false; 
     }
-    if (! testPasswordStrength(password)) {
+    if (!testPasswordStrength(password)) {
         addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
         return false; 
     }
@@ -50,7 +50,7 @@ var checkSignUpForm = function () {
         addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
         return false;
     }
-    if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10) {
+    if (!isValidPhoneNumber(phoneNumber)) {
         addMessage('Please enter a valid US phone number with 10 digits.', 'danger', true, true);
         return false;
     }

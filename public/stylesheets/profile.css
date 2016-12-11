@@ -1,0 +1,16 @@
+/* Author: Czarina Lao */
+
+@media screen and (min-width: 768px) {
+    .profile-table-container {
+        padding-right: 20%;
+    }
+}
+@media screen and (min-width: 992px) {
+    .profile-table-container {
+        padding-right: 30%;
+    }
+}
+
+#change-password-button, #edit-confirm-button {
+    margin-right: 15px;
+}

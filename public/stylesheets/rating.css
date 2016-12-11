@@ -2,38 +2,42 @@
 /* Adapted from: https://github.com/FortAwesome/Font-Awesome/issues/4147 */
 
 .star-rating {
-  position: relative;
-  display: inline-block;
-  letter-spacing: 0px;
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0px;
 }
+
 .star-rating:before {
-  display: block;
-  top: 0;
-  left: 0;
-  font-family: FontAwesome;
-  content: "\f005\f005\f005\f005\f005";
-  /*width: 65px;*/
-  color: #818181;
-  text-shadow: 0 1px #4e4e4e;
+    display: block;
+    top: 0;
+    left: 0;
+    font-family: FontAwesome;
+    /* stars */
+    content: "\f005\f005\f005\f005\f005";
+    color: #818181;
+    text-shadow: 0 1px #4e4e4e;
 }
+
 .star-rating span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  display: block;
-  overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: block;
+    overflow: hidden;
 }
+
 .star-rating span:before {
-  font-family: FontAwesome;
-  color: #ffd700;
-  position: absolute;
-  left: 0;
-  top: 0;
-  content: "\f005\f005\f005\f005\f005";
-  text-shadow: 0 1px #997000;
-  display: block;
+    font-family: FontAwesome;
+    color: #ffd700;
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: "\f005\f005\f005\f005\f005";
+    text-shadow: 0 1px #997000;
+    display: block;
 }
+
 .star-rating.profile-stars {
-  width: 84px;
+    width: 84px;
 }

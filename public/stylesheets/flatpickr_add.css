@@ -1,0 +1,30 @@
+/* Author: Czarina Lao */
+/* Additional stylings for flatpickr */
+
+/* Remove styling for readonly because flatpickr form-control is readonly */
+.form-control[readonly] {
+    background-color: initial;
+    color: initial;
+    /* border-color of usual input form control in flat-ui */
+    border-color: 2px solid #bdc3c7;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.flatpickr-month, .flatpickr-weekdays {
+    background-color: #1abc9c;
+}
+
+@media screen and (max-width: 480px) {
+    /* flatpickr calendar display of year overlaps for small devices */
+    .flatpickr-current-month > .numInputWrapper {
+        display: none !important;
+    }
+}
+
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    /* flatpickr calendar display of year overlaps for small devices */
+    .flatpickr-current-month > .numInputWrapper {
+        display: none !important;
+    }
+}

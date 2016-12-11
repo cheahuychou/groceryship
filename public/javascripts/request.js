@@ -3,9 +3,7 @@
 $(document).ready(function() {
     flatpickr("input[name=item-due]", {
         enableTime: true,
-        // minDate seems to have a bug so not using it for now
-        // minDate: 'today',
-        enable: [{from:'today', to: new Date().fp_incr(1000)}],
+        minDate: 'today',
         // create an extra input solely for display purposes
         altInput: true,
         altFormat: "F j, Y h:i K"

@@ -1,0 +1,12 @@
+/* Author: Czarina Lao */
+/* Styling for the Request Tab page */
+
+@media screen and (min-width: 992px) {
+    #request-form-container {
+        padding-right: 10%;
+    }
+}
+
+#make-request {
+    margin-bottom: 40px;
+}

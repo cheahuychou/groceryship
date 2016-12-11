@@ -21,14 +21,14 @@ $(document).ready(function () {
    	document.getElementById('edit-dormlist').setAttribute("name", "dorm");
    	$('#edit-confirm-button').click(function () {
    		var username = $('#kerberos').text();
-   		var phoneNumber = $('#phone-number-register-box').val();
+   		var phoneNumber = formatNumberString($('#phone-number-register-box').val());
 	   	var dorm = $('#edit-dormlist :selected').val();
 		var csrf = $('#csrf').val();
 		var hasError = false;
 		// validate inputs first
         // check that all inputs are nonempty
         // if empty, alert the user of the error and show where it is
-        if (!phoneNumber || !phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10 || !dorm || dorm.trim()=='') {
+        if (!phoneNumber || !isValidPhoneNumber(phoneNumber) || !dorm || dorm.trim()=='') {
             showError('#phone-number-register-box');
             hasError = true;
             if (phoneNumber.trim() != ''){
@@ -71,7 +71,7 @@ $(document).ready(function () {
 		var csrf = $('#csrf').val();
 		var hasError = false;
 		
-		if (currentPassword.trim().length === 0 || findScriptingTags(currentPassword)) {
+		if (!isValidPassword(currentPassword.trim())) {
 			showError('#current-password-box');
             hasError = true;
 	        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
@@ -80,7 +80,7 @@ $(document).ready(function () {
 		} else {
 			$('#current-password-box').parent().removeClass('has-error');
 		}
-		if (newPassword.trim().length === 0 || findScriptingTags(newPassword)) {
+		if (!isValidPassword(newPassword.trim())) {
 			showError('#new-password-box');
             hasError = true;
 	        addMessage('Please enter a non-empty and valid new password.', 'danger', true, true);
@@ -89,7 +89,7 @@ $(document).ready(function () {
 		} else {
 			$('#new-password-box').parent().removeClass('has-error');
 		}
-		if (confirmedPassword.trim().length === 0 || findScriptingTags(confirmedPassword)) {
+		if (!isValidPassword(confirmedPassword.trim())) {
 			showError('#confirmed-new-password-box');
             hasError = true;
 	        addMessage('Please enter a non-empty and valid confirmation of your new password.', 'danger', true, true);
@@ -98,7 +98,7 @@ $(document).ready(function () {
 		} else {
 			$('#confirmed-new-password-box').parent().removeClass('has-error');
 		}
-		if (! testPasswordStrength(newPassword)) {
+		if (!testPasswordStrength(newPassword)) {
 	        showError('#new-password-box');
             hasError = true;
 	        addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character,' 
