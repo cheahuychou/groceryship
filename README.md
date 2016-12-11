@@ -10,6 +10,11 @@ For a local version,
 - Start the app with `npm start`.
 - The app will be available on [`http://localhost:3000`](http://localhost:3000).
 
+Stripe instructions: 
+- For both the local version and the deployed version, a Stripe Connect testing platform is used in the app. No real transactions will happen but you can see the testing transaction records in your Stripe account. 
+- Users have to connect their GroceryShip accounts with their Stripe accounts during registration in order to receive future payments. If a user connects with a development mode Stripe account, the user can pay other users but cannot receive payments. When accepting items and paying the shoppers, the users will enter testing credit cards information. 
+- One example testing Visa credit card number is 4242424242424242. The expiration date can be any time in the future and the CVC security code can be any three digits. More testing credit card numbers can be found in the [Stripe documentation](https://stripe.com/docs/testing#cards).
+
 ## Description
 GroceryShip is a web application that facilitates peer grocery delivery. Students from the same college can post requests for groceries they need with a detailed description of the item/s. Students who are doing grocery shopping can then claim and fulfill these requests. Requesters specify how much they're willing to pay as a delivery fee and which pickup/delivery locations (dorms, living groups, other on-campus places) they prefer. Payments are made once delivery is complete and both parties indicate this in the app. We will focus on an implementation for MIT students first. 
 
@@ -46,6 +51,7 @@ Existing solutions include the delivery services of each grocery store (if it ex
         - dashboard.js (Czarina Lao)
         - dashboard_helpers.js (Czarina Lao)
         - deliver.js (Czarina Lao)
+        - faq.js (Czarina Lao)
         - index.js (Czarina Lao)
         - login.js (Joseph Kuan)
         - navbar.js (Czarina Lao)
@@ -54,13 +60,27 @@ Existing solutions include the delivery services of each grocery store (if it ex
         - rating.js (Cheahuychou Mao)
         - request.js (Czarina Lao)
         - user_info.js (Czarina Lao)
+        - validation.js (Czarina Lao)
     - stylesheets
+        - dashboard.css (Czarina Lao)
+        - deliver.css (Czarina Lao)
+        - faq.css (Czarina Lao)
+        - flatpickr_add.css (Czarina Lao)
+        - home.css (Czarina Lao)
+        - profile.css (Czarina Lao)
+        - rating.css (Czarina Lao)
+        - request.css (Czarina Lao)
         - style.css (Czarina Lao)
+        - tile.css (Czarina Lao)
 - routes
     - deliveries.js (Joseph Kuan)
     - index.js (Cheahuychou Mao)
     - users.js (Chien-Hsun Chang)
 - test
+    - client_side
+        - format.js (Czarina Lao)
+        - helpers_test.html (Czarina Lao)
+        - validation.js (Czarina Lao)
     - authentication_test.js (Cheahuychou Mao)
     - delivery_test.js (Joseph Kuan)
     - email_test.js (Cheahuychou Mao)
@@ -88,7 +108,6 @@ Existing solutions include the delivery services of each grocery store (if it ex
         - reject.hbs (Cheahuychou Mao)
         - request_form.hbs (Czarina Lao)
         - request_item.hbs (Czarina Lao)
-        - request_item_form.hbs (Czarina Lao)
         - requests.hbs (Czarina Lao)
         - requests_table.hbs (Czarina Lao)
         - set_pickup.hbs (Czarina Lao)
@@ -96,6 +115,7 @@ Existing solutions include the delivery services of each grocery store (if it ex
     - dashboard.hbs (Czarina Lao)
     - deliver.hbs (Czarina Lao)
     - error.hbs (Cheahuychou Mao)
+    - faq.hbs (Chien-Hsun Chang)
     - home.hbs (Czarina Lao)
     - profile.hbs (Chien-Hsun Chang)
     - request.hbs (Czarina Lao)
