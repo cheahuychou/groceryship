@@ -172,7 +172,7 @@ router.put("/:id/claim", authentication.isAuthenticated, parseForm, csrfProtecti
 });
 
 /**
-Updates a Delivery when a user clicks on "Deliver Now"
+Updates a Delivery when a user clicks on "Set Pickup Time" and "Confirm"
 request body fields: pickupTime, actualPrice
 **/
 router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtection, function(req, res){
@@ -182,7 +182,6 @@ router.put("/:id/deliver", authentication.isAuthenticated, parseForm, csrfProtec
             console.log(err);
             res.json({success: false, message: err});
         } else {
-            console.log(currentDelivery);
             var formattedDelivery = utils.formatDate([currentDelivery])[0];
             email.sendDeliveryEmail(formattedDelivery);
             res.json({success: true});

@@ -10,14 +10,24 @@
 var checkLogInForm = function () {
     var kerberos = $('#kerberos-box').val().trim();
     var password = $('#password-box').val().trim();
+    // make sure inputs are nonempty
     if (!isValidKerberos(kerberos)) {
+        showError('#kerberos-box');
         addMessage('Please enter a valid kerberos.', 'danger', false, true);
         return false; 
+    } else {
+        $('#kerberos-box').parent().removeClass('has-error');
     }
     if (!isValidPassword(password)) {
+        showError('#password-box');
         addMessage('Please enter a valid password.', 'danger', false, true);
         return false; 
+    } else {
+        $('#password-box').parent().removeClass('has-error');
     }
+    // replace text submitted in form with trimmed version
+    $('#kerberos-box').val(kerberos);
+    $('#password-box').val(password);
 }
 
 /**
@@ -33,27 +43,50 @@ var checkSignUpForm = function () {
     var confirmPassword = $('#confirm-password-register-box').val().trim();
     var phoneNumber = formatNumberString($('#phone-number-register-box').val());
     var dorm = $('.dorm :selected').text().trim();
+    // make sure inputs are nonempty and don't contain scripting tags
+    // passwords can contain scripting tags because they won't be displayed and directly saved
     if (!isValidKerberos(kerberos)) {
+        showError('#kerberos-register-box');
         addMessage('Please enter a non-empty and valid kerberos. Note that spaces at the ends are trimmed.', 'danger', true, true);
         return false; 
+    } else {
+        $('#kerberos-register-box').parent().removeClass('has-error');
     }
     if (!isValidPassword(password)) {
+        showError('#password-register-box');
         addMessage('Please enter a non-empty and valid password. Note that spaces at the ends are trimmed.', 'danger', true, true);
         return false; 
+    } else {
+        $('#password-register-box').parent().removeClass('has-error');
     }
     if (!testPasswordStrength(password)) {
+        showError('#password-register-box');
         addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
         return false; 
+    } else {
+        $('#password-register-box').parent().removeClass('has-error');
     }
     if (confirmPassword !== password) {
+        showError('#password-register-box');
+        showError('#confirm-password-register-box');
         addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
         return false;
+    } else {
+        $('#password-register-box').parent().removeClass('has-error');
+        $('#confirm-password-register-box').parent().removeClass('has-error');
     }
     if (!isValidPhoneNumber(phoneNumber)) {
+        showError('#phone-number-register-box');
         addMessage('Please enter a valid US phone number with 10 digits.', 'danger', true, true);
         return false;
+    } else {
+        $('#phone-number-register-box').parent().removeClass('has-error');
     }
-
+    // replace text submitted in form with trimmed version
+    $('#kerberos-register-box').val(kerberos);
+    $('#password-register-box').val(password);
+    $('#confirm-password-register-box').val(confirmPassword);
+    $('#phone-number-register-box').val(phoneNumber);
 }
 
 $(document).ready(function () {

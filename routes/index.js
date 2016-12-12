@@ -47,7 +47,7 @@ passport.serializeUser(function (user, callback) {
 
 passport.deserializeUser(function (user, callback) {
     User.find({username: user.username}, function(err, user) {
-    callback(err, user);
+        callback(err, user);
     });
 });
 

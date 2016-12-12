@@ -51,7 +51,6 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
 router.put('/:username/profile/edit', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
     var newPhoneNumber = parseInt(req.body.newPhoneNumber.trim());
     var newDorm = req.body.newDorm.trim();
-    console.log('yo updating');
     User.editProfile(req.params.username, newPhoneNumber, newDorm, function(err){
         if (err) {
             res.json({success: false, message: err});
@@ -64,7 +63,6 @@ router.put('/:username/profile/edit', authentication.isAuthenticated, parseForm,
 router.put('/:username/changePassword', authentication.isAuthenticated, parseForm, csrfProtection, function(req, res, next){
     var currentPassword = req.body.currentPassword.trim();
     var newPassword = req.body.newPassword.trim();
-    console.log('yo updating');
     User.authenticate(req.params.username, currentPassword, function(err, user){
         if (err){
             res.json({success: false, message: err.message});
