@@ -12,7 +12,10 @@ $(document).ready(function () {
                        { 'targets': [11, 12], 'visible': false, 'searchable': false}]
     });
     deliveriesDatatable.on('draw', function() {
-        checkIfNoMatches();
+        // only check if there are no matches if there were deliveries to begin with
+        if (countDeliveries() > 0) {            
+            checkIfNoMatches();
+        }
     });
 
     $('#navbar-dashboard').addClass('active');
