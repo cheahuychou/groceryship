@@ -4,11 +4,27 @@
 A deployed version of GroceryShip is available on Heroku [here](http://groceryship.herokuapp.com/).
 
 For a local version,
-- Make sure you have Node.js, NPM, and [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community) which will be used for this project.
+- You will need a `config.js` file in the `javascripts/` folder. The file should contain a module that exports an `Object` with the following methods:
+    - `emailAddress`
+    - `emailPassword`
+    - `productionUrl`
+    - `stripeClientId`
+    - `stripeApiKey`
+    - `stripePublishableKey`
+    - `stripeTokenURI`
+    - `stripeAuthorizeURI`
+    - `mitPeopleClientId`
+    - `mitPeopleClientSecret`
+The methods should return a String of what is described in the method name. These will be used to send the verification and notification emails, access the Stripe API, and access the MIT People Directory API.
+- Next, make sure you have Node.js, NPM, and [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community) which will be used for this project.
 - Start the MongoDB server in one terminal window with `sudo mongod`.
 - In another terminal window, install the dependencies with `npm install`.
 - Start the app with `npm start`.
 - The app will be available on [`http://localhost:3000`](http://localhost:3000).
+
+Sign up restrictions:
+- GroceryShip is designed to be used by people with an MIT email/kerberos, so only those with a valid kerberos (not a mailing list) can sign up. A kerberos is valid if it is in the MIT People Directory.
+- However, in the local version where the app is in development mode, the app will allow an invalid kerberos to sign up for ease of testing. You will still have to verify the email account, so we suggest the use of an MIT mailing list that sends emails to yourself as a "kerberos" to test with. Additionally, you could manually get the verification token sent in the email from the local database, or check Sent Mail from the email account being used to send the verification emails.
 
 Stripe instructions: 
 - For both the local version and the deployed version, a Stripe Connect testing platform is used in the app. No real transactions will happen but you can see the testing transaction records in your Stripe account. 
