@@ -1,0 +1,30 @@
+{{!--Author: Chien-Hsun Chang--}}
+<link rel="stylesheet" href="/stylesheets/faq.css">
+<script src='/javascripts/faq.js'></script>
+
+<h1>{{title}}</h1>
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+<div id='faq-content'>
+  <h2>For requesters:</h2>
+   
+  <span class='question'>Q: What is the use of the minimum shopper rating in the request form?</span><br>
+  <span class='answer'>A: Each request can only be seen and claimed by users with shipping ratings at least equal to the set minimum shopper rating. You can set a minimum shopper rating to ensure the shipping service quality.</span><br><br>
+   
+  <span class='question'>Q: What happens if the shopper does not show up on time?</span><br>
+  <span class='answer'>A: You can contact the shopper again or reject the delivery with the reason that “The deliverer did not show up.”. You should rate the shopper accordingly. Shoppers with shipping rating below our set threshold will be suspended from delivering for a period of time.</span><br><br>
+   
+  <span class='question'>Q: What if the shopper buys a wrong item?</span><br>
+  <span class='answer'>A: You can reject the delivery and give the reason that “The delivered item is not what I requested for.” The shopper will be responsible for either returning and keeping the item. You should rate the shopper accordingly. Shoppers with shipping rating below our set threshold will be suspended from delivering for a period of time.</span><br><br>
+   
+  <h2>For shoppers:</h2>
+   
+  <span class='question'>Q: When should I claim a request?</span><br>
+  <span class='answer'>A: You claim a request when you are at the grocery store(s) and know that you can buy the item in the request.</span><br><br>
+   
+  <span class='question'>Q: What happens if the requester rejects my delivery?</span><br>
+  <span class='answer'>A: If you are unsatisfied with the rejection reason, you rate the requester accordingly. You can choose to keep or return the item. All the grocery stores in our listing have full refund policies.</span><br><br>
+   
+  <span class='question'>Q: What is the suspension policy in GroceryShip?</span><br>
+  <span class='answer'>A:  If a user deliveries four or more times, and gets an average shipping rating lower than three, the user will be suspended for a month.</span><br><br>
+</div>

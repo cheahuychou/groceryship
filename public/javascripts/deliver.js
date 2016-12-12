@@ -1,4 +1,5 @@
 // Author: Czarina Lao
+// js for the Deliver tab page
 
 /**
  * Makes the pagination buttons use Flat UI styling
@@ -15,12 +16,8 @@ var fixPaginationButtons = function () {
  * If there are none, shows the no requests message
  * @return {void} 
  */
- 
-var checkIfNoRequests = function () {
+ var checkIfNoRequests = function () {
     if ($('.request-item-row').size() === 0) {
-        // not using this anymore for now because of the weird formatting
-        // with the new integration with datatable
-        // $('.empty-requests-table-message').removeClass('hide');
         var noRequestsMessage = $('<div>', {
             class: 'well well-lg message no-requests-message',
             text: 'No requests from other users to claim yet.'
@@ -30,9 +27,14 @@ var checkIfNoRequests = function () {
     }
 }
 
-
+/**
+ * Adds the click handler to all the claim buttons for requests
+ * in requestTable if it does not already exist.
+ * @param  {Object} requestTable a DataTable instance
+ */
 var initializeClaimButtons = function(requestTable) {
-    $('.claim-request').prop('onclick',null).off('click').click(function() { //this removes any previously set click functions before redefining it again
+    // remove any previously set click functions before redefining it again
+    $('.claim-request').prop('onclick',null).off('click').click(function() {
         var id = $(this).parent().parent().attr('data-id');
         var csrf = $('#csrf').val();
         $.ajax({
@@ -40,11 +42,12 @@ var initializeClaimButtons = function(requestTable) {
             type: 'PUT',
             data: {id: id, _csrf: csrf},
             success: function(data) {
-                console.log(data);
                 if (data.success) {
                     requestTable.row($('.request-item-row[data-id='+id+']')).remove().draw(false); //draw(false) tells datatables to remain on current page after removing
                     addMessage('Request claimed! It has been added to your dashboard. Remember to contact the requester to set a pickup time.', 'success', false, true);
-                    if (requestTable.data().count() === 0) { //if there are no request data left, display "No request to claim" message
+
+                    //if there are no request data left, display "No request to claim" message
+                    if (requestTable.data().count() === 0) {
                         checkIfNoRequests();
                     }
                 } else {
@@ -52,7 +55,6 @@ var initializeClaimButtons = function(requestTable) {
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
@@ -61,11 +63,11 @@ var initializeClaimButtons = function(requestTable) {
 
 
 $(document).ready(function () {
+    // initialize table for request feed
     var requestTable = $('#request-table').DataTable({
         "ordering": false,
     });
     requestTable.on('draw', function() {
-        console.log('drawing~');
         fixPaginationButtons();
         initializeClaimButtons(requestTable);
         $('[data-toggle="tooltip"]').tooltip({
@@ -75,7 +77,8 @@ $(document).ready(function () {
             html: true
         });
 
-        if ($('.request-item-row').size() === 0 && requestTable.data().count() !== 0) { //display "No matches found" if there are no matches & table has data
+        // display "No matches found" if there are no matches & table has data
+        if ($('.request-item-row').size() === 0 && requestTable.data().count() !== 0) {
             // fixes small issue when there are no matches and tooltip remains shown
             $('.tooltip').hide();
             var noMatchesMessage = $('<div>', {

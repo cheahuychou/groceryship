@@ -245,7 +245,7 @@ UserSchema.statics.addCompletedShipping = function(id, deliveryId, rating, callb
             //Suspend users for a period of time if they
             //    1. previously had a good average rating but rating now fell below minimum allowed ship rating
             //    2. currently have a bad average rating & receive another bad rating
-            if (newLength >= 4) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
+            if (newLength >= utils.minDeliveriesForSuspension()) { //only suspend users who have made 4 or more deliveries so you have a sufficient sample size
                 if ((oldRating >= utils.minAllowedShipRating() && currentUser.avgShippingRating < utils.minAllowedShipRating())
                     || (oldRating < utils.minAllowedShipRating() && rating < utils.minAllowedShipRating())) {
                     var now = Date.now();

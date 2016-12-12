@@ -1,5 +1,12 @@
 // Author: Czarina Lao
+// js for showing user information with ratings and tooltips
 
+/**
+ * Helper function called by .tooltip
+ * which gives the associated tooltip for the element this
+ * that calls it.
+ * @return {String} the html string for the tooltip of this
+ */
 var getContactTooltip = function() {
     var targetElement = $(this).attr('data-target');
 
@@ -7,6 +14,14 @@ var getContactTooltip = function() {
 };
 
 // Adapted from: https://github.com/FortAwesome/Font-Awesome/issues/4147
+/**
+ * Fills in the stars in the element/s given by selector
+ * based on the indicated number of stars from the text in each element.
+ * That is, if the text says x, x filled stars will be displayed.
+ * @param  {String}  selector  the selector for the element/s that will contain the stars
+ *                                and that contains the number of stars to be filled
+ * @param  {Boolean} isTooltip whether the selector is for (an) element/s in a tooltip
+ */
 var fillStars = function(selector, isTooltip) {
     // need tooltip star size because css does weird things
     // and we can't get the element's proper width when updating ratings

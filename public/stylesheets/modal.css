@@ -1,0 +1,49 @@
+/* Author: Czarina Lao */
+@media screen and (max-width: 480px) {
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 50%;
+    }
+}
+
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 25%;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .modal-dialog-wide {
+        width: 750px;
+    }
+
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 25%;
+    }
+}
+@media screen and (min-width: 992px) {
+    .modal-dialog-wide {
+        width: 850px;
+    }
+
+    .modal-messages, #messages {
+        left: 2%;
+        max-width: 25%;
+    }
+}
+
+.modal-body table {
+    vertical-align: middle;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-messages, #messages {
+    position: fixed;
+    bottom: 0;
+    z-index: 1050;
+}

@@ -47,7 +47,7 @@ passport.serializeUser(function (user, callback) {
 
 passport.deserializeUser(function (user, callback) {
     User.find({username: user.username}, function(err, user) {
-    callback(err, user);
+        callback(err, user);
     });
 });
 
@@ -236,6 +236,14 @@ router.get('/oauth/callback', function(req, res) {
             );
         }
     });
+});
+
+router.get('/faq', authentication.isAuthenticated, function (req, res) {
+    var user = req.session.passport.user;
+    res.render('faq', { title: 'FAQ',
+                        username: user.username,
+                        fullName: user.fullName,
+                        csrfToken: req.csrfToken()});
 });
 
 module.exports = router;

@@ -37,7 +37,9 @@ $(document).ready(function () {
             success: function(data) {
                 refreshAllCounts();
             },
-            error: function(err) {console.log(err);}
+            error: function(err) {
+                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
+            }
         });
     });
     
@@ -48,9 +50,7 @@ $(document).ready(function () {
         // e.g. expiry is this month,year or later
         $('#accept-modal-'+id+' input').each(function() {
             if ($(this).attr('required') && (!$(this).val() || $(this).val().trim()=='')) {
-                if (!$(this).parent().hasClass('has-error')) {
-                    $(this).parent().addClass('has-error');
-                }
+                showError(this);
                 hasError = true;
             } else {
                 $(this).parent().removeClass('has-error');
@@ -79,7 +79,6 @@ $(document).ready(function () {
                         cvc: cvc
                     },
                 success: function(data) {
-                    console.log(data);
                     if (data.success) {
                         addMessage('Payment succeeded. The shopper has been notified.', 'success', false, true);
                         $('#accept-modal-' + id).modal('toggle');
@@ -98,13 +97,11 @@ $(document).ready(function () {
                         updateStarRating(userId, data.newRating, true);
 
                     } else {
-                        console.log(data.message);
                         addMessage(data.message + " Please try again.", 'danger', true, true);
                         $('.card-number').focus();
                     }
                 },
                 error: function(err) {
-                    console.log(err);
                     addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
                 }
             });
@@ -120,7 +117,6 @@ $(document).ready(function () {
             type: 'PUT',
             data: {id: id, reason: reason, shopperRating: rating, _csrf: csrf},
             success: function(data) {
-                console.log(data);
                 if (data.success) {
                     addMessage('Rejection succeeded. The shopper has been notified.', 'success', false, true);
                     $('#reject-modal-' + id).modal('toggle');
@@ -141,12 +137,10 @@ $(document).ready(function () {
                     
                     refreshAllCounts();
                 } else {
-                    console.log(data.message);
                     addMessage('Rejection failed. Please try again.', 'danger', true, true);
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
             }
         });
@@ -160,7 +154,6 @@ $(document).ready(function () {
             type: 'PUT',
             data: {id: id, requesterRating: rating, _csrf: csrf},
             success: function(data) {
-                console.log(data);
                 if (data.success) {
                     addMessage('Rating succeeded.', 'success', false, true);
                     $('#close-modal-' + id).modal('toggle');
@@ -178,12 +171,10 @@ $(document).ready(function () {
                     
                     refreshAllCounts();
                 } else {
-                    console.log(data.message);
                     addMessage('Rating failed. Please try again.', 'danger', true, true);
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', true, true);
             }
         });

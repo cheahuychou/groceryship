@@ -1,6 +1,7 @@
 // Author: Czarina Lao
 
 var assert = require("assert");
+var test = require('chai').assert;
 var utils = require('../javascripts/utils.js');
 var mongoose = require("mongoose");
 var User = require("../models/user");
@@ -99,6 +100,40 @@ describe("Utils", function() {
             var formatedDeliveries = utils.formatDate([acceptedDelivery, pendingDelivery]);
             assert(formatedDeliveries[0].deadline === 'Nov 23, 6:00 AM' && formatedDeliveries[0].pickupTime === 'Nov 22, 6:00 PM' && formatedDeliveries[1].deadline === 'Nov 21, 6:59 PM'); 
             done();
+        });
+    });
+
+    describe("isValidRating", function() {
+        it("should return false for a non-integer rating outside of the rating range", function() {
+            test.isFalse(utils.isValidRating(34.5));
+        });
+
+        it("should return false for an integer rating outside of the rating range", function() {
+            test.isFalse(utils.isValidRating(6));
+        });
+
+        it("should return false for a non-integer rating between the rating range", function() {
+            test.isFalse(utils.isValidRating(2.5));
+        });
+
+        it("should return false for a 0 rating", function() {
+            test.isFalse(utils.isValidRating(0));
+        });
+
+        it("should return true for a rating of null", function() {
+            test.isTrue(utils.isValidRating(null));
+        });
+
+        it("should return true for the lowest rating", function() {
+            test.isTrue(utils.isValidRating(1));
+        });
+
+        it("should return true for the highest rating", function() {
+            test.isTrue(utils.isValidRating(5));
+        });
+
+        it("should return true for a rating in the middle of the range", function() {
+            test.isTrue(utils.isValidRating(3));
         });
     });
 });

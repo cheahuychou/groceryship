@@ -10,16 +10,25 @@
 var checkLogInForm = function () {
     var kerberos = $('#kerberos-box').val().trim();
     var password = $('#password-box').val().trim();
-    if (kerberos.length === 0 || /<[a-z][\s\S]*>/i.test(kerberos)) {
+    // make sure inputs are nonempty
+    if (!isValidKerberos(kerberos)) {
+        showError('#kerberos-box');
         addMessage('Please enter a valid kerberos.', 'danger', false, true);
         return false; 
+    } else {
+        $('#kerberos-box').parent().removeClass('has-error');
     }
-    if (password.length === 0 || /<[a-z][\s\S]*>/i.test(password)) {
+    if (!isValidPassword(password)) {
+        showError('#password-box');
         addMessage('Please enter a valid password.', 'danger', false, true);
         return false; 
+    } else {
+        $('#password-box').parent().removeClass('has-error');
     }
+    // replace text submitted in form with trimmed version
+    $('#kerberos-box').val(kerberos);
+    $('#password-box').val(password);
 }
-
 
 /**
 * Checks that the fields in the signup form are non-empty strings,
@@ -34,28 +43,50 @@ var checkSignUpForm = function () {
     var confirmPassword = $('#confirm-password-register-box').val().trim();
     var phoneNumber = formatNumberString($('#phone-number-register-box').val());
     var dorm = $('.dorm :selected').text().trim();
-    if (kerberos.length === 0 || kerberos.toLowerCase() !== kerberos || /<[a-z][\s\S]*>/i.test(kerberos)) {
-        addMessage('Please enter a non-empty and valid kerberos.', 'danger', true, true);
+    // make sure inputs are nonempty and don't contain scripting tags
+    // passwords can contain scripting tags because they won't be displayed and directly saved
+    if (!isValidKerberos(kerberos)) {
+        showError('#kerberos-register-box');
+        addMessage('Please enter a non-empty and valid kerberos. Note that spaces at the ends are trimmed.', 'danger', true, true);
         return false; 
+    } else {
+        $('#kerberos-register-box').parent().removeClass('has-error');
     }
-    if (password.length === 0 || /<[a-z][\s\S]*>/i.test(password)) {
-        addMessage('Please enter a non-empty and valid password.', 'danger', true, true);
+    if (!isValidPassword(password)) {
+        showError('#password-register-box');
+        addMessage('Please enter a non-empty and valid password. Note that spaces at the ends are trimmed.', 'danger', true, true);
         return false; 
+    } else {
+        $('#password-register-box').parent().removeClass('has-error');
     }
-    if (password.length < 8 || ! /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
-        // regex taken from https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
+    if (!testPasswordStrength(password)) {
+        showError('#password-register-box');
         addMessage('Your password needs to contain at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.', 'danger', true, true);
         return false; 
+    } else {
+        $('#password-register-box').parent().removeClass('has-error');
     }
-    if (confirmPassword !== password || /<[a-z][\s\S]*>/i.test(password)) {
+    if (confirmPassword !== password) {
+        showError('#password-register-box');
+        showError('#confirm-password-register-box');
         addMessage('The password and confirm password you entered did not match, please try again.', 'danger', true, true);
         return false;
+    } else {
+        $('#password-register-box').parent().removeClass('has-error');
+        $('#confirm-password-register-box').parent().removeClass('has-error');
     }
-    if (!phoneNumber.match(/^\d+$/) || parseInt(phoneNumber).toString().length != 10) {
+    if (!isValidPhoneNumber(phoneNumber)) {
+        showError('#phone-number-register-box');
         addMessage('Please enter a valid US phone number with 10 digits.', 'danger', true, true);
         return false;
+    } else {
+        $('#phone-number-register-box').parent().removeClass('has-error');
     }
-
+    // replace text submitted in form with trimmed version
+    $('#kerberos-register-box').val(kerberos);
+    $('#password-register-box').val(password);
+    $('#confirm-password-register-box').val(confirmPassword);
+    $('#phone-number-register-box').val(phoneNumber);
 }
 
 $(document).ready(function () {
@@ -63,7 +94,7 @@ $(document).ready(function () {
         var username = $('#username').val();
         var verificationToken = $('#verificationToken').val();
         var csrf = $('#csrf').val();
-        console.log(username, verificationToken, csrf);
+
         $.ajax({
             url: '/verify/'+username+'/'+verificationToken,
             type: 'PUT',
@@ -73,7 +104,7 @@ $(document).ready(function () {
                     addMessage('Verification succeeded! Redirecting you to the homepage...', 'success', false, true);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
-                            window.location = data.redirect
+                            window.location = data.redirect;
                         }, 1000);   
                     }
                 } else {
@@ -81,7 +112,6 @@ $(document).ready(function () {
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });

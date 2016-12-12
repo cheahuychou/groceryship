@@ -1,42 +1,7 @@
 /* Author: Czarina Lao */
+/* Genaral page and table styling */
 a {
   color: #00B7FF;
-}
-
-.notification-icon img {
-  height: 20px;
-  display: block;
-  margin: auto;
-}
-
-.tile-icon img {
-    height: 40px;
-    display: block;
-    margin: 0;
-    margin-right: 10px;
-    margin-bottom: 5px;
-}
-
-.badge {
-    margin-bottom: 23px;
-}
-
-.feature {
-    float: left;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.accept-reject-container {
-  /*width: 100%;*/
-  display: inline-block;
-}
-
-.feature img {
-	width: 80px;
-	height: 80px;
-    margin-bottom: 10px;
-    float: left;
 }
 
 .navbar-logo {
@@ -46,39 +11,16 @@ a {
     margin-right: 5px;
 }
 
-.right-space {
-  margin-right:15px;
-}
-
-.feature-img-text {
-    margin-top: 20px;
-    margin-left: 90px;
-    display: block;
-}
-
-#about {
-	float: left;
-}
-
-#login-content {
-	float: right;
-}
-
-.login-column {
-    margin-top: 20px;
-}
-
-.fa-star-o, .fa-star {
-  font-size: 150% !important;
-  color:  #FFD700;
-}
-
 #main-content {
     margin-top: 20px;
 }
 
 h1 {
     font-size: 40px;
+}
+
+h2 {
+    font-size: 35px;
 }
 
 h3 {
@@ -93,189 +35,24 @@ h3 {
 }
 
 @media screen and (max-width: 480px) {
-    /* flatpickr calendar display of year overlaps for small devices */
-    .flatpickr-current-month > .numInputWrapper {
-        display: none !important;
-    }
-    #sort-direction {
-        margin-top: 0px;
-    }
-
-    #sort-direction .radio {
-        padding-left: 10px;
-    }
-
     body {
       padding: 40px 10%;
-    }
-
-    .modal-messages, #messages {
-        left: 2%;
-        max-width: 50%;
     }
 }
 @media screen and (min-width: 480px) and (max-width: 767px) {
-    /* flatpickr calendar display of year overlaps for small devices */
-    .flatpickr-current-month > .numInputWrapper {
-        display: none !important;
-    }
-    #sort-direction {
-        margin-top: 0px;
-    }
-
-    #sort-direction .radio {
-        padding-left: 10px;
-    }
-
     body {
       padding: 40px 10%;
     }
-
-    .modal-messages, #messages {
-        left: 2%;
-        max-width: 25%;
-    }
 }
 @media screen and (min-width: 768px) {
-    #sort-direction {
-        margin-top: -35px;
-    }
-
-    #sort-direction .radio {
-        padding-left: 5px;
-    }
-
-    #filter-sort {
-        float: right;
-    }
-
     body {
       padding: 70px 80px;
-    }
-
-    .profile-table-container {
-        padding-right: 20%;
-    }
-
-    .modal-dialog-wide {
-        width: 750px;
-    }
-
-    .modal-messages, #messages {
-        left: 2%;
-        max-width: 25%;
     }
 }
 @media screen and (min-width: 992px) {
     body {
       padding: 70px 120px;
     }
-
-    #request-form-container {
-        padding-right: 10%;
-    }
-    .profile-table-container {
-        padding-right: 30%;
-    }
-
-    .modal-dialog-wide {
-        width: 850px;
-    }
-
-    .modal-messages, #messages {
-        left: 2%;
-        max-width: 25%;
-    }
-}
-
-.tile p {
-    margin-bottom: 15px;
-    word-wrap: break-word;
-    line-height: 1.25;
-}
-
-.tile-title, .tile-subtitle {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    /*word-wrap: break-word;*/
-}
-
-.modal-body table {
-/*    table-layout: fixed;
-    word-wrap: break-word;*/
-    vertical-align: middle;
-}
-
-.tile {
-    text-align: left;
-    height: 165px;
-/*    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;*/
-}
-
-.tile-content {
-    line-height: 2.5ex;
-    height: 5ex;
-    vertical-align: center;
-}
-
-.notification-tile {
-    height: 165px;
-}
-
-#dashboard-notifications {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-#dashboard-requests {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.request-tile {
-    height: 150px;
-}
-
-.request-tile-content {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.tile:hover{
-    background-color: rgba(22, 160, 133,0.25);/*rgba(26, 188, 156,0.5)*//*#1abc9c;*//*#16a085;*/
-}
-
-#add-request-icon {
-    /* TODO: make this size depend on tile height? */
-    font-size: 55px;
-}
-
-.add-request-tile {
-    text-align: center;
-    height: 150px;
-    vertical-align: middle;
-}
-
-.title-toggle:hover {
-    color: #1abc9c;
-}
-
-.title-toggle .glyphicon {
-    font-size: 80%;
-}
-
-#make-request {
-    margin-bottom: 40px;
-}
-
-#deliver-items {
-    margin-top: 20px;
 }
 
 table.table thead .sorting,
@@ -294,30 +71,7 @@ table.dataTable td.dataTables_empty {
     margin: 0.1px;
 }
 
-#xs-sort-by, #request-feed {
-    margin-top: 15px;
-}
-
-/* Remove styling for readonly because flatpickr form-control is readonly */
-.form-control[readonly] {
-    background-color: initial;
-    color: initial;
-    /* border-color of usual input form control in flat-ui */
-    border-color: 2px solid #bdc3c7;
-    cursor: pointer;
-    opacity: 1;
-}
-
-.flatpickr-month, .flatpickr-weekdays {
-    background-color: #1abc9c;
-}
-
-td.item-name, td.item-description {
-    word-wrap: break-word;
-    word-break: break-all;
-}
-
-td.set-pickup-item {
+td.item-name, td.item-description, td.set-pickup-item {
     word-wrap: break-word;
     word-break: break-all;
 }
@@ -327,67 +81,9 @@ td.deadline, td.pickup-time {
     min-width: 95px;
 }
 
-#set-pickup-modal .pickup-time {
-    /* make input box big enough for whole date */
-    width: 190px;
-}
-
-#set-pickup-modal th.price {
-    /* temporary fix for price column size so that it's not too small */
-    width: 100px;
-}
-
-.cost-summary, .card-input {
-    padding-left: 8%;
-}
-
-.card-input .form-group {
-    margin-bottom: 10px;
-}
-
-.card-input .col-expiry-month {
-    padding-right: 0;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-#request-table > table {
-    /*table-layout: fixed;*/
-}
-
-#request-table th {
-/*    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;*/
-}
-
-.signup-input {
-    margin-bottom: 10px;
-}
-
-.welcome-container {
-    padding-top: 5%;
-}
-
-#register-button {
-    margin: 5px 10px 0 0;
-}
-
-#change-password-button, #edit-confirm-button {
-    margin-right: 15px;
-}
-
 /* https://www.sitepoint.com/five-ways-to-hide-elements-in-css/ */
 .hide-from-view {
-   position: absolute;
-   top: -9999px;
-   left: -9999px;
-}
-
-.modal-messages, #messages {
-    position: fixed;
-    bottom: 0;
-    z-index: 1050;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
 }

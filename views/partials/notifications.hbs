@@ -2,186 +2,84 @@
 <script src='/javascripts/notifications.js'></script>
 
 <div class='row'>
-{{#each requestItems}}
-  {{#if shopper}}
-    {{#if pickupTime}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
-        <div class='tile notification-tile' data-id='{{_id}}'>
-          <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
-          <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Shopper: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
-          <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving:{{/ifIsPast}} <br>{{pickupTime}}</p>
+  {{#each requestItems}}
+    {{#if shopper}}
+      {{#if pickupTime}}
+      {{!-- request items with a shopper and pickup time --}}
+        <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
+          <div class='tile notification-tile' name="notification-{{_id}}" data-id='{{_id}}'>
+            <div class='tile-icon' style='float: left'><img src="/images/{{#ifIsPast rawPickupTime ../now}}clipboard.png{{else}}checklist.png{{/ifIsPast}}"></img></div>
+            <h4 class='tile-title'>{{itemName}}</h4>
+            <p class='tile-subtitle'>Shopper: <a href="#notification-{{_id}}" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
+            <p class='tile-content'>{{#ifIsPast rawPickupTime ../now}}Arrived:{{else}}Arriving:{{/ifIsPast}} <br>{{pickupTime}}</p>
 
-          <div class="accept-reject-container">
-            <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-            <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
+            <div class="accept-reject-container">
+              <button class='accept-notification-items btn btn-primary btn-xs' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
+              <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
+            </div>
           </div>
         </div>
-      </div>
-    {{else}} {{!-- for if pickupTime --}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
-        <div class='tile notification-tile' data-id='{{_id}}'>
-          <div class='tile-icon' style='float: left'><img src="/images/watch.png"></img></div>
-          <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Claimed by: <a href="#" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
-          <p class='tile-content'><i>Contact the shopper and<br class='hidden-ms hidden-md'> set a pickup time!</i></p>
+      {{else}} {{!-- for if pickupTime --}}
+      {{!-- request items with a shopper but no pickup time --}}
+        <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
+          <div class='tile notification-tile' name="notification-{{_id}}" data-id='{{_id}}'>
+            <div class='tile-icon' style='float: left'><img src="/images/watch.png"></img></div>
+            <h4 class='tile-title'>{{itemName}}</h4>
+            <p class='tile-subtitle'>Claimed by: <a href="#notification-{{_id}}" data-toggle="tooltip" data-view="shopper" data-target="#contact-shopper-tooltip-{{shopper._id}}">{{shopper.username}}</a></p>
+            <p class='tile-content'><i>Contact the shopper and<br class='hidden-ms hidden-md'> set a pickup time!</i></p>
 
-          <div class="accept-reject-container">
-            <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
+            <div class="accept-reject-container">
+              <button class='reject-notification-items btn btn-danger btn-xs' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
+            </div>
           </div>
         </div>
-      </div>
-    {{/if}} {{!-- for if pickupTime --}}
-  {{else}} {{!-- for if shopper --}}
-    {{#ifIsPast rawDeadline ../now}}
-      <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
-        <div class='tile notification-tile' data-id='{{_id}}'>
-          <div class='tile-icon' style='float: left'><img src="/images/expired.png"></img></div>
-          <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'><i>unclaimed</i></p>
-          <p class='tile-content'><i>Sorry, this request expired!</i><br></p>
+      {{/if}} {{!-- for if pickupTime --}}
+    {{else}} {{!-- for if shopper --}}
+      {{#ifIsPast rawDeadline ../now}}
+      {{!-- expired request items --}}
+        <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
+          <div class='tile notification-tile' name="notification-{{_id}}" data-id='{{_id}}'>
+            <div class='tile-icon' style='float: left'><img src="/images/expired.png"></img></div>
+            <h4 class='tile-title'>{{itemName}}</h4>
+            <p class='tile-subtitle'><i>unclaimed</i></p>
+            <p class='tile-content'><i>Sorry, this request expired!</i><br></p>
 
-          <div>
-            <button type="button" class="close-expired-notif btn btn-xs btn-inverse" data-id="{{_id}}">Close</button>
+            <div>
+              <button type="button" class="close-expired-notif btn btn-xs btn-inverse" data-id="{{_id}}">Close</button>
+            </div>
           </div>
         </div>
-      </div>
-    {{/ifIsPast}}
-  {{/if}} {{!-- for if shopper --}}
-{{/each}} {{!-- for requestItems --}}
+      {{/ifIsPast}}
+    {{/if}} {{!-- for if shopper --}}
+  {{/each}} {{!-- for requestItems --}}
 
-{{#each deliveryItems}}
-  {{#ifContains status "claimed"}}
-    {{#if actualPrice}}
+  {{#each deliveryItems}}
+    {{#ifContains status "claimed"}}
+      {{#if actualPrice}}
+        <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
+          <div class='tile notification-tile' name="notification-{{_id}}" data-id='{{_id}}'>
+            <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
+            <h4 class='tile-title'>{{itemName}}</h4>
+            <p class='tile-subtitle'>Requester: <a href="#notification-{{_id}}" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></p>
+            <p class='tile-content'>Deliver on: <br>{{pickupTime}}</p>
+
+            <button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button>
+          </div>
+        </div>
+      {{/if}}
+    {{else}}
       <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
-        <div class='tile notification-tile' data-id='{{_id}}'>
+        <div class='tile notification-tile' name="notification-{{_id}}" data-id='{{_id}}'>
           <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
           <h4 class='tile-title'>{{itemName}}</h4>
-          <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></p>
-          <p class='tile-content'>Deliver on: <br>{{pickupTime}}</p>
+          <p class='tile-subtitle'>Requester: <a href="#notification-{{_id}}" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></p>
+          <p class='tile-content'><i>{{status}} by requester</i></p>
 
-          {{!--  TODO: make these buttons work and stop the modal from popping up --}}
           <button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button>
         </div>
       </div>
-    {{/if}}
-  {{else}}
-    <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-3' id='notif-container-{{_id}}'>
-      <div class='tile notification-tile' data-id='{{_id}}'>
-        <div class='tile-icon' style='float: left'><img src="/images/cart.png"></img></div>
-        <h4 class='tile-title'>{{itemName}}</h4>
-        <p class='tile-subtitle'>Requester: <a href="#" data-toggle="tooltip" data-view="requester" data-target="#contact-requester-tooltip-{{requester._id}}">{{requester.username}}</a></p>
-        <p class='tile-content'><i>{{status}} by requester</i></p>
-
-        {{!--  TODO: make these buttons work and stop the modal from popping up --}}
-        <button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button>
-      </div>
-    </div>
-  {{/ifContains}}
-{{/each}} {{!-- for deliveryItems --}}
-
-
-{{!-- <div id="notifications-table">
-  <table class="table table-hover">
-    <tbody>
-      {{#each requestItems}}
-        {{#if shopper}}
-          {{#if pickupTime}}
-            {{#ifIsPast rawPickupTime ../now}}
-            <tr id='notif-row-{{_id}}' class='notification-row'>
-            <td>
-              <div class='notification-icon'><img src="/images/exclamation.png"></img></div>
-            </td>
-            <td class='notification-text'>Collect your request of {{itemName}} ({{itemQuantity}}) from <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a> now!</td>
-            <td>
-              <div class="accept-reject-container">
-                <button class='accept-notification-items btn btn-primary btn-xs pull-left' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-                <button class='reject-notification-items btn btn-danger btn-xs pull-right' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
-              </div>
-            </td>
-            <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
-            <td></td>
-            </tr>
-            {{else}}
-            <tr id='notif-row-{{_id}}' class='notification-row'>
-            <td>
-              <div class='notification-icon'><img src="/images/checklist.png"></img></div>
-            </td>
-            <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) is now being delivered by <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a>! Arriving {{pickupTime}}</td>
-            <td>
-              <div class="accept-reject-container">
-                <button class='accept-notification-items btn btn-primary btn-xs pull-left' data-toggle="modal" data-target='#accept-modal-{{_id}}'>Accept</button>
-                <button class='reject-notification-items btn btn-danger btn-xs pull-right' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
-              </div>
-            </td>
-            <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
-            <td></td>
-            </tr>
-            {{/ifIsPast}}
-          {{else}}
-          <tr id='notif-row-{{_id}}' class='notification-row'>
-          <td>
-            <div class='notification-icon'><img src="/images/checklist.png"></img></div>
-          </td>
-          <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) has been claimed by <a href="#" data-toggle="modal" data-target="#contact-modal-{{shopper._id}}">{{shopper.firstName}} {{shopper.lastName}}</a>! Contact him/her to set a pickup time.</td>
-          <td>
-            <div class="accept-reject-container">
-              <button class='reject-notification-items btn btn-danger btn-xs pull-right' data-toggle="modal" data-target='#reject-modal-{{_id}}'>Reject</button>
-            </div>
-          </td>
-          <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
-          <td></td>
-          </tr>
-          {{/if}}
-        {{else}}
-          {{#ifIsPast rawDeadline ../now}}
-          <tr id='notif-row-{{_id}}' class='notification-row'>
-          <td>
-            <div class='notification-icon'><img src="/images/expired.png"></img></div>
-          </td>
-          <td class='notification-text'>Your request of {{itemName}} ({{itemQuantity}}) went unclaimed and has expired.</td>
-          <td></td>
-          <td>
-            <button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button>
-          </td>
-          <td>
-            <button type="button" class="close close-expired-notif" data-id="{{_id}}">&times;</button>
-          </td>
-          </tr>
-          {{/ifIsPast}}
-        {{/if}}
-      {{/each}}
-      {{#each deliveryItems}}
-        {{#ifContains status "claimed"}}
-          {{#if actualPrice}}
-            <tr id='notif-row-{{_id}}' class='notification-row'>
-            <td>
-              <div class='notification-icon'><img src="/images/cart.png"></img></div>
-            </td>
-            <td class='notification-text'>
-              You need to deliver {{itemName}} ({{itemQuantity}}) to <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a>! Deliver to {{pickupLocation}} at {{pickupTime}}
-            </td>
-            <td><button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button></td>
-            <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
-            <td></td>
-            </tr>
-          {{/if}}
-        {{else}}
-            <tr id='notif-row-{{_id}}' class='notification-row'>
-            <td>
-              <div class='notification-icon'><img src="/images/cart.png"></img></div>
-            </td>
-            <td class='notification-text'>
-              <a href="#" data-toggle="modal" data-target="#contact-modal-{{requester._id}}">{{requester.firstName}} {{requester.lastName}}</a> has {{status}} your delivery of {{itemName}} ({{itemQuantity}})!
-            </td>
-            <td><button class='close-notification-items btn btn-success btn-xs' data-toggle="modal" data-target='#close-modal-{{_id}}'>Close Delivery</button></td>
-            <td><button class='view-notification btn btn-default btn-xs' data-toggle="modal" data-target='#notification-modal-{{_id}}'>Details</button></td>
-            <td></td>
-            </tr>
-        {{/ifContains}}
-      {{/each}}
-    </tbody>
-  </table> --}}
+    {{/ifContains}}
+  {{/each}} {{!-- for deliveryItems --}}
 
   {{!-- notification item modals --}}
   {{#each requestItems}}

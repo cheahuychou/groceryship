@@ -33,14 +33,21 @@ var Utils = function() {
     * @return {Number} The minimum allowed average shipping rating for users, below which the user will be suspended for a period of time
     */
     that.minAllowedShipRating = function() {
-    	return 3;
-    }
+        return 3;
+    };
 
     /**
     * @return {Integer} The length of time (in milliseconds) that a user will be suspended for, if he falls below the minimum rating
     */
     that.suspensionPeriod = function() {
-    	return 1000*60*60*24*30; //30 days
+        return 1000*60*60*24*30; //30 days
+    };
+
+    /**
+     * @return {Integer} The minimum number of deliveries made by a user before he/she can be suspended.
+     */
+    that.minDeliveriesForSuspension = function() {
+        return 4;
     }
 
     /**
@@ -48,7 +55,7 @@ var Utils = function() {
     */
     that.numTokenDigits = function () {
         return 32;
-    }
+    };
 
     /**
     * Reverse the given array (not in place)
@@ -60,18 +67,18 @@ var Utils = function() {
         reversed_array = reversed_array.concat(array);
         reversed_array.reverse();
         return reversed_array;
-    }
+    };
 
     // taken from lectures
     var from_to = function (from, to, f) {
         if (from > to) return;
         f(from); from_to(from+1, to, f);
-    }
+    };
 
     // taken from lecture
     that.each = function (a, f) {
         from_to(0, a.length-1, function (i) {f(a[i]);});
-    }
+    };
 
     /**
     * Reformat the deadline of each delivery
@@ -81,7 +88,7 @@ var Utils = function() {
     that.formatDate = function (deliveries) {
         var deliveries = JSON.parse(JSON.stringify(deliveries)); // deep copy
         return deliveries.map(function (delivery) {
-	        delivery.rawDeadline = (new Date(delivery.deadline)).getTime();
+            delivery.rawDeadline = (new Date(delivery.deadline)).getTime();
             delivery.deadline = dateFormat(delivery.deadline, "mmm d, h:MM TT");
             if (delivery.pickupTime) {
                 delivery.rawPickupTime = (new Date(delivery.pickupTime)).getTime();
@@ -89,7 +96,29 @@ var Utils = function() {
             }
             return delivery;
         });
-    }
+    };
+
+    /**
+     * Checks if number is an integer from from to to.
+     * @param  {Integer}  number the number to check
+     * @param  {Integer}  from   the minimum integer value for number
+     * @param  {Integer}  to     the maximum integer value for number
+     * @return {Boolean}         true if number is an integer from from to to; false otherwise
+     */
+    var isFromToInt = function(number, from, to) {
+        return Number.isInteger(number) && number >= from && number <= to;
+    };
+
+    /**
+     * Checks if rating is a valid rating
+     * @param  {Integer}  rating the rating to be checked
+     * @return {Boolean}         true if rating is a valid rating; false otherwise
+     */
+    that.isValidRating = function(rating) {
+        var minRating = 1;
+        var maxRating = 5;
+        return rating === null || isFromToInt(rating, minRating, maxRating);
+    };
 
     Object.freeze(that);
     return that;

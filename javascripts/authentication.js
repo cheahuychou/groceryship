@@ -7,9 +7,9 @@ var utils = require('./utils.js');
 
 var Authentication = function() {
 
-	var that = Object.create(Authentication.prototype);
+    var that = Object.create(Authentication.prototype);
 
-	/**
+    /**
     * Checks if the request has a defined session and correct authentication
     * @param {Object} req - request to check for authentication
     * @param {Object} res - response from the previous function
@@ -35,15 +35,15 @@ var Authentication = function() {
     * @param  {Function} callback - the function that takes in an object and is called once this function is done
     */
     that.encryptPassword = function (password, callback) {
-    	bcrypt.genSalt(function(err, salt) {
+        bcrypt.genSalt(function(err, salt) {
             if (err) {
                 return callback(err);
             } else {
-            	bcrypt.hash(password, salt, function(err, hash) {
+                bcrypt.hash(password, salt, function(err, hash) {
                     if (err) {
                         return callback(err);
                     } else {
-                    	return callback(err, hash);
+                        return callback(err, hash);
                     }
                 });
             }
@@ -130,7 +130,7 @@ var Authentication = function() {
         });
     }
 
-	Object.freeze(that);
+    Object.freeze(that);
     return that;
 };
 

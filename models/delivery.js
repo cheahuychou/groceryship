@@ -61,11 +61,11 @@ DeliverySchema.path("pickupLocation").validate(function(value) {
 }, "Not a valid pickup location name");
 
 DeliverySchema.path("requesterRating").validate(function(rating) {
-    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5 || rating === null;
+    return utils.isValidRating(rating);
 }, "A requester rating should be ranged from 1 to 5.");
 
 DeliverySchema.path("shopperRating").validate(function(rating) {
-    return rating == 1 || rating == 2 || rating == 3 || rating == 4 || rating == 5 || rating === null;
+    return utils.isValidRating(rating);
 }, "A shopper rating should be ranged from 1 to 5.");
 
 /**

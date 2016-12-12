@@ -1,4 +1,5 @@
 // Author: Czarina Lao
+// js for the dashboard and its componenets
 
 $(document).ready(function () {
     var deliveriesDatatable = $('#deliveries-table').DataTable({
@@ -27,7 +28,10 @@ $(document).ready(function () {
     });
 
     // remove all added items on set pickup time modal
-    $('#set-pickup-modal').on('hidden.bs.modal', function() {
+    $('#set-pickup-modal').on('hide.bs.modal', function() {
+        $(flatpickr('#set-pickup-modal .flatpickr')).each(function() {
+            this.destroy();
+        });
         $('#set-pickup-modal tbody').empty();
     });
 
@@ -62,19 +66,15 @@ $(document).ready(function () {
             type: 'DELETE',
             data: {_csrf: csrf},
             success: function(data) {
-                console.log(data);
                 if (data.success) {
                     $('.request-tile[data-id='+id+']').parent().remove();
                     refreshAllCounts();
-                    // TODO: ask for the reason of cancellation?
                     addMessage('Request canceled.', 'success', false, true);
                 } else {
-                    console.log(data.message);
                     addMessage('The request could not be canceled. Note that you can\'t cancel claimed requests.', 'danger', false, true);
                 }
             },
             error: function(err) {
-                console.log(err);
                 addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
             }
         });
@@ -175,15 +175,24 @@ $(document).ready(function () {
                 row.append($('<td/>').append(inputPrice));
 
                 $('#set-pickup-modal tbody').append(row);
-                console.log(rawDeadline);
+
                 // initialize flatpickr with restrictions based on time now and deadline
                 flatpickr('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]', {
                     enableTime: true,
-                    // minDate: 'today',
                     enable: [{from: 'today', to: rawDeadline}],
                     // create an extra input solely for display purposes
                     altInput: true,
                     altFormat: "M j Y, h:i K"
+                });
+
+                // add a listener for changes to show error if input is in the past or past the deadline
+                $('tr[data-id="'+id+'"] .flatpickr[name=pickup-time]').change(function() {
+                    var inputDate = new Date($(this).val()+getFormattedTimezoneOffset());
+                    if (inputDate < Date.now() || inputDate > rawDeadline) {
+                        showError(this);
+                    } else {
+                        $(this).parent().removeClass('has-error');
+                    }
                 });
             }
         });
@@ -215,12 +224,14 @@ $(document).ready(function () {
             // check that all inputs are nonempty
             // if empty, alert the user of the error and show where it is
             if (!$(this).val() || $(this).val().trim()=='') {
-                if (!$(this).parent().hasClass('has-error')) {
-                    $(this).parent().addClass('has-error');
-                }
+                showError(this);
                 hasError = true;
-                console.log(this);
                 addMessage('All fields must be filled out.', 'danger', true, true);
+                return false;
+            } else if (findScriptingTags($(this).val())) {
+                showError(this);
+                hasError = true;
+                addMessage('Please enter valid input.', 'danger', true, true);
                 return false;
             } else if ($(this).hasClass('price')
                 && $(this).parent().hasClass('has-error')) {
@@ -228,24 +239,14 @@ $(document).ready(function () {
                 hasError = true;
                 addMessage('Please enter a valid price.', 'danger', true, true);
                 return false;
+            } else if ($(this).attr('name') == 'pickup-time'
+                && $(this).parent().hasClass('has-error')) {
+                // check if deadline is in the future
+                hasError = true;
+                addMessage('Please enter a date and time in the future and before the deadline.', 'danger', true, true);
+                return false;
             } else {
                 $(this).parent().removeClass('has-error');
-            }
-
-            if ($(this).attr('name') == 'pickup-time') {                
-                // check if pickup time is in the future and <= deadline
-                // TODO: attach this validator to .change of datetime pickers instead
-                var pickupTime = new Date($(this).val()+getFormattedTimezoneOffset());
-                if (pickupTime < Date.now() || pickupTime > new Date($(this).attr('data-deadline'))) {
-                    if (!$(this).parent().hasClass('has-error')) {
-                        $(this).parent().addClass('has-error');
-                    }
-                    hasError = true;
-                    addMessage('Please enter a date and time in the future and before the deadline.', 'danger', true, true);
-                    return false;
-                } else {
-                    $(this).parent().removeClass('has-error');
-                }
             }
         });
 
@@ -266,7 +267,6 @@ $(document).ready(function () {
                         _csrf: csrf
                     },
                     success: function(data) {
-                        // TODO
                         if (data.success) {
                             // update to deliver table
                             var originalRow = $('.delivery-item-row[data-id='+id+']');
@@ -282,26 +282,26 @@ $(document).ready(function () {
                             currentItem.remove();
                         } else {
                             hasError = true;
-                            console.log(data.message);
                         }
                     },
                     error: function(err) {
-                        console.log(err);
-                        // TODO: tell user which ones failed?
                         hasError = true;
                     }
                 });
             });
 
             $.when.apply(this, deliveredItems).then(function() {
-                // header checkbox is disabled if no rows have checkboxes
-                if ($('.deliveries-checkbox').length === 0) {
-                    $('.header-checkbox').prop('disabled', true);
-                    $('#deliver-items').prop('disabled', true);
-                } else if ($('.deliveries-checkbox:checked').size() === 0) {
-                    // disable deliver now button if no checkboxes are checked
-                    $('#deliver-items').prop('disabled', true);
+                // uncheck header checkbox if not all items are selected anymore
+                if ($('.deliveries-checkbox:checked').size() != $('.deliveries-checkbox').size()) {
                     $('.header-checkbox').prop('checked', false);
+                }
+                // header checkbox is disabled if no rows have checkboxes
+                if ($('.deliveries-checkbox').size() === 0) {
+                    $('.header-checkbox').prop('disabled', true);
+                }
+                if ($('.deliveries-checkbox:checked').size() === 0) {
+                    // disable set pickup time button if no checkboxes are checked
+                    $('#deliver-items').prop('disabled', true);
                 }
 
                 if (hasError) {

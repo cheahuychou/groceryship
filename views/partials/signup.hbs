@@ -12,15 +12,25 @@
           <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <div class='row'>
             <div class='col-xs-8 col-md-6'>
-              <input id='kerberos-register-box' class='form-control signup-input' type='text' name='requestedKerberos' placeholder='kerberos' required></input>
-              <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
-              <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
-              <input id='phone-number-register-box' class='form-control signup-input' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input>
-              <select name='dorm' class='form-control signup-input'>
-                {{#each allDorms}}
-                <option>{{this}}</option>
-                {{/each}}
-              </select>
+              <div>
+                <input id='kerberos-register-box' class='form-control signup-input' type='text' name='requestedKerberos' placeholder='kerberos' required></input>
+              </div>
+              <div>
+                <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
+              </div>
+              <div>
+                <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
+              </div>
+              <div>
+                <input id='phone-number-register-box' class='form-control signup-input' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input>
+              </div>
+              <div>
+                <select name='dorm' class='form-control signup-input'>
+                  {{#each allDorms}}
+                  <option>{{this}}</option>
+                  {{/each}}
+                </select>
+              </div>
             </div>
           </div>
           <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP">

@@ -1,0 +1,67 @@
+/* Author: Czarina Lao */
+
+/* General tile styling */
+.tile-icon img {
+    height: 40px;
+    display: block;
+    margin: 0;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.tile p {
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    line-height: 1.25;
+}
+
+.tile-title, .tile-subtitle, .request-tile-content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.tile {
+    text-align: left;
+    height: 165px;
+}
+
+.tile-content {
+    line-height: 2.5ex;
+    height: 5ex;
+    vertical-align: center;
+}
+
+.tile:hover{
+    background-color: rgba(22, 160, 133,0.25);
+}
+
+.accept-reject-container {
+    display: inline-block;
+}
+
+/* Notification tiles styling */
+.notification-tile {
+    height: 165px;
+}
+
+.notification-icon img {
+    height: 20px;
+    display: block;
+    margin: auto;
+}
+
+/* Request tiles styling */
+.request-tile, .add-request-tile {
+    height: 150px;
+}
+
+#add-request-icon {
+    font-size: 55px;
+}
+
+.add-request-tile {
+    text-align: center;
+    vertical-align: middle;
+}
+
