@@ -10,3 +10,8 @@
 #make-request {
     margin-bottom: 40px;
 }
+
+.dropdown-menu {
+    /* make sure the dropdown menu won't get hidden under the navbar */
+    z-index: 99999;
+}
