@@ -15,6 +15,7 @@ For a local version,
     - `stripeAuthorizeURI`
     - `mitPeopleClientId`
     - `mitPeopleClientSecret`
+    
 The methods should return a String of what is described in the method name. These will be used to send the verification and notification emails, access the Stripe API, and access the MIT People Directory API.
 - Next, make sure you have Node.js, NPM, and [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community) which will be used for this project.
 - Start the MongoDB server in one terminal window with `sudo mongod`.
