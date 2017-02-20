@@ -94,7 +94,7 @@ router.get('/verify/:username/resend', function(req, res, next) {
             username: username,
             allDorms: utils.allDorms(),
             csrfToken: req.csrfToken()}
-    User.sendVerficationEmail(username, req.devMode, function (err, user) {
+    User.sendVerificationEmail(username, req.devMode, function (err, user) {
         if (err) {
             return res.render('home', data);
         }
